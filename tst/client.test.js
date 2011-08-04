@@ -81,12 +81,10 @@ test('setup', function(t) {
   server.search(SUFFIX, function(req, res, next) {
     var e = res.createSearchEntry({
       objectName: req.dn,
-      attributes: [
-        new Attribute({
-          type: 'cn',
-          vals: ['test']
-        })
-      ]
+      attributes: {
+        cn: ['unit', 'test'],
+        sn: 'testy'
+      }
     });
     res.send(e);
     res.send(e);
@@ -146,6 +144,20 @@ test('add success', function(t) {
     })
   ];
   client.add('cn=add, ' + SUFFIX, attrs, function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    t.equal(res.status, 0);
+    t.end();
+  });
+});
+
+
+test('add success with object', function(t) {
+  var entry = {
+    cn: ['unit', 'add'],
+    sn: 'test'
+  };
+  client.add('cn=add, ' + SUFFIX, entry, function(err, res) {
     t.ifError(err);
     t.ok(res);
     t.equal(res.status, 0);
@@ -238,6 +250,22 @@ test('modify success', function(t) {
 });
 
 
+test('modify change plain object success', function(t) {
+  var change = new Change({
+    type: 'Replace',
+    modification: {
+      cn: 'test'
+    }
+  });
+  client.modify('cn=modify, ' + SUFFIX, change, function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    t.equal(res.status, 0);
+    t.end();
+  });
+});
+
+
 test('modify array success', function(t) {
   var changes = [
     new Change({
@@ -294,6 +322,7 @@ test('search basic', function(t) {
       t.equal(entry.dn.toString(), 'cn=test, ' + SUFFIX);
       t.ok(entry.attributes);
       t.ok(entry.attributes.length);
+      t.ok(entry.object);
       gotEntry++;
     });
     res.on('error', function(err) {
