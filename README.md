@@ -1,8 +1,8 @@
-node-ldapjs will blow your mind.  Docs coming soon.
+Docs coming soon.
 
 ## Installation
 
-    npm install ldapjs
+For now this is not published to npm.  Use at your own risk.
 
 ## License
 
