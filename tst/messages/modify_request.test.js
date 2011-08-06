@@ -44,7 +44,7 @@ test('new with args', function(t) {
     })]
   });
   t.ok(req);
-  t.equal(req.dn, 'cn=foo, o=test');
+  t.equal(req.dn.toString(), 'cn=foo, o=test');
   t.equal(req.changes.length, 1);
   t.equal(req.changes[0].operation, 'Replace');
   t.equal(req.changes[0].modification.type, 'objectclass');

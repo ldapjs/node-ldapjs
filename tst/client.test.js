@@ -92,7 +92,6 @@ test('setup', function(t) {
     return next();
   });
 
-
   server.unbind(function(req, res, next) {
     res.end();
     return next();

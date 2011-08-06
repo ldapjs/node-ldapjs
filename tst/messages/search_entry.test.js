@@ -41,7 +41,7 @@ test('new with args', function(t) {
   });
   t.ok(res);
   t.equal(res.messageID, 123);
-  t.equal(res.dn, 'cn=foo, o=test');
+  t.equal(res.dn.toString(), 'cn=foo, o=test');
   t.equal(res.attributes.length, 2);
   t.equal(res.attributes[0].type, 'cn');
   t.equal(res.attributes[0].vals[0], 'foo');
