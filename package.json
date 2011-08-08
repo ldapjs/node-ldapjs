@@ -1,8 +1,9 @@
 {
   "author": "Mark Cavage <mcavage@gmail.com>",
   "name": "ldapjs",
+  "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
@@ -15,7 +16,7 @@
     "asn1": "~0.1.5",
     "buffertools": "~1.0.3",
     "sprintf": "~0.1.1"
- },
+  },
   "devDependencies": {
     "tap": "~0.0.9",
     "node-uuid": "~1.2.0"
