@@ -65,27 +65,14 @@ test('match false', function(t) {
 
 test('parse ok', function(t) {
   var writer = new BerWriter();
-  writer.writeString('foo');
+  writer.writeString('foo', 0x87);
 
   var f = new PresenceFilter();
   t.ok(f);
-  t.ok(f.parse(new BerReader(writer.buffer)));
+
+  var reader = new BerReader(writer.buffer);
+  reader.readSequence();
+  t.ok(f.parse(reader));
   t.ok(f.matches({ foo: 'bar' }));
-  t.end();
-});
-
-
-test('parse bad', function(t) {
-  var writer = new BerWriter();
-  writer.writeInt(20);
-
-  var f = new PresenceFilter();
-  t.ok(f);
-  try {
-    f.parse(new BerReader(writer.buffer));
-    t.fail('Should have thrown InvalidAsn1Error');
-  } catch (e) {
-    t.equal(e.name, 'InvalidAsn1Error');
-  }
   t.end();
 });

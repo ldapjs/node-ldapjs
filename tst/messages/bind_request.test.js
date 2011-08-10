@@ -52,7 +52,7 @@ test('parse', function(t) {
   var req = new BindRequest();
   t.ok(req._parse(new BerReader(ber.buffer)));
   t.equal(req.version, 3);
-  t.equal(req.dn, 'cn=root');
+  t.equal(req.dn.toString(), 'cn=root');
   t.ok(req.name.constructor);
   t.equal(req.name.constructor.name, 'DN');
   t.equal(req.credentials, 'secret');
