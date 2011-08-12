@@ -34,7 +34,7 @@ test('new with args', function(t) {
     entry: dn.parse('cn=test')
   });
   t.ok(req);
-  t.equal(req.dn, 'cn=test');
+  t.equal(req.dn.toString(), 'cn=test');
   t.end();
 });
 
@@ -47,7 +47,7 @@ test('parse', function(t) {
   var reader = new BerReader(ber.buffer);
   reader.readSequence(0x4a);
   t.ok(req.parse(reader.buffer, reader.length));
-  t.equal(req.dn, 'cn=test');
+  t.equal(req.dn.toString(), 'cn=test');
   t.end();
 });
 

@@ -113,3 +113,32 @@ test('toBer', function(t) {
 
   t.end();
 });
+
+
+test('toObject', function(t) {
+  var req = new AddRequest({
+    entry: dn.parse('cn=foo, o=test'),
+    attributes: [new Attribute({type: 'cn', vals: ['foo', 'bar']}),
+                 new Attribute({type: 'objectclass', vals: ['person']})]
+  });
+
+  t.ok(req);
+
+  var obj = req.toObject();
+  t.ok(obj);
+
+  t.ok(obj.dn);
+  t.equal(obj.dn, 'cn=foo, o=test');
+  t.ok(obj.attributes);
+  t.ok(obj.attributes.cn);
+  t.ok(Array.isArray(obj.attributes.cn));
+  t.equal(obj.attributes.cn.length, 2);
+  t.equal(obj.attributes.cn[0], 'foo');
+  t.equal(obj.attributes.cn[1], 'bar');
+  t.ok(obj.attributes.objectclass);
+  t.ok(Array.isArray(obj.attributes.objectclass));
+  t.equal(obj.attributes.objectclass.length, 1);
+  t.equal(obj.attributes.objectclass[0], 'person');
+
+  t.end();
+});

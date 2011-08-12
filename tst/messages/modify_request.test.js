@@ -46,7 +46,7 @@ test('new with args', function(t) {
   t.ok(req);
   t.equal(req.dn.toString(), 'cn=foo, o=test');
   t.equal(req.changes.length, 1);
-  t.equal(req.changes[0].operation, 'Replace');
+  t.equal(req.changes[0].operation, 'replace');
   t.equal(req.changes[0].modification.type, 'objectclass');
   t.equal(req.changes[0].modification.vals[0], 'person');
   t.end();
@@ -74,9 +74,9 @@ test('parse', function(t) {
 
   var req = new ModifyRequest();
   t.ok(req._parse(new BerReader(ber.buffer)));
-  t.equal(req.dn, 'cn=foo, o=test');
+  t.equal(req.dn.toString(), 'cn=foo, o=test');
   t.equal(req.changes.length, 1);
-  t.equal(req.changes[0].operation, 'Replace');
+  t.equal(req.changes[0].operation, 'replace');
   t.equal(req.changes[0].modification.type, 'objectclass');
   t.equal(req.changes[0].modification.vals[0], 'person');
   t.end();

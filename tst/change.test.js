@@ -40,7 +40,7 @@ test('new with args', function(t) {
   });
   t.ok(change);
 
-  t.equal(change.operation, 'Add');
+  t.equal(change.operation, 'add');
   t.equal(change.modification.type, 'cn');
   t.equal(change.modification.vals.length, 2);
   t.equal(change.modification.vals[0], 'foo');
@@ -90,7 +90,7 @@ test('parse', function(t) {
   t.ok(change);
   t.ok(change.parse(new BerReader(ber.buffer)));
 
-  t.equal(change.operation, 'Add');
+  t.equal(change.operation, 'add');
   t.equal(change.modification.type, 'cn');
   t.equal(change.modification.vals.length, 2);
   t.equal(change.modification.vals[0], 'foo');
