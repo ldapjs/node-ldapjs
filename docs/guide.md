@@ -28,12 +28,12 @@ basically breaks down as follows:
 
 It might be helpful to visualize that:
 
-		  o=example
-		  /       \
-	     ou=users     ou=groups
-	    /      |         |     \
-	cn=john  cn=jane    cn=dudes  cn=dudettes
-	/
+                  o=example
+                  /       \
+             ou=users     ou=groups
+            /      |         |     \
+        cn=john  cn=jane    cn=dudes  cn=dudettes
+        /
     keyid=foo
 
 
@@ -187,8 +187,8 @@ Blah blah, let's try running the ldap client again, first with a bad password:
     $ ldapsearch -H ldap://localhost:1389 -x -D cn=root -w foo -b "o=myhost" objectclass=*
 
     ldap_bind: Invalid credentials (49)
-	matched DN: cn=root
-	additional info: Invalid Credentials
+        matched DN: cn=root
+        additional info: Invalid Credentials
 
 And again with the correct one:
 
@@ -212,7 +212,7 @@ authorization handler that we'll use in all our subsequent routes:
 
     function authorize(req, res, next) {
       if (!req.connection.ldap.bindDN.equals('cn=root'))
-	return next(new ldap.InsufficientAccessRightsError());
+        return next(new ldap.InsufficientAccessRightsError());
 
       return next();
     }
@@ -249,35 +249,35 @@ First, let's make a handler that just loads the "user database" for us in a
 
     function loadPasswdFile(req, res, next) {
       fs.readFile('/etc/passwd', 'utf8', function(err, data) {
-	if (err)
-	  return next(new ldap.OperationsError(err.message));
+        if (err)
+          return next(new ldap.OperationsError(err.message));
 
-	req.users = {};
+        req.users = {};
 
-	var lines = data.split('\n');
-	for (var i = 0; i < lines.length; i++) {
-	  if (!lines[i] || /^#/.test(lines[i]))
-	    continue;
+        var lines = data.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          if (!lines[i] || /^#/.test(lines[i]))
+            continue;
 
-	  var record = lines[i].split(':');
-	  if (!record || !record.length)
-	    continue;
+          var record = lines[i].split(':');
+          if (!record || !record.length)
+            continue;
 
-	  req.users[record[0]] = {
-	    dn: 'cn=' + record[0] + ', ou=users, o=myhost',
-	    attributes: {
-	      cn: record[0],
-	      uid: record[2],
-	      gid: record[3],
-	      description: record[4],
-	      homedirectory: record[5],
-	      shell: record[6] || '',
-	      objectclass: 'unixUser'
-	    }
-	  };
-	}
+          req.users[record[0]] = {
+            dn: 'cn=' + record[0] + ', ou=users, o=myhost',
+            attributes: {
+              cn: record[0],
+              uid: record[2],
+              gid: record[3],
+              description: record[4],
+              homedirectory: record[5],
+              shell: record[6] || '',
+              objectclass: 'unixUser'
+            }
+          };
+        }
 
-	return next();
+        return next();
       });
     }
 
@@ -289,8 +289,8 @@ handler to process that:
 
     server.search('o=myhost', pre, function(req, res, next) {
       Object.keys(req.users).forEach(function(k) {
-	if (req.filter.matches(req.users[k].attributes))
-	  res.send(req.users[k]);
+        if (req.filter.matches(req.users[k].attributes))
+          res.send(req.users[k]);
       });
 
       res.end();
@@ -357,13 +357,13 @@ of attributes.  So that's why we did this:
     var entry = {
       dn: 'cn=' + record[0] + ', ou=users, o=myhost',
       attributes: {
-	cn: record[0],
-	uid: record[2],
-	gid: record[3],
-	description: record[4],
-	homedirectory: record[5],
-	shell: record[6] || '',
-	objectclass: 'unixUser'
+        cn: record[0],
+        uid: record[2],
+        gid: record[3],
+        description: record[4],
+        homedirectory: record[5],
+        shell: record[6] || '',
+        objectclass: 'unixUser'
       }
     };
 
@@ -398,36 +398,36 @@ the following code in as another handler (you'll need a
 
     server.add('ou=users, o=myhost', pre, function(req, res, next) {
       if (!req.dn.rdns[0].cn)
-	return next(new ldap.ConstraintViolationError('cn required'));
+        return next(new ldap.ConstraintViolationError('cn required'));
 
       if (req.users[req.dn.rdns[0].cn])
-	return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+        return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
 
       var entry = req.toObject().attributes;
 
       if (entry.objectclass.indexOf('unixUser') === -1)
-	return next(new ldap.ConstraintViolation('entry must be a unixUser'));
+        return next(new ldap.ConstraintViolation('entry must be a unixUser'));
 
       var opts = ['-m'];
       if (entry.description) {
-	opts.push('-c');
-	opts.push(entry.description[0]);
+        opts.push('-c');
+        opts.push(entry.description[0]);
       }
       if (entry.homedirectory) {
-	opts.push('-d');
-	opts.push(entry.homedirectory[0]);
+        opts.push('-d');
+        opts.push(entry.homedirectory[0]);
       }
       if (entry.gid) {
-	opts.push('-g');
-	opts.push(entry.gid[0]);
+        opts.push('-g');
+        opts.push(entry.gid[0]);
       }
       if (entry.shell) {
-	opts.push('-s');
-	opts.push(entry.shell[0]);
+        opts.push('-s');
+        opts.push(entry.shell[0]);
       }
       if (entry.uid) {
-	opts.push('-u');
-	opts.push(entry.uid[0]);
+        opts.push('-u');
+        opts.push(entry.uid[0]);
       }
       opts.push(entry.cn[0]);
       var useradd = spawn('useradd', opts);
@@ -435,22 +435,22 @@ the following code in as another handler (you'll need a
       var messages = [];
 
       useradd.stdout.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
       useradd.stderr.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
 
       useradd.on('exit', function(code) {
-	if (code !== 0) {
-	  var msg = '' + code;
-	  if (messages.length)
-	    msg += ': ' + messages.join();
-	  return next(new ldap.OperationsError(msg));
-	}
+        if (code !== 0) {
+          var msg = '' + code;
+          if (messages.length)
+            msg += ': ' + messages.join();
+          return next(new ldap.OperationsError(msg));
+        }
 
-	res.end();
-	return next();
+        res.end();
+        return next();
       });
     });
 
@@ -485,15 +485,15 @@ As before, here's a breakdown of the code:
 
     server.add('ou=users, o=myhost', pre, function(req, res, next) {
       if (!req.dn.rdns[0].cn)
-	return next(new ldap.ConstraintViolationError('cn required'));
+        return next(new ldap.ConstraintViolationError('cn required'));
 
       if (req.users[req.dn.rdns[0].cn])
-	return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+        return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
 
       var entry = req.toObject().attributes;
 
       if (entry.objectclass.indexOf('unixUser') === -1)
-	return next(new ldap.ConstraintViolation('entry must be a unixUser'));
+        return next(new ldap.ConstraintViolation('entry must be a unixUser'));
 
 Here's a few new things:
 
@@ -530,37 +530,37 @@ Go ahead and add the following code into your source file:
 
     server.modify('ou=users, o=myhost', pre, function(req, res, next) {
       if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
-	return next(new ldap.NoSuchObjectError(req.dn.toString()));
+        return next(new ldap.NoSuchObjectError(req.dn.toString()));
 
       if (!req.changes.length)
-	return next(new ldap.ProtocolError('changes required'));
+        return next(new ldap.ProtocolError('changes required'));
 
       var user = req.users[req.dn.rdns[0].cn].attributes;
       var mod;
 
       for (var i = 0; i < req.changes.length; i++) {
-	mod = req.changes[i].modification;
-	switch (req.changes[i].operation) {
-	case 'replace':
-	  if (mod.type !== 'userpassword' || !mod.vals || !mod.vals.length)
-	    return next(new ldap.UnwillingToPerformError('only password updates ' +
-							 'allowed'));
-	  break;
-	case 'add':
-	case 'delete':
-	  return next(new ldap.UnwillingToPerformError('only replace allowed'));
-	}
+        mod = req.changes[i].modification;
+        switch (req.changes[i].operation) {
+        case 'replace':
+          if (mod.type !== 'userpassword' || !mod.vals || !mod.vals.length)
+            return next(new ldap.UnwillingToPerformError('only password updates ' +
+                                                         'allowed'));
+          break;
+        case 'add':
+        case 'delete':
+          return next(new ldap.UnwillingToPerformError('only replace allowed'));
+        }
       }
 
       var passwd = spawn('chpasswd', ['-c', 'MD5']);
       passwd.stdin.end(user.cn + ':' + mod.vals[0], 'utf8');
 
       passwd.on('exit', function(code) {
-	if (code !== 0)
-	  return next(new ldap.OperationsError(code));
+        if (code !== 0)
+          return next(new ldap.OperationsError(code));
 
-	res.end();
-	return next();
+        res.end();
+        return next();
       });
     });
 
@@ -592,28 +592,28 @@ delete it :).  Go ahead and add the following code into your server:
 
     server.del('ou=users, o=myhost', pre, function(req, res, next) {
       if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
-	return next(new ldap.NoSuchObjectError(req.dn.toString()));
+        return next(new ldap.NoSuchObjectError(req.dn.toString()));
 
       var userdel = spawn('userdel', ['-f', req.dn.rdns[0].cn]);
 
       var messages = [];
       userdel.stdout.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
       userdel.stderr.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
 
       userdel.on('exit', function(code) {
-	if (code !== 0) {
-	  var msg = '' + code;
-	  if (messages.length)
-	    msg += ': ' + messages.join();
-	  return next(new ldap.OperationsError(msg));
-	}
+        if (code !== 0) {
+          var msg = '' + code;
+          if (messages.length)
+            msg += ': ' + messages.join();
+          return next(new ldap.OperationsError(msg));
+        }
 
-	res.end();
-	return next();
+        res.end();
+        return next();
       });
     });
 
@@ -638,7 +638,7 @@ the complete implementation for what we went through above:
 
     function authorize(req, res, next) {
       if (!req.connection.ldap.bindDN.equals('cn=root'))
-	return next(new ldap.InsufficientAccessRightsError());
+        return next(new ldap.InsufficientAccessRightsError());
 
       return next();
     }
@@ -646,35 +646,35 @@ the complete implementation for what we went through above:
 
     function loadPasswdFile(req, res, next) {
       fs.readFile('/etc/passwd', 'utf8', function(err, data) {
-	if (err)
-	  return next(new ldap.OperationsError(err.message));
+        if (err)
+          return next(new ldap.OperationsError(err.message));
 
-	req.users = {};
+        req.users = {};
 
-	var lines = data.split('\n');
-	for (var i = 0; i < lines.length; i++) {
-	  if (!lines[i] || /^#/.test(lines[i]))
-	    continue;
+        var lines = data.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          if (!lines[i] || /^#/.test(lines[i]))
+            continue;
 
-	  var record = lines[i].split(':');
-	  if (!record || !record.length)
-	    continue;
+          var record = lines[i].split(':');
+          if (!record || !record.length)
+            continue;
 
-	  req.users[record[0]] = {
-	    dn: 'cn=' + record[0] + ', ou=users, o=myhost',
-	    attributes: {
-	      cn: record[0],
-	      uid: record[2],
-	      gid: record[3],
-	      description: record[4],
-	      homedirectory: record[5],
-	      shell: record[6] || '',
-	      objectclass: 'unixUser'
-	    }
-	  };
-	}
+          req.users[record[0]] = {
+            dn: 'cn=' + record[0] + ', ou=users, o=myhost',
+            attributes: {
+              cn: record[0],
+              uid: record[2],
+              gid: record[3],
+              description: record[4],
+              homedirectory: record[5],
+              shell: record[6] || '',
+              objectclass: 'unixUser'
+            }
+          };
+        }
 
-	return next();
+        return next();
       });
     }
 
@@ -689,7 +689,7 @@ the complete implementation for what we went through above:
 
     server.bind('cn=root', function(req, res, next) {
       if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret')
-	return next(new ldap.InvalidCredentialsError());
+        return next(new ldap.InvalidCredentialsError());
 
       res.end();
       return next();
@@ -698,36 +698,36 @@ the complete implementation for what we went through above:
 
     server.add('ou=users, o=myhost', pre, function(req, res, next) {
       if (!req.dn.rdns[0].cn)
-	return next(new ldap.ConstraintViolationError('cn required'));
+        return next(new ldap.ConstraintViolationError('cn required'));
 
       if (req.users[req.dn.rdns[0].cn])
-	return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+        return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
 
       var entry = req.toObject().attributes;
 
       if (entry.objectclass.indexOf('unixUser') === -1)
-	return next(new ldap.ConstraintViolation('entry must be a unixUser'));
+        return next(new ldap.ConstraintViolation('entry must be a unixUser'));
 
       var opts = ['-m'];
       if (entry.description) {
-	opts.push('-c');
-	opts.push(entry.description[0]);
+        opts.push('-c');
+        opts.push(entry.description[0]);
       }
       if (entry.homedirectory) {
-	opts.push('-d');
-	opts.push(entry.homedirectory[0]);
+        opts.push('-d');
+        opts.push(entry.homedirectory[0]);
       }
       if (entry.gid) {
-	opts.push('-g');
-	opts.push(entry.gid[0]);
+        opts.push('-g');
+        opts.push(entry.gid[0]);
       }
       if (entry.shell) {
-	opts.push('-s');
-	opts.push(entry.shell[0]);
+        opts.push('-s');
+        opts.push(entry.shell[0]);
       }
       if (entry.uid) {
-	opts.push('-u');
-	opts.push(entry.uid[0]);
+        opts.push('-u');
+        opts.push(entry.uid[0]);
       }
       opts.push(entry.cn[0]);
       var useradd = spawn('useradd', opts);
@@ -735,95 +735,95 @@ the complete implementation for what we went through above:
       var messages = [];
 
       useradd.stdout.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
       useradd.stderr.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
 
       useradd.on('exit', function(code) {
-	if (code !== 0) {
-	  var msg = '' + code;
-	  if (messages.length)
-	    msg += ': ' + messages.join();
-	  return next(new ldap.OperationsError(msg));
-	}
+        if (code !== 0) {
+          var msg = '' + code;
+          if (messages.length)
+            msg += ': ' + messages.join();
+          return next(new ldap.OperationsError(msg));
+        }
 
-	res.end();
-	return next();
+        res.end();
+        return next();
       });
     });
 
 
     server.modify('ou=users, o=myhost', pre, function(req, res, next) {
       if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
-	return next(new ldap.NoSuchObjectError(req.dn.toString()));
+        return next(new ldap.NoSuchObjectError(req.dn.toString()));
 
       if (!req.changes.length)
-	return next(new ldap.ProtocolError('changes required'));
+        return next(new ldap.ProtocolError('changes required'));
 
       var user = req.users[req.dn.rdns[0].cn].attributes;
       var mod;
 
       for (var i = 0; i < req.changes.length; i++) {
-	mod = req.changes[i].modification;
-	switch (req.changes[i].operation) {
-	case 'replace':
-	  if (mod.type !== 'userpassword' || !mod.vals || !mod.vals.length)
-	    return next(new ldap.UnwillingToPerformError('only password updates ' +
-							 'allowed'));
-	  break;
-	case 'add':
-	case 'delete':
-	  return next(new ldap.UnwillingToPerformError('only replace allowed'));
-	}
+        mod = req.changes[i].modification;
+        switch (req.changes[i].operation) {
+        case 'replace':
+          if (mod.type !== 'userpassword' || !mod.vals || !mod.vals.length)
+            return next(new ldap.UnwillingToPerformError('only password updates ' +
+                                                         'allowed'));
+          break;
+        case 'add':
+        case 'delete':
+          return next(new ldap.UnwillingToPerformError('only replace allowed'));
+        }
       }
 
       var passwd = spawn('chpasswd', ['-c', 'MD5']);
       passwd.stdin.end(user.cn + ':' + mod.vals[0], 'utf8');
 
       passwd.on('exit', function(code) {
-	if (code !== 0)
-	  return next(new ldap.OperationsError('' + code));
+        if (code !== 0)
+          return next(new ldap.OperationsError('' + code));
 
-	res.end();
-	return next();
+        res.end();
+        return next();
       });
     });
 
 
     server.del('ou=users, o=myhost', pre, function(req, res, next) {
       if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
-	return next(new ldap.NoSuchObjectError(req.dn.toString()));
+        return next(new ldap.NoSuchObjectError(req.dn.toString()));
 
       var userdel = spawn('userdel', ['-f', req.dn.rdns[0].cn]);
 
       var messages = [];
       userdel.stdout.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
       userdel.stderr.on('data', function(data) {
-	messages.push(data.toString());
+        messages.push(data.toString());
       });
 
       userdel.on('exit', function(code) {
-	if (code !== 0) {
-	  var msg = '' + code;
-	  if (messages.length)
-	    msg += ': ' + messages.join();
-	  return next(new ldap.OperationsError(msg));
-	}
+        if (code !== 0) {
+          var msg = '' + code;
+          if (messages.length)
+            msg += ': ' + messages.join();
+          return next(new ldap.OperationsError(msg));
+        }
 
-	res.end();
-	return next();
+        res.end();
+        return next();
       });
     });
 
 
     server.search('o=myhost', pre, function(req, res, next) {
       Object.keys(req.users).forEach(function(k) {
-	if (req.filter.matches(req.users[k].attributes))
-	  res.send(req.users[k]);
+        if (req.filter.matches(req.users[k].attributes))
+          res.send(req.users[k]);
       });
 
       res.end();

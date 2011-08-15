@@ -22,7 +22,6 @@
     "node-uuid": "~1.2.0"
   },
   "scripts": {
-    "pretest": "which gjslint; if [[ \"$?\" = 0 ]] ; then  gjslint --nojsdoc -r lib -r tst; else echo \"Missing gjslint. Skipping lint\"; fi",
     "test": "./node_modules/.bin/tap ./tst"
   }
 }
