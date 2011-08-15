@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ldapjs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="media/css/restdown.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+</head>
+<body>
+<div id="header">
+    <h1>ldapjs Documentation</h1>
+</div>
+
+    <div id="sidebar">
+<ul>
+  <li><div><a href="#what-exactly-is-ldap">What exactly is LDAP?</a></div>
+  <ul>
+    <li><div><a href="#How-is-ldapjs-any-different?"><span class="method name"><span class="name">How is ldapjs any different?</span></span></a></div></li>
+  </ul></li>
+  <li><div><a href="#ok-cool-learn-me-some-ldap">Ok, cool. Learn me some LDAP!</a></div>
+  <ul>
+    <li><div><a href="#Install"><span class="method name"><span class="name">Install</span></span></a></div></li>
+    <li><div><a href="#Bind"><span class="method name"><span class="name">Bind</span></span></a></div></li>
+    <li><div><a href="#Search"><span class="method name"><span class="name">Search</span></span></a></div></li>
+    <li><div><a href="#Add"><span class="method name"><span class="name">Add</span></span></a></div></li>
+    <li><div><a href="#Modify"><span class="method name"><span class="name">Modify</span></span></a></div></li>
+    <li><div><a href="#Delete"><span class="method name"><span class="name">Delete</span></span></a></div></li>
+  </ul></li>
+  <li><div><a href="#the-code-in-its-entirety">The code in its entirety</a></div></li>
+</ul>
+
+    </div>
+    <div id="content">
+
+<h1>This guide</h1>
+<div class="intro">
+
+
+<p>This guide was written assuming that you (1) don't know anything about ldapjs,
+and perhaps more importantly (2) know little if anything about LDAP.  If you're
+already an LDAP whiz, please don't read this and feel it's condescending.  Most
+people don't know how LDAP works, other than that "it's that thing that has my
+password".</p>
+
+<p>By the end of this guide, we'll have a simple LDAP server that accomplishes a
+"real" task.</p>
+
+
+</div>
+<h1 id="what-exactly-is-ldap">What exactly is LDAP?</h1>
+
+<p>If you haven't already read the <a href="http://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">wikipedia</a>
+entry, LDAP is the "Lightweight Directory Access Protocol".  A directory service
+basically breaks down as follows:</p>
+
+<ul>
+<li>A directory is a tree of entries (similar to but different than a FS).</li>
+<li>Every entry has a unique name in the tree.</li>
+<li>An entry is a set of attributes.</li>
+<li>An attribute is a key/value(s) pairing (multival is natural).</li>
+</ul>
+
+<p>It might be helpful to visualize that:</p>
+
+<pre><code>              o=example
+              /       \
+         ou=users     ou=groups
+        /      |         |     \
+    cn=john  cn=jane    cn=dudes  cn=dudettes
+    /
+keyid=foo
+</code></pre>
+
+<p>And let's say we wanted to look at the record cn=john in that tree:</p>
+
+<pre><code>dn: cn=john, ou=users, o=example
+cn: john
+sn: smith
+email: john@example.com
+email: john.smith@example.com
+objectClass: person
+</code></pre>
+
+<p>Then there's a few things to note:</p>
+
+<ul>
+<li>All names in a directory tree are actually referred to as a <em>distinguished
+name</em>, or <em>dn</em> for short.  A dn is comprised of attributes that lead to that
+node in the tree, as shown above (the syntax is foo=bar, ...).</li>
+<li>The root of the tree is at the right of the <em>dn</em>, which is inverted from a
+filesystem hierarchy, if that wasn't already obvious.</li>
+<li>Every entry in the tree is an <em>instance of</em> an <em>objectclass</em>.</li>
+<li>An <em>objectclass</em> is a schema concept; think of it like a table in a
+traditional ORM.</li>
+<li>An <em>objectclass</em> defines what <em>attributes</em> an entry can have (on the ORM
+analogy, an <em>attribute</em> would be like a column).</li>
+</ul>
+
+<p>That's really it. LDAP really then is the protocol for interacting with the
+directory tree, and it's pretty comprehensively specified for common operations,
+like add/update/delete and importantly, search.  Really, the power of LDAP
+really comes through the search operations defined in the protocol, which are
+richer than HTTP query string filtering, but less powerful than full SQL.  If it
+helps, you can think of LDAP as a NoSQL/document store with a well-defined query
+syntax.</p>
+
+<p>So, why isn't LDAP more popular for a lot of applications? Like anything else
+that has "simple" or "lightweight" in the name, it's not really that
+lightweight, and in particular, almost all of the implementations of LDAP stem
+from the original University of Michigan codebase written in 1996. At that
+time, the original intention of LDAP was to be an IP-accessible gateway to the
+much more complex X.500 directories,  which really means that a lot of that
+baggage has carried through to today.  That makes for a high barrier to entry,
+when really most applications just don't need most of those features.</p>
+
+<h2 id="How-is-ldapjs-any-different?"><span class="method name"><span class="name">How is ldapjs any different?</span></span></h2>
+
+<p>Well, on the one hand, since ldapjs has to be 100% wire compatible with LDAP to
+be useful, it's not, but on the other hand, there are no forced assumptions
+about what you need and don't for your use of a directory system.  For example,
+want to run with no-schema in OpenLDAP/389DS/et al? Good luck.  Most of the
+server implementations support arbitrary "backends" for persistence, but really
+you'll be using [BDB]: http://www.oracle.com/technetwork/database/berkeleydb/overview/index.html</p>
+
+<p>Want to run schemaless in ldapjs, or wire it up with some mongoose models? No
+problem.  Want to back it to redis? Should be able to get some basics up in a
+day or two.</p>
+
+<p>Basically, the ldapjs philospohy is to deal with the "muck" of LDAP, and then
+get out of the way so you can just use the "good parts".</p>
+
+<h1 id="ok-cool-learn-me-some-ldap">Ok, cool. Learn me some LDAP!</h1>
+
+<p>Ok, so with the initial fluff out of the way, let's do something crazy to teach
+you some LDAP.  Let's put an LDAP server up over the top of your (Linux) host's
+/etc/passwd and /etc/group files. Usually sysadmins "go the other way", and
+replace /etc/passwd with a PAM module to LDAP, so while this is probably not
+a super useful real-world use case, it will teach you some of the basics.
+Oh, and if it is useful to you, then that's gravy.</p>
+
+<h2 id="Install"><span class="method name"><span class="name">Install</span></span></h2>
+
+<p>If you don't already have node.js and npm, clearly you need those, so follow
+the steps at <a href="http://nodejs.org">nodejs.org</a> and <a href="http://npmjs.org">npmjs.org</a>,
+respectively.  After that, run:</p>
+
+<pre class="shell"><code>npm install ldapjs
+</code></pre>
+
+<p>Also, rather than overload you with client-side programming for now, we'll use
+the OpenLDAP CLI to interact with our server.  It's almost certainly already
+installed on your system, but if not, you can get it from brew/apt/yum/...</p>
+
+<p>To get started, open some file, and let's get the library loaded and a server
+created:</p>
+
+<pre><code>var ldap = require('ldapjs');
+
+var server = ldap.createServer();
+
+server.listen(1389, function() {
+  console.log('/etc/passwd LDAP server up at: %s', server.url);
+});
+</code></pre>
+
+<p>And run that.  Doing anything will give you errors (LDAP "No Such Object")
+since we haven't added any support in yet, but go ahead and try it anyway:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -b "o=myhost" objectclass=*
+</code></pre>
+
+<h2 id="Bind"><span class="method name"><span class="name">Bind</span></span></h2>
+
+<p>So, lesson #1 about LDAP: unlike HTTP, it's connection-oriented; that means that
+you authenticate (in LDAP nomenclature this is called a <em>bind</em>), and all
+subsequent operations operate at the level of priviledge you established during
+a bind.  You can bind any number of times on a single connection and change that
+identity.  Technically, it's optional, and you can support <em>anonymous</em>
+operations from clients, but (1) you probably don't want that, and (2) most
+LDAP clients will initiate a bind anyway (OpenLDAP will), so let's add it in
+and get it out of our way.</p>
+
+<p>What we're going to do is add a "root" user to our LDAP server.  This root user
+has no correspondance to our Unix root user, it's just something we're making up
+and going to use for allowing an (LDAP) admin to do anything.  Great, so go
+ahead and add this code into your file:</p>
+
+<pre><code>server.bind('cn=root', function(req, res, next) {
+  if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret')
+    return next(new ldap.InvalidCredentialsError());
+
+  res.end();
+  return next();
+});
+</code></pre>
+
+<p>Not very secure, but this is a demo.  What we did there was "mount" a tree in
+the ldapjs server, and add a handler for the <em>bind</em> method.  If you've ever used
+express, this pattern should be really familiar; you can add any number of
+handlers in, as we'll see later.</p>
+
+<p>On to the meat of the method.  What's up with this?</p>
+
+<pre><code>if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret')
+</code></pre>
+
+<p>So, the first part <code>req.dn.toString() !== 'cn=root'</code>:  you're probably thinking
+"wtf?!? does ldapjs allow something other than cn=root into this handler?" Sort
+of.  It allows cn=root <em>and any children</em> into that handler.  So the entries
+<code>cn=root</code> and <code>cn=evil, cn=root</code> would both match and flow into this handler.
+Hence that check.  The second check <code>req.credentials</code> is probably obvious, but
+it brings up an important point, and that is the <code>req</code>, <code>res</code> objects in ldapjs
+are not homogenous across server operation types.  Unlike HTTP, there's not a
+single message format, so each of the operations has fields and functions
+appropriate to that type.  The LDAP bind operation has <code>credentials</code>, which are
+a string representation of the client's password.  This is logically the same as
+HTTP Basic Authentication (there are other mechanisms, but that's out of scope
+for a getting started guide).  Ok, if either of those checks failed, we pass a
+new ldapjs <code>Error</code> back into the server, and it will (1) halt the chain, and (2)
+send the proper error code back to the client.</p>
+
+<p>Lastly, assuming that this request was ok, we just end the operation with
+<code>res.end()</code>.  The <code>return next()</code> isn't strictly necessary, since here we only
+have one handler in the chain, but it's good habit to always do that, so if you
+add another handler in later you won't get bit by it not being invoked.</p>
+
+<p>Blah blah, let's try running the ldap client again, first with a bad password:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -D cn=root -w foo -b "o=myhost" objectclass=*
+
+ldap_bind: Invalid credentials (49)
+    matched DN: cn=root
+    additional info: Invalid Credentials
+</code></pre>
+
+<p>And again with the correct one:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" objectclass=*
+
+No such object (32)
+Additional information: No tree found for: o=myhost
+</code></pre>
+
+<p>Don't worry about all the flags we're passing into OpenLDAP, that's just to make
+their CLI less annonyingly noisy.  Note that this time, we got another
+<code>No such object</code> error, but this time note that it's for the tree
+<code>o=myhost</code>. That means our bind went through, and our search failed,
+since we haven't yet added a search handler. Just one more small thing to do
+first.</p>
+
+<p>Remember earlier I said there was no authorization rules baked into LDAP? Well,
+we added a bind route, so the only user that can authenticate is <code>cn=root</code>, but
+what if the remote end doesn't authenticate at all? Right, nothing says they
+<em>have to</em> bind, that's just what the common clients do.  Let's add a quick
+authorization handler that we'll use in all our subsequent routes:</p>
+
+<pre><code>function authorize(req, res, next) {
+  if (!req.connection.ldap.bindDN.equals('cn=root'))
+    return next(new ldap.InsufficientAccessRightsError());
+
+  return next();
+}
+</code></pre>
+
+<p>Should be pretty self-explanatory, but as a reminder, LDAP is connection
+oriented, so we check that the connection remote user was indeed our <code>cn=root</code>
+(by default ldapjs will have a DN of <code>cn=anonymous</code> if the client didn't bind).</p>
+
+<h2 id="Search"><span class="method name"><span class="name">Search</span></span></h2>
+
+<p>Ok, we said we wanted to allow LDAP operations over /etc/passwd, so let's detour
+for a moment to explain an /etc/passwd record:</p>
+
+<pre><code>jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8910,(234)555-0044,email:/home/jsmith:/bin/sh
+</code></pre>
+
+<p>That maps to:</p>
+
+<ul>
+<li>jsmith: user name.</li>
+<li>x: historically this contained the password hash, but that's usually in
+/etc/shadow now, so you get an 'x'.</li>
+<li>1001: the unix numeric user id.</li>
+<li>1000: the unix numeric group id. (primary)</li>
+<li>'Joe Smith,...': the "gecos", which is a description, and is usually a comma
+separated list of contact details.</li>
+<li>/home/jsmith: the user's home directory</li>
+<li>/bin/sh: the user's shell.</li>
+</ul>
+
+<p>Great, let's some handlers to parse that and transform it into an LDAP search
+record (note, you'll need to add <code>var fs = require('fs');</code> at the top of the
+source file):</p>
+
+<p>First, let's make a handler that just loads the "user database" for us in a
+"pre" handler:</p>
+
+<pre><code>function loadPasswdFile(req, res, next) {
+  fs.readFile('/etc/passwd', 'utf8', function(err, data) {
+    if (err)
+      return next(new ldap.OperationsError(err.message));
+
+    req.users = {};
+
+    var lines = data.split('\n');
+    for (var i = 0; i &lt; lines.length; i++) {
+      if (!lines[i] || /^#/.test(lines[i]))
+        continue;
+
+      var record = lines[i].split(':');
+      if (!record || !record.length)
+        continue;
+
+      req.users[record[0]] = {
+        dn: 'cn=' + record[0] + ', ou=users, o=myhost',
+        attributes: {
+          cn: record[0],
+          uid: record[2],
+          gid: record[3],
+          description: record[4],
+          homedirectory: record[5],
+          shell: record[6] || '',
+          objectclass: 'unixUser'
+        }
+      };
+    }
+
+    return next();
+  });
+}
+</code></pre>
+
+<p>Ok, all that did is tack the /etc/passwd records onto req.users so that any
+subsequent handler doesn't have to reload the file.  Next, let's write a search
+handler to process that:</p>
+
+<pre><code>var pre = [authorize, loadPasswdFile];
+
+server.search('o=myhost', pre, function(req, res, next) {
+  Object.keys(req.users).forEach(function(k) {
+    if (req.filter.matches(req.users[k].attributes))
+      res.send(req.users[k]);
+  });
+
+  res.end();
+  return next();
+});
+</code></pre>
+
+<p>And try running:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" cn=root
+dn: cn=root, ou=users, o=myhost
+cn: root
+uid: 0
+gid: 0
+description: System Administrator
+homedirectory: /var/root
+shell: /bin/sh
+objectclass: unixUser
+</code></pre>
+
+<p>Sweet! Try this out too:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" objectclass=*
+...
+</code></pre>
+
+<p>You should have seen an entry for every record in /etc/passwd with the second.
+What all did we do here?  A lot.  Let's break this down...</p>
+
+<h3>What did I just do on the command line?</h3>
+
+<p>Let's start with looking at what you even asked for:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" cn=root
+</code></pre>
+
+<p>We can throw away <code>ldapsearch -H -x -D -w -LLL</code>, as those just specify the URL
+to connect to, the bind credentials and the <code>-LLL</code> just quiets down OpenLDAP.
+That leaves us with: <code>-b "o=myhost" cn=root</code>.</p>
+
+<p>The <code>-b o=myhost</code> tells our LDAP server where to <em>start</em> looking in
+the tree for entries that might match the search filter, which above is
+<code>cn=root</code>.</p>
+
+<p>In this little LDAP example, we're mostly throwing out any qualification of the
+"tree", since there's not actually a tree in /etc/passwd (we will extend later
+with /etc/group).  Remember how I said ldapjs gets out of the way and doesn't
+force anything on you.  Here's an example.  If we wanted an LDAP server to run
+over the filesystem, we actually would use this, but here, meh.</p>
+
+<p>Next, "cn=root" is the search 'filter'.  LDAP has a rich specification of
+filters, where you can specify <code>and</code>, <code>or</code>, <code>not</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>equal</code>,
+<code>wildcard</code>, <code>present</code> and a few other esoteric things.  Really, <code>equal</code>,
+<code>wildcard</code>, <code>present</code> and the boolean operators are all you'll likely ever need.
+So, the filter <code>cn=root</code> is an 'equality' filter, and says to only return
+entries that have attributes that match that.  In the second invocation, we used
+a 'presence' filter, to say 'return any entries that have an objectclass'
+attribute, which in LDAP parlance is saying "give me everything".</p>
+
+<h3>The code</h3>
+
+<p>So in the code above, let's ignore the fs and split stuff, since really all we
+did was read in /etc/passwd line by line.  After that, we looked at each record
+and made the cheesiest transform ever, which is making up a "search entry". A
+search entry <em>must</em> have a DN so the client knows what record it is, and a set
+of attributes.  So that's why we did this:</p>
+
+<pre><code>var entry = {
+  dn: 'cn=' + record[0] + ', ou=users, o=myhost',
+  attributes: {
+    cn: record[0],
+    uid: record[2],
+    gid: record[3],
+    description: record[4],
+    homedirectory: record[5],
+    shell: record[6] || '',
+    objectclass: 'unixUser'
+  }
+};
+</code></pre>
+
+<p>Next, we let ldapjs do all the hard work of figuring out LDAP search filters
+for us by calling <code>req.filter.matches</code>.  If it matched, we return the whole
+record with <code>res.send</code>.  Note in this little example we're running O(n), so for
+something big and/or slow, you'd have to do some work to effectively write a
+query planner (or just not support it...); for some reference code, check out
+<code>node-ldapjs-riak</code>, which takes on the fairly difficult task of writing a 'full'
+LDAP server over riak.</p>
+
+<p>To demonstrate what ldapjs is doing for you, let's find all users who have a
+shell set to <code>/bin/false</code> and whose name starts with <code>p</code> (I'm doing this
+on Ubuntu).  Then, let's say we only care about their login name and primary
+group id.  We'd do this:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" "(&amp;(shell=/bin/false)(cn=p*))" cn gid
+dn: cn=proxy, ou=users, o=myhost
+cn: proxy
+gid: 13
+
+dn: cn=pulse, ou=users, o=myhost
+cn: pulse
+gid: 114
+</code></pre>
+
+<h2 id="Add"><span class="method name"><span class="name">Add</span></span></h2>
+
+<p>This is going to be a little bit ghetto, since what we're going to do is just
+use node's child process module to spawn calls to <code>adduser</code>.  Go ahead and add
+the following code in as another handler (you'll need a
+<code>var spawn = require('child_process').spawn;</code> at the top of your file):</p>
+
+<pre><code>server.add('ou=users, o=myhost', pre, function(req, res, next) {
+  if (!req.dn.rdns[0].cn)
+    return next(new ldap.ConstraintViolationError('cn required'));
+
+  if (req.users[req.dn.rdns[0].cn])
+    return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+
+  var entry = req.toObject().attributes;
+
+  if (entry.objectclass.indexOf('unixUser') === -1)
+    return next(new ldap.ConstraintViolation('entry must be a unixUser'));
+
+  var opts = ['-m'];
+  if (entry.description) {
+    opts.push('-c');
+    opts.push(entry.description[0]);
+  }
+  if (entry.homedirectory) {
+    opts.push('-d');
+    opts.push(entry.homedirectory[0]);
+  }
+  if (entry.gid) {
+    opts.push('-g');
+    opts.push(entry.gid[0]);
+  }
+  if (entry.shell) {
+    opts.push('-s');
+    opts.push(entry.shell[0]);
+  }
+  if (entry.uid) {
+    opts.push('-u');
+    opts.push(entry.uid[0]);
+  }
+  opts.push(entry.cn[0]);
+  var useradd = spawn('useradd', opts);
+
+  var messages = [];
+
+  useradd.stdout.on('data', function(data) {
+    messages.push(data.toString());
+  });
+  useradd.stderr.on('data', function(data) {
+    messages.push(data.toString());
+  });
+
+  useradd.on('exit', function(code) {
+    if (code !== 0) {
+      var msg = '' + code;
+      if (messages.length)
+        msg += ': ' + messages.join();
+      return next(new ldap.OperationsError(msg));
+    }
+
+    res.end();
+    return next();
+  });
+});
+</code></pre>
+
+<p>Then, you'll need to be root to have this running, so start your server with
+<code>sudo</code> (or be root, whatever).  Now, go ahead and create a file called
+<code>user.ldif</code> with the following contents:</p>
+
+<pre><code>dn: cn=ldapjs, ou=users, o=myhost
+objectClass: unixUser
+cn: ldapjs
+shell: /bin/bash
+description: Created via ldapadd
+</code></pre>
+
+<p>Now go ahead and invoke like:</p>
+
+<pre class="shell"><code>ldapadd -H ldap://localhost:1389 -x -D cn=root -w secret -f ./user.ldif
+adding new entry "cn=ldapjs, ou=users, o=myhost"
+</code></pre>
+
+<p>Let's confirm he got added with an ldapsearch:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -LLL -x -D cn=root -w secret -b "ou=users, o=myhost" cn=ldapjs
+dn: cn=ldapjs, ou=users, o=myhost
+cn: ldapjs
+uid: 1001
+gid: 1001
+description: Created via ldapadd
+homedirectory: /home/ldapjs
+shell: /bin/bash
+objectclass: unixUser
+</code></pre>
+
+<p>As before, here's a breakdown of the code:</p>
+
+<pre><code>server.add('ou=users, o=myhost', pre, function(req, res, next) {
+  if (!req.dn.rdns[0].cn)
+    return next(new ldap.ConstraintViolationError('cn required'));
+
+  if (req.users[req.dn.rdns[0].cn])
+    return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+
+  var entry = req.toObject().attributes;
+
+  if (entry.objectclass.indexOf('unixUser') === -1)
+    return next(new ldap.ConstraintViolation('entry must be a unixUser'));
+</code></pre>
+
+<p>Here's a few new things:</p>
+
+<ul>
+<li>We mounted this handler at <code>ou=users, o=myhost</code>. Why? What if we want to
+extend this little project with groups?  We probably want those under a
+different part of the tree.</li>
+<li>We did some really minimal schema enforcement by:
+<em>* Checking that the leaf RDN (relative distinguished name) was a _cn_
+attribute.
+*</em> We then did <code>req.toObject()</code>. As mentioned before, each of the req/res
+objects have special APIs that make sense for that operation.  Without getting
+into the details, the LDAP add operation on the wire doesn't look like a JS
+object, and we want to support both the LDAP nerd that wants to see what
+got sent, and the "easy" case.  So use <code>.toObject()</code>.  Note we also filtered
+out to the <code>attributes</code> portion of the object since that's all we're really
+looking at.
+** Lastly, we did a super minimal check to see if the entry was of type
+<code>unixUser</code>. Frankly for this case, it's kind of useless, but it does illustrate
+one point: attribute names are case-insensitive, so ldapjs converts them all to
+lower case (note the client sent <em>objectClass</em> over the wire).</li>
+</ul>
+
+<p>After that, we really just delegated off to the <em>useradd</em> command.  AFAIK there
+is not a node.js module that wraps up <code>getpwent</code> and friends, otherwise we'd use
+that.</p>
+
+<p>Now, what's missing?  Oh, right, we need to let you set a password.  Well, let's
+support that via the <em>modify</em> command.</p>
+
+<h2 id="Modify"><span class="method name"><span class="name">Modify</span></span></h2>
+
+<p>So unlike HTTP "partial" document updates are fully specified as part of the
+RFC, so appending, removing, or replacing a single attribute is pretty natural.
+Go ahead and add the following code into your source file:</p>
+
+<pre><code>server.modify('ou=users, o=myhost', pre, function(req, res, next) {
+  if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
+    return next(new ldap.NoSuchObjectError(req.dn.toString()));
+
+  if (!req.changes.length)
+    return next(new ldap.ProtocolError('changes required'));
+
+  var user = req.users[req.dn.rdns[0].cn].attributes;
+  var mod;
+
+  for (var i = 0; i &lt; req.changes.length; i++) {
+    mod = req.changes[i].modification;
+    switch (req.changes[i].operation) {
+    case 'replace':
+      if (mod.type !== 'userpassword' || !mod.vals || !mod.vals.length)
+        return next(new ldap.UnwillingToPerformError('only password updates ' +
+                                                     'allowed'));
+      break;
+    case 'add':
+    case 'delete':
+      return next(new ldap.UnwillingToPerformError('only replace allowed'));
+    }
+  }
+
+  var passwd = spawn('chpasswd', ['-c', 'MD5']);
+  passwd.stdin.end(user.cn + ':' + mod.vals[0], 'utf8');
+
+  passwd.on('exit', function(code) {
+    if (code !== 0)
+      return next(new ldap.OperationsError(code));
+
+    res.end();
+    return next();
+  });
+});
+</code></pre>
+
+<p>Basically, we made sure the remote client was targeting an entry that exists,
+ensuring that they were asking to "replace" the <code>userPassword</code> attribute (which
+is the 'standard' LDAP attribute for passwords, for whatever that's worth; if
+you think it's easier to use 'password', knock yourself out), and then just
+delegating to the <code>chpasswd</code> command (which lets you change a user's password
+over stdin).  Next, go ahead and create a <code>passwd.ldif</code> file:</p>
+
+<pre><code>dn: cn=ldapjs, ou=users, o=myhost
+changetype: modify
+replace: userPassword
+userPassword: secret
+-
+</code></pre>
+
+<p>And then run the OpenLDAP CLI like:</p>
+
+<pre class="shell"><code>ldapmodify -H ldap://localhost:1389 -x -D cn=root -w secret -f ./passwd.ldif
+</code></pre>
+
+<p>You should now be able to login to your box as the ldapjs user. Ok, let's get
+the last "mainline" piece of work out of the way, and delte the user.</p>
+
+<h2 id="Delete"><span class="method name"><span class="name">Delete</span></span></h2>
+
+<p>Delete is pretty straightforward. The client gives you a dn to delete, and you
+delete it :).  Go ahead and add the following code into your server:</p>
+
+<pre><code>server.del('ou=users, o=myhost', pre, function(req, res, next) {
+  if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
+    return next(new ldap.NoSuchObjectError(req.dn.toString()));
+
+  var userdel = spawn('userdel', ['-f', req.dn.rdns[0].cn]);
+
+  var messages = [];
+  userdel.stdout.on('data', function(data) {
+    messages.push(data.toString());
+  });
+  userdel.stderr.on('data', function(data) {
+    messages.push(data.toString());
+  });
+
+  userdel.on('exit', function(code) {
+    if (code !== 0) {
+      var msg = '' + code;
+      if (messages.length)
+        msg += ': ' + messages.join();
+      return next(new ldap.OperationsError(msg));
+    }
+
+    res.end();
+    return next();
+  });
+});
+</code></pre>
+
+<p>And then run the following command:</p>
+
+<pre class="shell"><code>ldapdelete -H ldap://localhost:1389 -x -D cn=root -w secret "cn=ldapjs, ou=users, o=myhost"
+</code></pre>
+
+<p>This should be pretty much self-explanatory by now :)</p>
+
+<h1 id="the-code-in-its-entirety">The code in its entirety</h1>
+
+<p>If you got tired of following along (this would be the tl;dr section), here's
+the complete implementation for what we went through above:</p>
+
+<pre><code>var fs = require('fs');
+var ldap = require('ldapjs');
+var spawn = require('child_process').spawn;
+
+
+
+///--- Shared handlers
+
+function authorize(req, res, next) {
+  if (!req.connection.ldap.bindDN.equals('cn=root'))
+    return next(new ldap.InsufficientAccessRightsError());
+
+  return next();
+}
+
+
+function loadPasswdFile(req, res, next) {
+  fs.readFile('/etc/passwd', 'utf8', function(err, data) {
+    if (err)
+      return next(new ldap.OperationsError(err.message));
+
+    req.users = {};
+
+    var lines = data.split('\n');
+    for (var i = 0; i &lt; lines.length; i++) {
+      if (!lines[i] || /^#/.test(lines[i]))
+        continue;
+
+      var record = lines[i].split(':');
+      if (!record || !record.length)
+        continue;
+
+      req.users[record[0]] = {
+        dn: 'cn=' + record[0] + ', ou=users, o=myhost',
+        attributes: {
+          cn: record[0],
+          uid: record[2],
+          gid: record[3],
+          description: record[4],
+          homedirectory: record[5],
+          shell: record[6] || '',
+          objectclass: 'unixUser'
+        }
+      };
+    }
+
+    return next();
+  });
+}
+
+
+var pre = [authorize, loadPasswdFile];
+
+
+
+///--- Mainline
+
+var server = ldap.createServer();
+
+server.bind('cn=root', function(req, res, next) {
+  if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret')
+    return next(new ldap.InvalidCredentialsError());
+
+  res.end();
+  return next();
+});
+
+
+server.add('ou=users, o=myhost', pre, function(req, res, next) {
+  if (!req.dn.rdns[0].cn)
+    return next(new ldap.ConstraintViolationError('cn required'));
+
+  if (req.users[req.dn.rdns[0].cn])
+    return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+
+  var entry = req.toObject().attributes;
+
+  if (entry.objectclass.indexOf('unixUser') === -1)
+    return next(new ldap.ConstraintViolation('entry must be a unixUser'));
+
+  var opts = ['-m'];
+  if (entry.description) {
+    opts.push('-c');
+    opts.push(entry.description[0]);
+  }
+  if (entry.homedirectory) {
+    opts.push('-d');
+    opts.push(entry.homedirectory[0]);
+  }
+  if (entry.gid) {
+    opts.push('-g');
+    opts.push(entry.gid[0]);
+  }
+  if (entry.shell) {
+    opts.push('-s');
+    opts.push(entry.shell[0]);
+  }
+  if (entry.uid) {
+    opts.push('-u');
+    opts.push(entry.uid[0]);
+  }
+  opts.push(entry.cn[0]);
+  var useradd = spawn('useradd', opts);
+
+  var messages = [];
+
+  useradd.stdout.on('data', function(data) {
+    messages.push(data.toString());
+  });
+  useradd.stderr.on('data', function(data) {
+    messages.push(data.toString());
+  });
+
+  useradd.on('exit', function(code) {
+    if (code !== 0) {
+      var msg = '' + code;
+      if (messages.length)
+        msg += ': ' + messages.join();
+      return next(new ldap.OperationsError(msg));
+    }
+
+    res.end();
+    return next();
+  });
+});
+
+
+server.modify('ou=users, o=myhost', pre, function(req, res, next) {
+  if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
+    return next(new ldap.NoSuchObjectError(req.dn.toString()));
+
+  if (!req.changes.length)
+    return next(new ldap.ProtocolError('changes required'));
+
+  var user = req.users[req.dn.rdns[0].cn].attributes;
+  var mod;
+
+  for (var i = 0; i &lt; req.changes.length; i++) {
+    mod = req.changes[i].modification;
+    switch (req.changes[i].operation) {
+    case 'replace':
+      if (mod.type !== 'userpassword' || !mod.vals || !mod.vals.length)
+        return next(new ldap.UnwillingToPerformError('only password updates ' +
+                                                     'allowed'));
+      break;
+    case 'add':
+    case 'delete':
+      return next(new ldap.UnwillingToPerformError('only replace allowed'));
+    }
+  }
+
+  var passwd = spawn('chpasswd', ['-c', 'MD5']);
+  passwd.stdin.end(user.cn + ':' + mod.vals[0], 'utf8');
+
+  passwd.on('exit', function(code) {
+    if (code !== 0)
+      return next(new ldap.OperationsError('' + code));
+
+    res.end();
+    return next();
+  });
+});
+
+
+server.del('ou=users, o=myhost', pre, function(req, res, next) {
+  if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
+    return next(new ldap.NoSuchObjectError(req.dn.toString()));
+
+  var userdel = spawn('userdel', ['-f', req.dn.rdns[0].cn]);
+
+  var messages = [];
+  userdel.stdout.on('data', function(data) {
+    messages.push(data.toString());
+  });
+  userdel.stderr.on('data', function(data) {
+    messages.push(data.toString());
+  });
+
+  userdel.on('exit', function(code) {
+    if (code !== 0) {
+      var msg = '' + code;
+      if (messages.length)
+        msg += ': ' + messages.join();
+      return next(new ldap.OperationsError(msg));
+    }
+
+    res.end();
+    return next();
+  });
+});
+
+
+server.search('o=myhost', pre, function(req, res, next) {
+  Object.keys(req.users).forEach(function(k) {
+    if (req.filter.matches(req.users[k].attributes))
+      res.send(req.users[k]);
+  });
+
+  res.end();
+  return next();
+});
+
+
+
+// LDAP "standard" listens on 389, but whatever.
+server.listen(1389, '127.0.0.1', function() {
+  console.log('/etc/passwd LDAP server up at: %s', server.url);
+});
+</code></pre>
+
+    </div>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+    var headerHeight = $("#header").height();
+
+    var sections = $("#content h1[id], #content h2[id]");
+    var sectionOffsets = [];
+    var slack = 100;  // Give the section scroll some slack (in pixels).
+    sections.each(function(elem) {
+        sectionOffsets.push($(this).offset().top - headerHeight - slack);
+    });
+
+    var currSectionIdx = -1;
+    function getSectionIdx(scrollDistance) {
+        if (scrollDistance < sectionOffsets[0]) {
+            return -1;
+        } else {
+            for (var id = sectionOffsets.length; id > 0; id--) {
+                if (scrollDistance > sectionOffsets[id - 1]) {
+                    return id - 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    /** {{{ http://code.activestate.com/recipes/577787/ (r2) */
+    _slugify_strip_re = /[^\w\s-]/g;
+    _slugify_hyphenate_re = /[-\s]+/g;
+    function slugify(s) {
+      s = s.replace(_slugify_strip_re, '').trim().toLowerCase();
+      s = s.replace(_slugify_hyphenate_re, '-');
+      return s;
+    }
+    /** end of http://code.activestate.com/recipes/577787/ }}} */
+
+
+    $("#content").scroll(function() {
+        var scrollDistance = $("#content").attr('scrollTop');
+        var sectionIdx = getSectionIdx(scrollDistance);
+    
+        if (sectionIdx !== currSectionIdx) {
+            $("#sidebar li>div").removeClass("current");
+            currSectionIdx = sectionIdx;
+            if (currSectionIdx >= 0) {
+                var heading = $(sections[currSectionIdx]).text();
+                var possibleAnchors = [
+                    slugify(heading), // h1 or non-method h2
+                    heading.replace(/ /g, '-'), // h2 method, just name or just endpoint
+                    heading.slice(0, heading.lastIndexOf(' (')).trimRight().replace(/ /g, '-'), // h2 method, name and endpoint
+                ]
+                for (var i=0; i < possibleAnchors.length; i++) {
+                    $("#sidebar a[href|=#" + possibleAnchors[i] + "]").parent().addClass("current");
+                }
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>
