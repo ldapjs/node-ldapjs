@@ -52,7 +52,7 @@ Then there's a few things to note:
 name_, or _dn_ for short.  A dn is comprised of attributes that lead to that
 node in the tree, as shown above (the syntax is foo=bar, ...).
 * The root of the tree is at the right of the _dn_, which is inverted from a
-filesystem hierarchy, if that wasn't already obvious.
+filesystem hierarchy.
 * Every entry in the tree is an _instance of_ an _objectclass_.
 * An _objectclass_ is a schema concept; think of it like a table in a
 traditional ORM.
@@ -501,16 +501,16 @@ Here's a few new things:
 extend this little project with groups?  We probably want those under a
 different part of the tree.
 * We did some really minimal schema enforcement by:
-** Checking that the leaf RDN (relative distinguished name) was a _cn_
+    + Checking that the leaf RDN (relative distinguished name) was a _cn_
 attribute.
-** We then did `req.toObject()`. As mentioned before, each of the req/res
+    + We then did `req.toObject()`. As mentioned before, each of the req/res
 objects have special APIs that make sense for that operation.  Without getting
 into the details, the LDAP add operation on the wire doesn't look like a JS
 object, and we want to support both the LDAP nerd that wants to see what
 got sent, and the "easy" case.  So use `.toObject()`.  Note we also filtered
 out to the `attributes` portion of the object since that's all we're really
 looking at.
-** Lastly, we did a super minimal check to see if the entry was of type
+    + Lastly, we did a super minimal check to see if the entry was of type
 `unixUser`. Frankly for this case, it's kind of useless, but it does illustrate
 one point: attribute names are case-insensitive, so ldapjs converts them all to
 lower case (note the client sent _objectClass_ over the wire).

@@ -36,7 +36,7 @@ test('new with args', function(t) {
     deleteOldRdn: true
   });
   t.ok(req);
-  t.equal(req.dn, 'cn=foo, o=test');
+  t.equal(req.dn.toString(), 'cn=foo, o=test');
   t.equal(req.newRdn.toString(), 'cn=foo2');
   t.equal(req.deleteOldRdn, true);
   t.end();
@@ -51,7 +51,7 @@ test('parse', function(t) {
 
   var req = new ModifyDNRequest();
   t.ok(req._parse(new BerReader(ber.buffer)));
-  t.equal(req.dn, 'cn=foo, o=test');
+  t.equal(req.dn.toString(), 'cn=foo, o=test');
   t.equal(req.newRdn.toString(), 'cn=foo2');
   t.equal(req.deleteOldRdn, true);
 
