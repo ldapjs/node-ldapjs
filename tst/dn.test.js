@@ -77,3 +77,36 @@ test('parse quoted', function(t) {
   t.equal(name.toString(), DN_STR);
   t.end();
 });
+
+
+test('equals', function(t) {
+  var dn1 = dn.parse('cn=foo, dc=bar');
+  t.ok(dn1.equals('cn=foo, dc=bar'));
+  t.ok(!dn1.equals('cn=foo1, dc=bar'));
+  t.ok(dn1.equals(dn.parse('cn=foo, dc=bar')));
+  t.ok(!dn1.equals(dn.parse('cn=foo2, dc=bar')));
+  t.end();
+});
+
+
+test('child of', function(t) {
+  var dn1 = dn.parse('cn=foo, dc=bar');
+  t.ok(dn1.childOf('dc=bar'));
+  t.ok(!dn1.childOf('dc=moo'));
+  t.ok(!dn1.childOf('dc=foo'));
+  t.ok(!dn1.childOf('cn=foo, dc=bar'));
+
+  t.ok(dn1.childOf(dn.parse('dc=bar')));
+  t.end();
+});
+
+
+test('parent of', function(t) {
+  var dn1 = dn.parse('cn=foo, dc=bar');
+  t.ok(dn1.parentOf('cn=moo, cn=foo, dc=bar'));
+  t.ok(!dn1.parentOf('cn=moo, cn=bar, dc=foo'));
+  t.ok(!dn1.parentOf('cn=foo, dc=bar'));
+
+  t.ok(dn1.parentOf(dn.parse('cn=moo, cn=foo, dc=bar')));
+  t.end();
+});
