@@ -1,7 +1,10 @@
 ---
 title: ldapjs
-mediaroot: /docs/public/media
+brand: spartan
 markdown2extras: wiki-tables
+logo-color: green
+logo-font-family: google:Aldrich, Verdana, sans-serif
+header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
 # This guide

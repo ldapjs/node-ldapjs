@@ -16,7 +16,8 @@ HAVE_GJSLINT := $(shell which gjslint >/dev/null && echo yes || echo no)
 NPM := npm_config_tar=$(TAR) npm
 
 RESTDOWN = ./node_modules/.restdown/bin/restdown
-RESTDOWN_VERSION=1.2.11
+#RESTDOWN = restdown
+RESTDOWN_VERSION=1.2.13
 DOCPKGDIR = ./docs/pkg
 
 .PHONY:  dep lint test doc clean all
@@ -54,7 +55,6 @@ doc: dep
 	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/guide.md
 	rm docs/*.json
 	mv docs/*.html ${DOCPKGDIR}
-	sed -i '' -e 's|docs/public/media|media|g' ${DOCPKGDIR}/*.html
 	(cd ${DOCPKGDIR} && $(TAR) -czf ${SRC}/${NAME}-docs-`git log -1 --pretty='format:%h'`.tar.gz *)
 
 
