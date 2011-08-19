@@ -1,18 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>ldapjs</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="media/css/restdown.css">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <title>ldapjs</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="media/css/style.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<style>
+
+#logo {
+  color: green;
+}
+
+#logo {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+</style>
+
+  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+
 </head>
 <body>
-<div id="header">
-    <h1>ldapjs Documentation</h1>
-</div>
+<div id="wrapper">
+<div id="main">
 
-    <div id="sidebar">
-<ul>
+<header id="header">
+  <span id="logo">ldapjs</span>
+  <span id="tocbox">
+    <span id="tocbutton" class="navbutton">Table of Contents</span>
+    <div id="toc" style="display: none">
+      <ul>
   <li><div><a href="#what-exactly-is-ldap">What exactly is LDAP?</a></div>
   <ul>
     <li><div><a href="#How-is-ldapjs-any-different?"><span class="method name"><span class="name">How is ldapjs any different?</span></span></a></div></li>
@@ -30,6 +52,8 @@
 </ul>
 
     </div>
+  </span>
+</header>
     <div id="content">
 
 <h1>This guide</h1>
@@ -88,7 +112,7 @@ objectClass: person
 name</em>, or <em>dn</em> for short.  A dn is comprised of attributes that lead to that
 node in the tree, as shown above (the syntax is foo=bar, ...).</li>
 <li>The root of the tree is at the right of the <em>dn</em>, which is inverted from a
-filesystem hierarchy, if that wasn't already obvious.</li>
+filesystem hierarchy.</li>
 <li>Every entry in the tree is an <em>instance of</em> an <em>objectclass</em>.</li>
 <li>An <em>objectclass</em> is a schema concept; think of it like a table in a
 traditional ORM.</li>
@@ -562,19 +586,21 @@ objectclass: unixUser
 extend this little project with groups?  We probably want those under a
 different part of the tree.</li>
 <li>We did some really minimal schema enforcement by:
-<em>* Checking that the leaf RDN (relative distinguished name) was a _cn_
-attribute.
-*</em> We then did <code>req.toObject()</code>. As mentioned before, each of the req/res
+<ul>
+<li>Checking that the leaf RDN (relative distinguished name) was a <em>cn</em>
+attribute.</li>
+<li>We then did <code>req.toObject()</code>. As mentioned before, each of the req/res
 objects have special APIs that make sense for that operation.  Without getting
 into the details, the LDAP add operation on the wire doesn't look like a JS
 object, and we want to support both the LDAP nerd that wants to see what
 got sent, and the "easy" case.  So use <code>.toObject()</code>.  Note we also filtered
 out to the <code>attributes</code> portion of the object since that's all we're really
-looking at.
-** Lastly, we did a super minimal check to see if the entry was of type
+looking at.</li>
+<li>Lastly, we did a super minimal check to see if the entry was of type
 <code>unixUser</code>. Frankly for this case, it's kind of useless, but it does illustrate
 one point: attribute names are case-insensitive, so ldapjs converts them all to
 lower case (note the client sent <em>objectClass</em> over the wire).</li>
+</ul></li>
 </ul>
 
 <p>After that, we really just delegated off to the <em>useradd</em> command.  AFAIK there
@@ -905,61 +931,32 @@ server.listen(1389, '127.0.0.1', function() {
 </code></pre>
 
     </div>
+</div> <!-- end of #main -->
+</div> <!-- end of #wrapper -->
+
+
 <script type="text/javascript" charset="utf-8">
-$(function() {
-    var headerHeight = $("#header").height();
-
-    var sections = $("#content h1[id], #content h2[id]");
-    var sectionOffsets = [];
-    var slack = 100;  // Give the section scroll some slack (in pixels).
-    sections.each(function(elem) {
-        sectionOffsets.push($(this).offset().top - headerHeight - slack);
+$(function () {
+    $("#toc").click(function(event) {
+        // This to ensure clicks in the #toc don't make it up to the
+        // `closeTocOnBodyClick` handler.
+        event.stopPropagation();
     });
-
-    var currSectionIdx = -1;
-    function getSectionIdx(scrollDistance) {
-        if (scrollDistance < sectionOffsets[0]) {
-            return -1;
+    $("#toc a").click(function(event) {
+        $("#tocbutton").click();
+    })
+    $("#tocbutton").click(function() {
+        var target = $("#toc");
+        if (target.css("display") !== "block") {
+            $("body").bind("click.tocCloser", function(event) {
+                $("#tocbutton").click();
+                event.stopPropagation();
+            });
         } else {
-            for (var id = sectionOffsets.length; id > 0; id--) {
-                if (scrollDistance > sectionOffsets[id - 1]) {
-                    return id - 1;
-                    break;
-                }
-            }
+            $("body").unbind("click.tocCloser");
         }
-    }
-
-    /** {{{ http://code.activestate.com/recipes/577787/ (r2) */
-    _slugify_strip_re = /[^\w\s-]/g;
-    _slugify_hyphenate_re = /[-\s]+/g;
-    function slugify(s) {
-      s = s.replace(_slugify_strip_re, '').trim().toLowerCase();
-      s = s.replace(_slugify_hyphenate_re, '-');
-      return s;
-    }
-    /** end of http://code.activestate.com/recipes/577787/ }}} */
-
-
-    $("#content").scroll(function() {
-        var scrollDistance = $("#content").attr('scrollTop');
-        var sectionIdx = getSectionIdx(scrollDistance);
-    
-        if (sectionIdx !== currSectionIdx) {
-            $("#sidebar li>div").removeClass("current");
-            currSectionIdx = sectionIdx;
-            if (currSectionIdx >= 0) {
-                var heading = $(sections[currSectionIdx]).text();
-                var possibleAnchors = [
-                    slugify(heading), // h1 or non-method h2
-                    heading.replace(/ /g, '-'), // h2 method, just name or just endpoint
-                    heading.slice(0, heading.lastIndexOf(' (')).trimRight().replace(/ /g, '-'), // h2 method, name and endpoint
-                ]
-                for (var i=0; i < possibleAnchors.length; i++) {
-                    $("#sidebar a[href|=#" + possibleAnchors[i] + "]").parent().addClass("current");
-                }
-            }
-        }
+        target.slideToggle(100);
+        event.stopPropagation(); 
     });
 });
 </script>
