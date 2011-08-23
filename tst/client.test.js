@@ -49,10 +49,7 @@ test('setup', function(t) {
   });
 
   server.compare(SUFFIX, function(req, res, next) {
-    if (req.value !== 'test')
-      return next(new ldap.CompareFalseError('value was test'));
-
-    res.end(ldap.LDAP_COMPARE_TRUE);
+    res.end(req.value === 'test');
     return next();
   });
 

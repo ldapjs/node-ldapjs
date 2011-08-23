@@ -52,6 +52,8 @@ endif
 doc: dep
 	@rm -rf ${DOCPKGDIR}
 	@mkdir -p ${DOCPKGDIR}
+	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/client.md
+	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/examples.md
 	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/guide.md
 	rm docs/*.json
 	mv docs/*.html ${DOCPKGDIR}
@@ -62,4 +64,4 @@ test: dep lint
 	$(NPM) test
 
 clean:
-	@rm -fr ${DOCPKGDIR} node_modules *.log
+	@rm -fr ${DOCPKGDIR} node_modules *.log *.tar.gz
