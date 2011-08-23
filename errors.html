@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ldapjs</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="media/css/style.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<style>
+
+#logo {
+  color: green;
+}
+
+#logo {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+</style>
+
+  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+
+</head>
+<body>
+<div id="wrapper">
+<div id="main">
+
+<header id="header">
+  <span id="logo">ldapjs</span>
+  <span id="tocbox">
+    <span id="tocbutton" class="navbutton">Table of Contents</span>
+    <div id="toc" style="display: none">
+      <ul>
+  <li><div><a href="#complete-list-of-ldaperror-subclasses">Complete list of LDAPError subclasses</a></div></li>
+</ul>
+
+    </div>
+  </span>
+</header>
+    <div id="content">
+
+<h1>Overview</h1>
+<div class="intro">
+
+
+<p>This documents the ldapjs Errors API; this assumes that you are familiar with
+LDAP, so if you're not, hit the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
+
+<p>All errors in the ldapjs framework extend from an abstract error type called
+<code>LDAPError</code>. In addition to the properties listed below, all errors will have
+a <code>stack</code> property correctly set.</p>
+
+<p>In general, you'll be using the errors in ldapjs like:</p>
+
+<pre><code>var ldap = require('ldapjs');
+
+var db = {};
+
+server.add('o=example', function(req, res, next) {
+  var parent = req.dn.parent();
+  if (parent) {
+    if (!db[parent.toString()])
+      return next(new ldap.NoSuchObjectError(parent.toString()));
+  }
+  if (db[req.dn.toString()])
+    return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+
+  ...
+});
+</code></pre>
+
+<p>I.e., if you just pass them into the <code>next()</code> handler, ldapjs will automatically
+return the appropriate LDAP error message, and stop the handler chain.</p>
+
+<p>All errors will have the following properties:</p>
+
+<h2>code</h2>
+
+<p>Returns the LDAP status code associated with this error.</p>
+
+<h2>name</h2>
+
+<p>The name of this error.</p>
+
+<h2>message</h2>
+
+<p>The message that will be returned to the client.</p>
+
+
+</div>
+<h1 id="complete-list-of-ldaperror-subclasses">Complete list of LDAPError subclasses</h1>
+
+<ul>
+<li>OperationsError</li>
+<li>ProtocolError</li>
+<li>TimeLimitExceededError</li>
+<li>SizeLimitExceededError</li>
+<li>CompareFalseError</li>
+<li>CompareTrueError</li>
+<li>AuthMethodNotSupportedError</li>
+<li>StrongAuthRequiredError</li>
+<li>ReferralError</li>
+<li>AdminLimitExceededError</li>
+<li>UnavailableCriticalExtensionError</li>
+<li>ConfidentialityRequiredError</li>
+<li>SaslBindInProgressError</li>
+<li>NoSuchAttributeError</li>
+<li>UndefinedAttributeTypeError</li>
+<li>InappropriateMatchingError</li>
+<li>ConstraintViolationError</li>
+<li>AttributeOrValueExistsError</li>
+<li>InvalidAttriubteSyntaxError</li>
+<li>NoSuchObjectError</li>
+<li>AliasProblemError</li>
+<li>InvalidDnSyntaxError</li>
+<li>AliasDerefProblemError</li>
+<li>InappropriateAuthenticationError</li>
+<li>InvalidCredentialsError</li>
+<li>InsufficientAccessRightsError</li>
+<li>BusyError</li>
+<li>UnavailableError</li>
+<li>UnwillingToPerformError</li>
+<li>LoopDetectError</li>
+<li>NamingViolationError</li>
+<li>ObjectclassViolationError</li>
+<li>NotAllowedOnNonLeafError</li>
+<li>NotAllowedOnRdnError</li>
+<li>EntryAlreadyExistsError</li>
+<li>ObjectclassModsProhibitedError</li>
+<li>AffectsMultipleDsasError</li>
+<li>OtherError</li>
+</ul>
+
+    </div>
+</div> <!-- end of #main -->
+</div> <!-- end of #wrapper -->
+
+
+<script type="text/javascript" charset="utf-8">
+$(function () {
+    $("#toc").click(function(event) {
+        // This to ensure clicks in the #toc don't make it up to the
+        // `closeTocOnBodyClick` handler.
+        event.stopPropagation();
+    });
+    $("#toc a").click(function(event) {
+        $("#tocbutton").click();
+    })
+    $("#tocbutton").click(function() {
+        var target = $("#toc");
+        if (target.css("display") !== "block") {
+            $("body").bind("click.tocCloser", function(event) {
+                $("#tocbutton").click();
+                event.stopPropagation();
+            });
+        } else {
+            $("body").unbind("click.tocCloser");
+        }
+        target.slideToggle(100);
+        event.stopPropagation(); 
+    });
+});
+</script>
+
+</body>
+</html>
