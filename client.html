@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ldapjs</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="media/css/style.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<style>
+
+#logo {
+  color: green;
+}
+
+#logo {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+</style>
+
+  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+
+</head>
+<body>
+<div id="wrapper">
+<div id="main">
+
+<header id="header">
+  <span id="logo">ldapjs</span>
+  <span id="tocbox">
+    <span id="tocbutton" class="navbutton">Table of Contents</span>
+    <div id="toc" style="display: none">
+      <ul>
+  <li><div><a href="#create-a-client">Create a client</a></div>
+  <ul>
+    <li><div><a href="#Connection-management"><span class="method name"><span class="name">Connection management</span></span></a></div></li>
+    <li><div><a href="#Common-patterns"><span class="method name"><span class="name">Common patterns</span></span></a></div></li>
+  </ul></li>
+  <li><div><a href="#bind">bind</a></div></li>
+  <li><div><a href="#add">add</a></div></li>
+  <li><div><a href="#compare">compare</a></div></li>
+  <li><div><a href="#del">del</a></div></li>
+  <li><div><a href="#exop">exop</a></div></li>
+  <li><div><a href="#modify">modify</a></div>
+  <ul>
+    <li><div><a href="#Change"><span class="method name"><span class="name">Change</span></span></a></div></li>
+  </ul></li>
+  <li><div><a href="#modifydn">modifyDN</a></div></li>
+  <li><div><a href="#search">search</a></div>
+  <ul>
+    <li><div><a href="#Filter-Strings"><span class="method name"><span class="name">Filter Strings</span></span></a></div></li>
+  </ul></li>
+  <li><div><a href="#unbind">unbind</a></div></li>
+</ul>
+
+    </div>
+  </span>
+</header>
+    <div id="content">
+
+<h1>Overview</h1>
+<div class="intro">
+
+
+<p>This documents the ldapjs client API; this assumes that you are familiar with
+LDAP, so if you're not, hit the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
+
+
+</div>
+<h1 id="create-a-client">Create a client</h1>
+
+<p>The code to create a new client liiks like:</p>
+
+<pre><code>var client = ldap.createClient({
+  url: 'ldap://127.0.0.1:1389'
+});
+</code></pre>
+
+<p>You can use <code>ldap://</code> or <code>ldaps://</code>; the latter would connect over SSL (note
+this will not use the LDAP TLS extended operation, but literally an SSL
+connection to port 636, as in LDAP v2). Full list of options:</p>
+
+<ul>
+<li><em>url:</em> a valid LDAP url</li>
+<li><em>socketPath:</em> If you're running an LDAP server over a Unix Domain Socket, use
+this.</li>
+<li><em>log4js:</em> You can optionally pass in a log4js instance that the client will
+get a logger from.  You'll need to set the level to <code>TRACE</code> To get any output
+from the client.</li>
+<li><em>numConnections:</em> The size of the connection pool. Default is 1.</li>
+</ul>
+
+<h2 id="Connection-management"><span class="method name"><span class="name">Connection management</span></span></h2>
+
+<p>If you'll recall, the LDAP protocol is connection-oriented, and completely
+asynchronous on a connection (meaning you can send as many requests as you want
+without waiting for responses).  However, our friend <code>bind</code> is a little
+different in that you generally want to wait for binds to be completed since
+subsequent operations assume that level of priviledge.</p>
+
+<p>The ldapjs client deals with this by maintaing a connection pool, and splaying
+requests across that connection pool, with the exception of <code>bind</code> and <code>unbind</code>,
+which it will apply to all connections in the pool.  By default a client will
+have one connection in the pool (since it's async already, you don't always need
+the complexity of a pool).  And after that, the operations in the client are
+pretty much a mapping of the LDAP C API, but made higher-level, so they make
+sense in JS.</p>
+
+<h2 id="Common-patterns"><span class="method name"><span class="name">Common patterns</span></span></h2>
+
+<p>The last two parameters in every api are <code>controls</code> and <code>callback</code>. <code>controls</code>
+can be either a single instance of a <code>Control</code> or an array of <code>Control</code>. You
+can, and probably will, omit this option.</p>
+
+<p>Almost every operation has the callback form of <code>function(err, res)</code> where err
+will be an instance of an ldapjs Error (you can use <code>instanceof</code> to switch).
+You probably won't need to check the <code>res</code> parameter, but it's there if you do.</p>
+
+<h1 id="bind">bind</h1>
+
+<p><code>bind(dn, password, controls,callback)</code></p>
+
+<p>The bind API only allows LDAP 'simple' binds (equivalent to HTTP Basic
+Authentication) for now. Note that all client APIs can optionally take an array
+of <code>Control</code> objects. You probably don't need them though...</p>
+
+<p>If you have &gt; 1 connection in the connection pool, you'll be called back after
+<em>all</em> of the connections are bound, not just the first one.</p>
+
+<p>Example:</p>
+
+<pre><code>client.bind('cn=root', 'secret', function(err) {
+  assert.ifError(err);
+});
+</code></pre>
+
+<h1 id="add">add</h1>
+
+<p><code>add(dn, entry, controls, callback)</code></p>
+
+<p>Allows you to add an entry (which is just a plain JS object), and as always,
+controls are optional.</p>
+
+<p>Example:</p>
+
+<pre><code>var entry = {
+  cn: 'foo',
+  sn: 'bar',
+  email: ['foo@bar.com', 'foo1@bar.com'],
+  objectclass: 'fooPerson'
+};
+client.add('cn=foo, o=example', entry, function(err) {
+  assert.ifError(err);
+});
+</code></pre>
+
+<h1 id="compare">compare</h1>
+
+<p><code>compare(dn, attribute, value, controls, callback)</code></p>
+
+<p>Performs an LDAP compare with the given attribute and value against the entry
+referenced by dn.</p>
+
+<p>Example:</p>
+
+<pre><code>client.compare('cn=foo, o=example', 'sn', 'bar', function(err, matched) {
+  assert.ifError(err);
+
+  console.log('matched: ' + matched);
+});
+</code></pre>
+
+<h1 id="del">del</h1>
+
+<p><code>del(dn, controls, callbak)</code></p>
+
+<p>Deletes an entry from the LDAP server.</p>
+
+<p>Example:</p>
+
+<pre><code>client.del('cn=foo, o=example', function(err) {
+  assert.ifError(err);
+});
+</code></pre>
+
+<h1 id="exop">exop</h1>
+
+<p><code>exop(name, value, controls, callback)</code></p>
+
+<p>Performs an LDAP extended operation against an LDAP server. <code>name</code> is typically
+going to be an OID (well, the RFC says it must be. ldapjs has no such
+restriction).  Value is completely arbitrary, and is whatever the exop says it
+should be.</p>
+
+<p>Example (performs an LDAP 'whois' extended op):</p>
+
+<pre><code>client.exop('1.3.6.1.4.1.4203.1.11.3', function(err, value, res) {
+  assert.ifError(err);
+
+  console.log('whois: ' + value);
+});
+</code></pre>
+
+<h1 id="modify">modify</h1>
+
+<p><code>modify(name, changes, controls, callback)</code></p>
+
+<p>Performs an LDAP modify operation against the LDAP server.  This API requires
+you to pass in a <code>Change</code> object, which is described below.  Note you can pass
+in a single <code>Change</code> or an array of <code>Change</code>.</p>
+
+<p>Example:</p>
+
+<pre><code>var change = new Change({
+  type: 'add',
+  modification: {
+    pets: ['cat', 'dog']
+  }
+});
+
+client.modify('cn=foo, o=example', change, function(err) {
+  assert.ifError(err);
+});
+</code></pre>
+
+<h2 id="Change"><span class="method name"><span class="name">Change</span></span></h2>
+
+<p>A Change object maps to the LDAP protocol of a modify change, and requires you
+to set the <code>operation</code> and <code>modification</code>.  The <code>operation</code> is a string, and
+must be one of:</p>
+
+<ul>
+<li><em>replace:</em> Replaces the attribute referenced in <code>modification</code>.  If the
+modification has no values, is equivalent to a delete.</li>
+<li><em>add:</em> Adds the attribute value(s) referenced in <code>modification</code>.  The
+attribute may or may not already exist.</li>
+<li><em>delete:</em> Deletes all the attribute (and all values) referenced in
+<code>modification</code>.</li>
+</ul>
+
+<p><code>modification</code> is just a plain old JS object with the values you want.</p>
+
+<h1 id="modifydn">modifyDN</h1>
+
+<p><code>modifyDN(dn, newDN, controls, callback)</code></p>
+
+<p>Performs an LDAP modifyDN (rename) operation against an entry in the LDAP
+server.  A couple points with this client API:</p>
+
+<ul>
+<li>There is no ability to set "keep old dn".  It's always going to flag the old
+dn to be purged.</li>
+<li>The client code will automagically figure out if the request is a "new
+superior" request (new superior means move to a different part of the tree,
+as opposed to just renaming the leaf).</li>
+</ul>
+
+<p>Example:</p>
+
+<pre><code>client.modifyDN('cn=foo, o=example', 'cn=bar', function(err) {
+  assert.ifError(err);
+});
+</code></pre>
+
+<h1 id="search">search</h1>
+
+<p><code>search(base, options, controls, callback)</code></p>
+
+<p>The search operation is more complex than the operations, so this one takes
+an options object for all the parameters.  However, ldapjs makes some defaults
+for you so that if you pass nothing in, it's pretty much equivalent to an HTTP
+GET operation (i.e., base search against the DN, filter set to always match).</p>
+
+<p>Like every other operation, <code>base</code> is a DN string.  Options has the following
+fields:</p>
+
+<ul>
+<li><em>scope:</em> One of <code>base</code>, <code>one</code>, or <code>sub</code>. Defaults to <code>base</code>.</li>
+<li><em>filter:</em> A string version of an LDAP filter (see below), or a programatically
+constructed <code>Filter</code> object. Defaults to <code>(objectclass=*)</code>.</li>
+<li><em>attributes:</em> attributes to select and return (if these are set, the server
+will return <em>only</em> these attributes). Defaults to the empty set, which means all
+attributes.</li>
+<li><em>attrsOnly:</em> boolean on whether you want the server to only return the names
+of the attributes, and not their values.  Borderline useless.  Defaults to
+false.</li>
+<li><em>sizeLimit:</em> the maximum number of entries to return. Defaults to 0
+(unlimited).</li>
+<li><em>timeLimit:</em> the maximum amount of time the server should take in responding,
+in seconds. Defaults to 10.  Lots of servers will ignore this.</li>
+</ul>
+
+<p>Responses from the <code>search</code> method are an <code>EventEmitter</code> where you will get a
+notification for each search entry that comes back from the server.  You will
+additionally be able to listen for an <code>error</code> and <code>end</code> event.  Note that the
+<code>error</code> event will only be for client/TCP errors, not LDAP error codes like the
+other APIs.  You'll want to check the LDAP status code (likely for <code>0</code>) on the
+<code>end</code> event to assert success.  LDAP search results can give you a lot of status
+codes, such as time or size exceeded, busy, inappropriate matching, etc., etc.,
+which is why this method doesn't try to wrap up the code matching.</p>
+
+<p>Example:</p>
+
+<pre><code>var opts = {
+  filter: '(&amp;(l=Seattle)(email=*@foo.com))',
+  scope: 'sub'
+};
+
+client.search('o=example', opts, function(err, res) {
+  assert.ifError(err);
+
+  res.on('searchEntry', function(entry) {
+    console.log('entry: ' + JSON.stringify(entry.object));
+  });
+  res.on('error', function(err) {
+    console.error('error: ' + err.message);
+  });
+  res.on('end', function(result) {
+    console.log('status: ' + result.status);
+  });
+});
+</code></pre>
+
+<h2 id="Filter-Strings"><span class="method name"><span class="name">Filter Strings</span></span></h2>
+
+<p>The easiest way to write search filters is to write them compliant with RFC2254,
+which is the "The string representation of LDAP search filters".  Note that
+ldapjs doesn't support extensible matching, since it's one of those features
+that almost nobody actually uses in practice.</p>
+
+<p>Assuming you don't really want to read the RFC, search filters in LDAP are
+basically are a "tree" of attribute/value assertions, with the tree specified
+in prefix notation.  For example, let's start simple, and build up a complicated
+filter.  The most basic filter is equality, so let's assume you want to search
+for an attribute <code>email</code> with a value of <code>foo@bar.com</code>.  The syntax would be:</p>
+
+<pre><code>(email=foo@bar.com)
+</code></pre>
+
+<p>Note that ldapjs requires all filters to be surrounded by '()' blocks. Ok, that
+was easy.  Let's now assume you want to find all records where the email is
+actually just anything in the @bar.com domain, and the location attribute is set
+to Seattle:</p>
+
+<pre><code>(&amp;(email=*@bar.com)(l=Seattle))
+</code></pre>
+
+<p>Ok, so now our filter is actually three LDAP filters.  We have an <code>and</code> filter,
+an <code>equality</code> filter (the l=Seattle), and a <code>substring</code> filter.  Substrings are
+wildcard filters.  Now, let's say we want to also set our filter to include a
+specification that either the employeeType <em>not</em> be a manager or a secretary:</p>
+
+<pre><code>(&amp;(email=*@bar.com)(l=Seattle)(!(|(employeeType=manager)(employeeType=secretary))))
+</code></pre>
+
+<p>It gets a little bit complicated, but it's actually quite powerful, and lets you
+find almost anything you're looking for.</p>
+
+<h1 id="unbind">unbind</h1>
+
+<p><code>unbind(callback)</code></p>
+
+<p>The unbind operation takes no parameters other than a callback, and will unbind
+(and disconnect) <em>all</em> of the connections in the pool.</p>
+
+<p>Example:</p>
+
+<pre><code>client.unbind(function(err) {
+  assert.ifError(err);
+});
+</code></pre>
+
+    </div>
+</div> <!-- end of #main -->
+</div> <!-- end of #wrapper -->
+
+
+<script type="text/javascript" charset="utf-8">
+$(function () {
+    $("#toc").click(function(event) {
+        // This to ensure clicks in the #toc don't make it up to the
+        // `closeTocOnBodyClick` handler.
+        event.stopPropagation();
+    });
+    $("#toc a").click(function(event) {
+        $("#tocbutton").click();
+    })
+    $("#tocbutton").click(function() {
+        var target = $("#toc");
+        if (target.css("display") !== "block") {
+            $("body").bind("click.tocCloser", function(event) {
+                $("#tocbutton").click();
+                event.stopPropagation();
+            });
+        } else {
+            $("body").unbind("click.tocCloser");
+        }
+        target.slideToggle(100);
+        event.stopPropagation(); 
+    });
+});
+</script>
+
+</body>
+</html>
