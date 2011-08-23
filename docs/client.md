@@ -14,7 +14,7 @@ LDAP, so if you're not, hit the [guide](http://ldapjs.org/guide.html) first.
 
 # Create a client
 
-The code to create a new client liiks like:
+The code to create a new client looks like:
 
     var client = ldap.createClient({
       url: 'ldap://127.0.0.1:1389'

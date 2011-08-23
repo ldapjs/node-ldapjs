@@ -53,8 +53,12 @@ doc: dep
 	@rm -rf ${DOCPKGDIR}
 	@mkdir -p ${DOCPKGDIR}
 	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/client.md
+	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/dn.md
+	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/errors.md
 	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/examples.md
+	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/filters.md
 	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/guide.md
+	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/server.md
 	rm docs/*.json
 	mv docs/*.html ${DOCPKGDIR}
 	(cd ${DOCPKGDIR} && $(TAR) -czf ${SRC}/${NAME}-docs-`git log -1 --pretty='format:%h'`.tar.gz *)
