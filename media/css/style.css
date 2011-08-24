@@ -165,10 +165,13 @@ body {
 #content {
   position: relative;
   top: 200px;
-  height: 100%;
   overflow: auto;
+  padding-bottom: 200px;
 }
-
+#footer {
+  position: relative;
+  padding-top: 60px;
+}
 
 /* ---- base styles */
 
@@ -297,6 +300,11 @@ pre.shell code::before {
   display: inline;
 }
 
+.copy {
+  font-size: 16px;
+  text-align: center;
+  color: #111;
+}
 
 /* ----- top header */
 a#homelink:link {
@@ -366,7 +374,7 @@ a#homelink:hover {
   margin-left: 24px;
 }
 #githubfork {
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: 552px;
+  right: 0px;
 }

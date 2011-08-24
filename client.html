@@ -82,8 +82,8 @@ h1,h2,h3,h4,h5,h6 {
 <div class="intro">
 
 
-<p>This documents the ldapjs client API; this assumes that you are familiar with
-LDAP, so if you're not, hit the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
+<p>This document covers the ldapjs client API and assumes that you are familiar
+with LDAP. If you're not, read the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
 
 
 </div>
@@ -97,15 +97,16 @@ LDAP, so if you're not, hit the <a href="http://ldapjs.org/guide.html">guide</a>
 </code></pre>
 
 <p>You can use <code>ldap://</code> or <code>ldaps://</code>; the latter would connect over SSL (note
-this will not use the LDAP TLS extended operation, but literally an SSL
-connection to port 636, as in LDAP v2). Full list of options:</p>
+that this will not use the LDAP TLS extended operation, but literally an SSL
+connection to port 636, as in LDAP v2). The full set of options to create a
+client is:</p>
 
 <table>
 <tbody>
-<tr><td>url</td><td>a valid LDAP url</td></tr>
-<tr><td>socketPath</td><td>If you're running an LDAP server over a Unix Domain Socket, use this</td></tr>
-<tr><td>log4js</td><td>You can optionally pass in a log4js instance that the client will get a logger from.  You'll need to set the level to <code>TRACE</code> To get any output from the client</td></tr>
-<tr><td>numConnections</td><td>The size of the connection pool. Default is 1</td></tr>
+<tr><td>url</td><td>a valid LDAP url.</td></tr>
+<tr><td>socketPath</td><td>If you're running an LDAP server over a Unix Domain Socket, use this.</td></tr>
+<tr><td>log4js</td><td>You can optionally pass in a log4js instance the client will use to acquire a logger.  The client logs all messages at the <code>Trace</code> level.</td></tr>
+<tr><td>numConnections</td><td>The size of the connection pool. Default is 1.</td></tr>
 </tbody>
 </table>
 
@@ -115,11 +116,11 @@ connection to port 636, as in LDAP v2). Full list of options:</p>
 asynchronous on a connection (meaning you can send as many requests as you want
 without waiting for responses).  However, our friend <code>bind</code> is a little
 different in that you generally want to wait for binds to be completed since
-subsequent operations assume that level of priviledge.</p>
+subsequent operations assume that level of privilege.</p>
 
 <p>The ldapjs client deals with this by maintaing a connection pool, and splaying
 requests across that connection pool, with the exception of <code>bind</code> and <code>unbind</code>,
-which it will apply to all connections in the pool.  By default a client will
+which it will apply to all connections in the pool.  By default,  a client will
 have one connection in the pool (since it's async already, you don't always need
 the complexity of a pool).  And after that, the operations in the client are
 pretty much a mapping of the LDAP C API, but made higher-level, so they make
@@ -127,24 +128,26 @@ sense in JS.</p>
 
 <h2 id="Common-patterns"><span class="method name"><span class="name">Common patterns</span></span></h2>
 
-<p>The last two parameters in every api are <code>controls</code> and <code>callback</code>. <code>controls</code>
-can be either a single instance of a <code>Control</code> or an array of <code>Control</code>. You
-can, and probably will, omit this option.</p>
+<p>The last two parameters in every API are <code>controls</code> and <code>callback</code>. <code>controls</code>
+can be either a single instance of a <code>Control</code> or an array of <code>Control</code> objects.
+You can, and probably will, omit this option.</p>
 
 <p>Almost every operation has the callback form of <code>function(err, res)</code> where err
-will be an instance of an ldapjs Error (you can use <code>instanceof</code> to switch).
+will be an instance of an <code>LDAPError</code> (you can use <code>instanceof</code> to switch).
 You probably won't need to check the <code>res</code> parameter, but it's there if you do.</p>
 
 <h1 id="bind">bind</h1>
 
 <p><code>bind(dn, password, controls,callback)</code></p>
 
+<p>Performs a bind operation against the LDAP server.</p>
+
 <p>The bind API only allows LDAP 'simple' binds (equivalent to HTTP Basic
 Authentication) for now. Note that all client APIs can optionally take an array
 of <code>Control</code> objects. You probably don't need them though...</p>
 
-<p>If you have &gt; 1 connection in the connection pool, you'll be called back after
-<em>all</em> of the connections are bound, not just the first one.</p>
+<p>If you have more than 1 connection in the connection pool, you will be called
+back after <em>all</em> of the connections are bound, not just the first one.</p>
 
 <p>Example:</p>
 
@@ -156,6 +159,8 @@ of <code>Control</code> objects. You probably don't need them though...</p>
 <h1 id="add">add</h1>
 
 <p><code>add(dn, entry, controls, callback)</code></p>
+
+<p>Performs an add operation against the LDAP server.</p>
 
 <p>Allows you to add an entry (which is just a plain JS object), and as always,
 controls are optional.</p>
@@ -177,8 +182,8 @@ client.add('cn=foo, o=example', entry, function(err) {
 
 <p><code>compare(dn, attribute, value, controls, callback)</code></p>
 
-<p>Performs an LDAP compare with the given attribute and value against the entry
-referenced by dn.</p>
+<p>Performs an LDAP compare operation with the given attribute and value against
+the entry referenced by dn.</p>
 
 <p>Example:</p>
 
@@ -207,8 +212,8 @@ referenced by dn.</p>
 <p><code>exop(name, value, controls, callback)</code></p>
 
 <p>Performs an LDAP extended operation against an LDAP server. <code>name</code> is typically
-going to be an OID (well, the RFC says it must be. ldapjs has no such
-restriction).  Value is completely arbitrary, and is whatever the exop says it
+going to be an OID (well, the RFC says it must be; however, ldapjs has no such
+restriction).  <code>value</code> is completely arbitrary, and is whatever the exop says it
 should be.</p>
 
 <p>Example (performs an LDAP 'whois' extended op):</p>
@@ -225,8 +230,8 @@ should be.</p>
 <p><code>modify(name, changes, controls, callback)</code></p>
 
 <p>Performs an LDAP modify operation against the LDAP server.  This API requires
-you to pass in a <code>Change</code> object, which is described below.  Note you can pass
-in a single <code>Change</code> or an array of <code>Change</code>.</p>
+you to pass in a <code>Change</code> object, which is described below.  Note that you can
+pass in a single <code>Change</code> or an array of <code>Change</code> objects.</p>
 
 <p>Example:</p>
 
@@ -244,15 +249,15 @@ client.modify('cn=foo, o=example', change, function(err) {
 
 <h2 id="Change"><span class="method name"><span class="name">Change</span></span></h2>
 
-<p>A Change object maps to the LDAP protocol of a modify change, and requires you
+<p>A <code>Change</code> object maps to the LDAP protocol of a modify change, and requires you
 to set the <code>operation</code> and <code>modification</code>.  The <code>operation</code> is a string, and
 must be one of:</p>
 
 <table>
 <tbody>
-<tr><td>replace</td><td>Replaces the attribute referenced in <code>modification</code>.  If the modification has no values, is equivalent to a delete</td></tr>
-<tr><td>add</td><td>Adds the attribute value(s) referenced in <code>modification</code>.  The attribute may or may not already exist</td></tr>
-<tr><td>delete</td><td>Deletes all the attribute (and all values) referenced in <code>modification</code></td></tr>
+<tr><td>replace</td><td>Replaces the attribute referenced in <code>modification</code>.  If the modification has no values, it is equivalent to a delete.</td></tr>
+<tr><td>add</td><td>Adds the attribute value(s) referenced in <code>modification</code>.  The attribute may or may not already exist.</td></tr>
+<tr><td>delete</td><td>Deletes the attribute (and all values) referenced in <code>modification</code>.</td></tr>
 </tbody>
 </table>
 
@@ -266,10 +271,10 @@ must be one of:</p>
 server.  A couple points with this client API:</p>
 
 <ul>
-<li>There is no ability to set "keep old dn".  It's always going to flag the old
+<li>There is no ability to set "keep old dn."  It's always going to flag the old
 dn to be purged.</li>
 <li>The client code will automagically figure out if the request is a "new
-superior" request (new superior means move to a different part of the tree,
+superior" request ("new superior" means move to a different part of the tree,
 as opposed to just renaming the leaf).</li>
 </ul>
 
@@ -284,22 +289,25 @@ as opposed to just renaming the leaf).</li>
 
 <p><code>search(base, options, controls, callback)</code></p>
 
-<p>The search operation is more complex than the operations, so this one takes
-an options object for all the parameters.  However, ldapjs makes some defaults
-for you so that if you pass nothing in, it's pretty much equivalent to an HTTP
-GET operation (i.e., base search against the DN, filter set to always match).</p>
+<p>Performs a search operation against the LDAP server.</p>
+
+<p>The search operation is more complex than the other operations, so this one
+takes an <code>options</code> object for all the parameters.  However, ldapjs makes some
+defaults for you so that if you pass nothing in, it's pretty much equivalent
+to an HTTP GET operation (i.e., base search against the DN, filter set to
+always match).</p>
 
 <p>Like every other operation, <code>base</code> is a DN string.  Options has the following
 fields:</p>
 
 <table>
 <tbody>
-<tr><td>scope</td><td>One of <code>base</code>, <code>one</code>, or <code>sub</code>. Defaults to <code>base</code></td></tr>
-<tr><td>filter</td><td>A string version of an LDAP filter (see below), or a programatically constructed <code>Filter</code> object. Defaults to <code>(objectclass=*)</code></td></tr>
-<tr><td>attributes</td><td>attributes to select and return (if these are set, the server will return <em>only</em> these attributes). Defaults to the empty set, which means all attributes</td></tr>
-<tr><td>attrsOnly</td><td>boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false</td></tr>
-<tr><td>sizeLimit</td><td>the maximum number of entries to return. Defaults to 0 (unlimited)</td></tr>
-<tr><td>timeLimit</td><td>the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this</td></tr>
+<tr><td>scope</td><td>One of <code>base</code>, <code>one</code>, or <code>sub</code>. Defaults to <code>base</code>.</td></tr>
+<tr><td>filter</td><td>A string version of an LDAP filter (see below), or a programatically constructed <code>Filter</code> object. Defaults to <code>(objectclass=*)</code>.</td></tr>
+<tr><td>attributes</td><td>attributes to select and return (if these are set, the server will return <em>only</em> these attributes). Defaults to the empty set, which means all attributes.</td></tr>
+<tr><td>attrsOnly</td><td>boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.</td></tr>
+<tr><td>sizeLimit</td><td>the maximum number of entries to return. Defaults to 0 (unlimited).</td></tr>
+<tr><td>timeLimit</td><td>the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.</td></tr>
 </tbody>
 </table>
 
@@ -309,7 +317,7 @@ additionally be able to listen for an <code>error</code> and <code>end</code> ev
 <code>error</code> event will only be for client/TCP errors, not LDAP error codes like the
 other APIs.  You'll want to check the LDAP status code (likely for <code>0</code>) on the
 <code>end</code> event to assert success.  LDAP search results can give you a lot of status
-codes, such as time or size exceeded, busy, inappropriate matching, etc., etc.,
+codes, such as time or size exceeded, busy, inappropriate matching, etc.,
 which is why this method doesn't try to wrap up the code matching.</p>
 
 <p>Example:</p>
@@ -337,7 +345,7 @@ client.search('o=example', opts, function(err, res) {
 <h2 id="Filter-Strings"><span class="method name"><span class="name">Filter Strings</span></span></h2>
 
 <p>The easiest way to write search filters is to write them compliant with RFC2254,
-which is the "The string representation of LDAP search filters".  Note that
+which is "The string representation of LDAP search filters."  Note that
 ldapjs doesn't support extensible matching, since it's one of those features
 that almost nobody actually uses in practice.</p>
 
@@ -350,15 +358,14 @@ for an attribute <code>email</code> with a value of <code>foo@bar.com</code>.  T
 <pre><code>(email=foo@bar.com)
 </code></pre>
 
-<p>Note that ldapjs requires all filters to be surrounded by '()' blocks. Ok, that
-was easy.  Let's now assume you want to find all records where the email is
-actually just anything in the @bar.com domain, and the location attribute is set
-to Seattle:</p>
+<p>ldapjs requires all filters to be surrounded by '()' blocks. Ok, that was easy.
+Let's now assume you want to find all records where the email is actually just
+anything in the "@bar.com" domain, and the location attribute is set to Seattle:</p>
 
 <pre><code>(&amp;(email=*@bar.com)(l=Seattle))
 </code></pre>
 
-<p>Ok, so now our filter is actually three LDAP filters.  We have an <code>and</code> filter,
+<p>Now our filter is actually three LDAP filters.  We have an <code>and</code> filter,
 an <code>equality</code> filter (the l=Seattle), and a <code>substring</code> filter.  Substrings are
 wildcard filters.  Now, let's say we want to also set our filter to include a
 specification that either the employeeType <em>not</em> be a manager or a secretary:</p>
@@ -373,6 +380,8 @@ find almost anything you're looking for.</p>
 
 <p><code>unbind(callback)</code></p>
 
+<p>Performs an unbind operation against the LDAP server.</p>
+
 <p>The unbind operation takes no parameters other than a callback, and will unbind
 (and disconnect) <em>all</em> of the connections in the pool.</p>
 
@@ -384,10 +393,11 @@ find almost anything you're looking for.</p>
 </code></pre>
 
     </div>
+<div id="footer">
+  <p class='copy'>Copyright &copy; 2011 <a href="https://github.com/mcavage">Mark Cavage</a></p>
+</div>
 </div> <!-- end of #main -->
 </div> <!-- end of #wrapper -->
-
-
 <script type="text/javascript" charset="utf-8">
 $(function () {
     $("#toc").click(function(event) {
