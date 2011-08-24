@@ -1,12 +1,190 @@
-<html>
- <body>
-  <ul>
-    <li><a href="guide.html">LDAP Tutorial and Guide</a></li>
-    <li><a href="client.html">Client</a></li>
-    <li><a href="dn.html">DN</a></li>
-    <li><a href="errors.html">Errors</a></li>
-    <li><a href="filters.html">Filters</a></li>
-    <li><a href="server.html">Server</a></li>
-    <li><a href="examples.html">Example Code</a></li>
- </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ldapjs</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="media/css/style.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
+<style>
+
+#logo {
+  color: green;
+}
+
+#logo {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: Aldrich, Verdana, sans-serif;
+}
+
+</style>
+
+  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25326304-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body>
+<div id="wrapper">
+<div id="main">
+<div id="fadeout"></div>
+<div id="header">
+  <span id="logo">
+    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
+  </span>
+  <span id="tocbox">
+    <span id="tocbutton" class="navbutton">Table of Contents</span>
+    <div id="toc" style="display: none">
+      <ul>
+  <li><div><a href="#features">Features</a></div></li>
+  <li><div><a href="#getting-started">Getting started</a></div></li>
+  <li><div><a href="#more-information">More information</a></div></li>
+  <li><div><a href="#whats-not-in-the-box">What's not in the box?</a></div></li>
+</ul>
+
+    </div>
+  </span>
+  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
+    <img src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+         alt="Fork me on GitHub">
+  </a>
+</div>
+    <div id="content">
+<p>LDAP for <a href="http://nodejs.org">node.js</a>.</p>
+
+
+<h1>Overview</h1>
+<div class="intro">
+
+
+<p>ldapjs is a pure JavaScript, from-scratch framework for implementing
+<a href="http://tools.ietf.org/html/rfc4510">LDAP</a> clients and servers in
+<a href="http://nodejs.org">node.js</a>.  It is intended for developers used to interacting
+with HTTP services in node and <a href="http://expressjs.com">express</a>.</p>
+
+<pre><code>var server = require('ldapjs').createServer();
+
+server.search('o=example', function(req, res, next) {
+  res.send({
+    dn: 'o=example',
+attributes: {
+  o: ['example'],
+  objectclass: ['organization', 'top']
+}
+  });
+
+  res.end();
+});
+
+server.listen(1389, function() {
+  console.log('LDAP server listening at %s', server.url);
+});
+</code></pre>
+
+<p>Try hitting that with:</p>
+
+<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -b o=example objectclass=*
+</code></pre>
+
+
+</div>
+<h1 id="features">Features</h1>
+
+<p>ldapjs implements most of the common operations in the LDAP v3 RFC(s), for
+both client and server.  It is 100% wire-compatible with the LDAP protocol
+itself, and is interoperable with <a href="http://openldap.org">OpenLDAP</a> and any other
+LDAPv3-compliant implementation.  ldapjs gives you a powerful routing and
+intercepting filter" pattern for implementing server(s).  It is intended
+that you can build LDAP over anything you want, not just traditional databases.</p>
+
+<h1 id="getting-started">Getting started</h1>
+
+<pre class="shell"><code>npm install ldapjs
+</code></pre>
+
+<p>If you're new to LDAP, check out the <a href="/guide.html">guide</a>.  Otherwise, the
+API documentation is:</p>
+
+<table>
+<tbody>
+<tr><td><a href="/server.html">server</a></td><td>Reference for implementing LDAP servers.</td></tr>
+<tr><td><a href="/client.html">client</a></td><td>Reference for implementing LDAP clients.</td></tr>
+<tr><td><a href="/dn.html">dn</a></td><td>API reference for the DN class.</td></tr>
+<tr><td><a href="/filters.html">filters</a></td><td>API reference for LDAP search filters.</td></tr>
+<tr><td><a href="/errors.html">errors</a></td><td>Listing of all ldapjs Error objects.</td></tr>
+<tr><td><a href="/examples.html">examples</a></td><td>Collection of sample/getting started code.</td></tr>
+</tbody>
+</table>
+
+<h1 id="more-information">More information</h1>
+
+<table>
+<tbody>
+<tr><td>License</td><td><a href="http://opensource.org/licenses/mit-license.php">MIT</a></td></tr>
+<tr><td>Code</td><td><a href="https://github.com/mcavage/node-ldapjs">mcavage/node-ldapjs</a></td></tr>
+<tr><td>node.js version</td><td>0.4.x and 0.5.x</td></tr>
+<tr><td>Twitter</td><td><a href="http://twitter.com/mcavage">@mcavage</a></td></tr>
+</tbody>
+</table>
+
+<h1 id="whats-not-in-the-box">What's not in the box?</h1>
+
+<p>Since most developers and system(s) adminstrators struggle with some of the
+esoteric features of LDAP, not all features in LDAP are implemented here.
+Specifically:</p>
+
+<ul>
+<li>Referrals</li>
+<li>LDIF</li>
+<li>Aliases</li>
+<li>Attributes by OID</li>
+<li>TLS extended operation (seriously, just use SSL)</li>
+<li>Extensible matching</li>
+</ul>
+
+<p>There are a few others, but those are the "big" ones.</p>
+
+    </div>
+</div> <!-- end of #main -->
+</div> <!-- end of #wrapper -->
+
+
+<script type="text/javascript" charset="utf-8">
+$(function () {
+    $("#toc").click(function(event) {
+        // This to ensure clicks in the #toc don't make it up to the
+        // `closeTocOnBodyClick` handler.
+        event.stopPropagation();
+    });
+    $("#toc a").click(function(event) {
+        $("#tocbutton").click();
+    })
+    $("#tocbutton").click(function() {
+        var target = $("#toc");
+        if (target.css("display") !== "block") {
+            $("body").bind("click.tocCloser", function(event) {
+                $("#tocbutton").click();
+                event.stopPropagation();
+            });
+        } else {
+            $("body").unbind("click.tocCloser");
+        }
+        target.slideToggle(100);
+        event.stopPropagation();
+    });
+});
+</script>
+
+</body>
 </html>

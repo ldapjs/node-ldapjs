@@ -23,14 +23,26 @@ h1,h2,h3,h4,h5,h6 {
 </style>
 
   <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25326304-1']);
+  _gaq.push(['_trackPageview']);
 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
 </head>
 <body>
 <div id="wrapper">
 <div id="main">
-
+<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">ldapjs</span>
+  <span id="logo">
+    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
+  </span>
   <span id="tocbox">
     <span id="tocbutton" class="navbutton">Table of Contents</span>
     <div id="toc" style="display: none">
@@ -59,6 +71,10 @@ h1,h2,h3,h4,h5,h6 {
 
     </div>
   </span>
+  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
+    <img src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+         alt="Fork me on GitHub">
+  </a>
 </div>
     <div id="content">
 
@@ -84,15 +100,14 @@ LDAP, so if you're not, hit the <a href="http://ldapjs.org/guide.html">guide</a>
 this will not use the LDAP TLS extended operation, but literally an SSL
 connection to port 636, as in LDAP v2). Full list of options:</p>
 
-<ul>
-<li><em>url:</em> a valid LDAP url</li>
-<li><em>socketPath:</em> If you're running an LDAP server over a Unix Domain Socket, use
-this.</li>
-<li><em>log4js:</em> You can optionally pass in a log4js instance that the client will
-get a logger from.  You'll need to set the level to <code>TRACE</code> To get any output
-from the client.</li>
-<li><em>numConnections:</em> The size of the connection pool. Default is 1.</li>
-</ul>
+<table>
+<tbody>
+<tr><td>url</td><td>a valid LDAP url</td></tr>
+<tr><td>socketPath</td><td>If you're running an LDAP server over a Unix Domain Socket, use this</td></tr>
+<tr><td>log4js</td><td>You can optionally pass in a log4js instance that the client will get a logger from.  You'll need to set the level to <code>TRACE</code> To get any output from the client</td></tr>
+<tr><td>numConnections</td><td>The size of the connection pool. Default is 1</td></tr>
+</tbody>
+</table>
 
 <h2 id="Connection-management"><span class="method name"><span class="name">Connection management</span></span></h2>
 
@@ -233,14 +248,13 @@ client.modify('cn=foo, o=example', change, function(err) {
 to set the <code>operation</code> and <code>modification</code>.  The <code>operation</code> is a string, and
 must be one of:</p>
 
-<ul>
-<li><em>replace:</em> Replaces the attribute referenced in <code>modification</code>.  If the
-modification has no values, is equivalent to a delete.</li>
-<li><em>add:</em> Adds the attribute value(s) referenced in <code>modification</code>.  The
-attribute may or may not already exist.</li>
-<li><em>delete:</em> Deletes all the attribute (and all values) referenced in
-<code>modification</code>.</li>
-</ul>
+<table>
+<tbody>
+<tr><td>replace</td><td>Replaces the attribute referenced in <code>modification</code>.  If the modification has no values, is equivalent to a delete</td></tr>
+<tr><td>add</td><td>Adds the attribute value(s) referenced in <code>modification</code>.  The attribute may or may not already exist</td></tr>
+<tr><td>delete</td><td>Deletes all the attribute (and all values) referenced in <code>modification</code></td></tr>
+</tbody>
+</table>
 
 <p><code>modification</code> is just a plain old JS object with the values you want.</p>
 
@@ -278,21 +292,16 @@ GET operation (i.e., base search against the DN, filter set to always match).</p
 <p>Like every other operation, <code>base</code> is a DN string.  Options has the following
 fields:</p>
 
-<ul>
-<li><em>scope:</em> One of <code>base</code>, <code>one</code>, or <code>sub</code>. Defaults to <code>base</code>.</li>
-<li><em>filter:</em> A string version of an LDAP filter (see below), or a programatically
-constructed <code>Filter</code> object. Defaults to <code>(objectclass=*)</code>.</li>
-<li><em>attributes:</em> attributes to select and return (if these are set, the server
-will return <em>only</em> these attributes). Defaults to the empty set, which means all
-attributes.</li>
-<li><em>attrsOnly:</em> boolean on whether you want the server to only return the names
-of the attributes, and not their values.  Borderline useless.  Defaults to
-false.</li>
-<li><em>sizeLimit:</em> the maximum number of entries to return. Defaults to 0
-(unlimited).</li>
-<li><em>timeLimit:</em> the maximum amount of time the server should take in responding,
-in seconds. Defaults to 10.  Lots of servers will ignore this.</li>
-</ul>
+<table>
+<tbody>
+<tr><td>scope</td><td>One of <code>base</code>, <code>one</code>, or <code>sub</code>. Defaults to <code>base</code></td></tr>
+<tr><td>filter</td><td>A string version of an LDAP filter (see below), or a programatically constructed <code>Filter</code> object. Defaults to <code>(objectclass=*)</code></td></tr>
+<tr><td>attributes</td><td>attributes to select and return (if these are set, the server will return <em>only</em> these attributes). Defaults to the empty set, which means all attributes</td></tr>
+<tr><td>attrsOnly</td><td>boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false</td></tr>
+<tr><td>sizeLimit</td><td>the maximum number of entries to return. Defaults to 0 (unlimited)</td></tr>
+<tr><td>timeLimit</td><td>the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this</td></tr>
+</tbody>
+</table>
 
 <p>Responses from the <code>search</code> method are an <code>EventEmitter</code> where you will get a
 notification for each search entry that comes back from the server.  You will
@@ -400,7 +409,7 @@ $(function () {
             $("body").unbind("click.tocCloser");
         }
         target.slideToggle(100);
-        event.stopPropagation(); 
+        event.stopPropagation();
     });
 });
 </script>

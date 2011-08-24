@@ -23,14 +23,26 @@ h1,h2,h3,h4,h5,h6 {
 </style>
 
   <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25326304-1']);
+  _gaq.push(['_trackPageview']);
 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
 </head>
 <body>
 <div id="wrapper">
 <div id="main">
-
+<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">ldapjs</span>
+  <span id="logo">
+    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
+  </span>
   <span id="tocbox">
     <span id="tocbutton" class="navbutton">Table of Contents</span>
     <div id="toc" style="display: none">
@@ -49,6 +61,10 @@ h1,h2,h3,h4,h5,h6 {
 
     </div>
   </span>
+  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
+    <img src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+         alt="Fork me on GitHub">
+  </a>
 </div>
     <div id="content">
 
@@ -76,18 +92,20 @@ these don't provide that property.</p>
 property <code>type</code> available; this will return a string name for the filter, and
 will be one of:</p>
 
-<ul>
-<li><em>equal:</em> an <code>EqualityFilter</code></li>
-<li><em>present:</em> a <code>PresenceFilter</code></li>
-<li><em>substring:</em> a <code>SubstringFilter</code></li>
-<li><em>ge:</em> a <code>GreaterThanEqualsFilter</code></li>
-<li><em>le:</em> a <code>LessThanEqualsFilter</code></li>
-<li><em>and:</em> an <code>AndFilter</code></li>
-<li><em>or:</em> an <code>OrFilter</code></li>
-<li><em>not:</em> a <code>NotFilter</code></li>
-<li><em>approx:</em> an <code>ApproximateMatchFilter</code> (quasi-supported in ldapjs)</li>
-<li><em>ext:</em> an <code>ExtensibleMatchFilter</code> (not supported in ldapjs)</li>
-</ul>
+<table>
+<tbody>
+<tr><td>equal</td><td>an <code>EqualityFilter</code></td></tr>
+<tr><td>present</td><td>a <code>PresenceFilter</code></td></tr>
+<tr><td>substring</td><td>a <code>SubstringFilter</code></td></tr>
+<tr><td>ge</td><td>a <code>GreaterThanEqualsFilter</code></td></tr>
+<tr><td>le</td><td>a <code>LessThanEqualsFilter</code></td></tr>
+<tr><td>and</td><td>an <code>AndFilter</code></td></tr>
+<tr><td>or</td><td>an <code>OrFilter</code></td></tr>
+<tr><td>not</td><td>a <code>NotFilter</code></td></tr>
+<tr><td>approx</td><td>an <code>ApproximateMatchFilter</code> (quasi-supported in ldapjs)</td></tr>
+<tr><td>ext</td><td>an <code>ExtensibleMatchFilter</code> (not supported in ldapjs)</td></tr>
+</tbody>
+</table>
 
 
 </div>
@@ -386,7 +404,7 @@ $(function () {
             $("body").unbind("click.tocCloser");
         }
         target.slideToggle(100);
-        event.stopPropagation(); 
+        event.stopPropagation();
     });
 });
 </script>

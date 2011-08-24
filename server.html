@@ -23,14 +23,26 @@ h1,h2,h3,h4,h5,h6 {
 </style>
 
   <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25326304-1']);
+  _gaq.push(['_trackPageview']);
 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
 </head>
 <body>
 <div id="wrapper">
 <div id="main">
-
+<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">ldapjs</span>
+  <span id="logo">
+    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
+  </span>
   <span id="tocbox">
     <span id="tocbutton" class="navbutton">Table of Contents</span>
     <div id="toc" style="display: none">
@@ -92,6 +104,10 @@ h1,h2,h3,h4,h5,h6 {
 
     </div>
   </span>
+  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
+    <img src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+         alt="Fork me on GitHub">
+  </a>
 </div>
     <div id="content">
 
@@ -113,14 +129,13 @@ LDAP, so if you're not, hit the <a href="http://ldapjs.org/guide.html">guide</a>
 
 <p>Full list of options:</p>
 
-<ul>
-<li><em>log4js:</em> You can optionally pass in a log4js instance that the client will
-get a logger from.  You'll need to set the level to <code>TRACE</code> To get any output
-from the client.</li>
-<li><em>certificate:</em> A PEM-encoded X.509 certificate; will cause this server to
-run in TLS mode.</li>
-<li><em>key:</em> A PEM-encoded private key that corresponds to <em>certificate</em> for SSL.</li>
-</ul>
+<table>
+<tbody>
+<tr><td>log4js</td><td>You can optionally pass in a log4js instance that the client will get a logger from.  You'll need to set the level to <code>TRACE</code> To get any output from the client</td></tr>
+<tr><td>certificate</td><td>A PEM-encoded X.509 certificate; will cause this server to run in TLS mode</td></tr>
+<tr><td>key</td><td>A PEM-encoded private key that corresponds to <em>certificate</em> for SSL</td></tr>
+</tbody>
+</table>
 
 <h2 id="Properties-on-server"><span class="method name"><span class="name">Properties on server</span></span></h2>
 
@@ -395,13 +410,6 @@ objectclass: ['person', 'top']
   res.end();
 });
 </code></pre>
-
-<p>this.derefAliases = options.derefAliases || Protocol.NEVER<em>DEREF</em>ALIASES;
-  this.sizeLimit = options.sizeLimit || 0;
-  this.timeLimit = options.timeLimit || 00;
-  this.typesOnly = options.typesOnly || false;
-  this.filter = options.filter || null;
-  this.attributes = options.attributes ? options.attributes.slice(0) : [];</p>
 
 <h2 id="SearchRequest"><span class="method name"><span class="name">SearchRequest</span></span></h2>
 
@@ -701,7 +709,7 @@ $(function () {
             $("body").unbind("click.tocCloser");
         }
         target.slideToggle(100);
-        event.stopPropagation(); 
+        event.stopPropagation();
     });
 });
 </script>

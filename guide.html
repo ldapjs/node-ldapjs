@@ -23,14 +23,26 @@ h1,h2,h3,h4,h5,h6 {
 </style>
 
   <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25326304-1']);
+  _gaq.push(['_trackPageview']);
 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
 </head>
 <body>
 <div id="wrapper">
 <div id="main">
-
+<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">ldapjs</span>
+  <span id="logo">
+    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
+  </span>
   <span id="tocbox">
     <span id="tocbutton" class="navbutton">Table of Contents</span>
     <div id="toc" style="display: none">
@@ -52,6 +64,10 @@ h1,h2,h3,h4,h5,h6 {
 
     </div>
   </span>
+  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
+    <img src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+         alt="Fork me on GitHub">
+  </a>
 </div>
     <div id="content">
 
@@ -302,17 +318,17 @@ for a moment to explain an /etc/passwd record:</p>
 
 <p>That maps to:</p>
 
-<ul>
-<li>jsmith: user name.</li>
-<li>x: historically this contained the password hash, but that's usually in
-/etc/shadow now, so you get an 'x'.</li>
-<li>1001: the unix numeric user id.</li>
-<li>1000: the unix numeric group id. (primary)</li>
-<li>'Joe Smith,...': the "gecos", which is a description, and is usually a comma
-separated list of contact details.</li>
-<li>/home/jsmith: the user's home directory</li>
-<li>/bin/sh: the user's shell.</li>
-</ul>
+<table>
+<tbody>
+<tr><td>jsmith</td><td>user name</td></tr>
+<tr><td>x</td><td>historically this contained the password hash, but that's usually in /etc/shadow now, so you get an 'x'</td></tr>
+<tr><td>1001</td><td>the unix numeric user id</td></tr>
+<tr><td>1000</td><td>the unix numeric group id. (primary)</td></tr>
+<tr><td>'Joe Smith,...'</td><td>the "gecos", which is a description, and is usually a comma separated list of contact details</td></tr>
+<tr><td>/home/jsmith</td><td>the user's home directory</td></tr>
+<tr><td>/bin/sh</td><td>the user's shell</td></tr>
+</tbody>
+</table>
 
 <p>Great, let's some handlers to parse that and transform it into an LDAP search
 record (note, you'll need to add <code>var fs = require('fs');</code> at the top of the
@@ -743,7 +759,7 @@ $(function () {
             $("body").unbind("click.tocCloser");
         }
         target.slideToggle(100);
-        event.stopPropagation(); 
+        event.stopPropagation();
     });
 });
 </script>

@@ -23,29 +23,53 @@ h1,h2,h3,h4,h5,h6 {
 </style>
 
   <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25326304-1']);
+  _gaq.push(['_trackPageview']);
 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
 </head>
 <body>
 <div id="wrapper">
 <div id="main">
-
+<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">ldapjs</span>
+  <span id="logo">
+    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
+  </span>
   <span id="tocbox">
     <span id="tocbutton" class="navbutton">Table of Contents</span>
     <div id="toc" style="display: none">
       <ul>
+  <li><div><a href="#in-memory-server">In-memory server</a></div></li>
   <li><div><a href="#etcpasswd-server">/etc/passwd server</a></div></li>
 </ul>
 
     </div>
   </span>
+  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
+    <img src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+         alt="Fork me on GitHub">
+  </a>
 </div>
     <div id="content">
 
-<h1>In-memory server</h1>
+<h1>Overview</h1>
 <div class="intro">
 
+
+<p>This page contains a (hopefully) growing list of sample code to get you started
+with ldapjs.</p>
+
+
+</div>
+<h1 id="in-memory-server">In-memory server</h1>
 
 <pre><code>var ldap = require('ldapjs');
 
@@ -246,8 +270,6 @@ server.listen(1389, function() {
 });
 </code></pre>
 
-
-</div>
 <h1 id="etcpasswd-server">/etc/passwd server</h1>
 
 <pre><code>var fs = require('fs');
@@ -486,7 +508,7 @@ $(function () {
             $("body").unbind("click.tocCloser");
         }
         target.slideToggle(100);
-        event.stopPropagation(); 
+        event.stopPropagation();
     });
 });
 </script>

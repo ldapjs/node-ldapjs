@@ -141,14 +141,30 @@ body {
 #main {
   min-height: 300px;
 }
+#fadeout {
+  z-index: 50;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 210px;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 255)), to(rgba(255, 255, 255, 0)));
+  background: -moz-linear-gradient(top, rgba(255, 255, 255, 255), rgba(255, 255, 255, 0));
+}
 #header {
   position: fixed;
-  z-index: 3;
-  height: 80px;
+  z-index: 100;
+  padding: 24px 0;
   top: 0;
+  left: auto;
+  right: auto;
+  width: 100%;
+  background: white;
+  height: 86px;
 }
 #content {
-  padding-top: 80px;
+  position: relative;
+  top: 200px;
   height: 100%;
   overflow: auto;
 }
@@ -283,20 +299,33 @@ pre.shell code::before {
 
 
 /* ----- top header */
-
-#header {
-  margin: 48px 0 24px 0;
+a#homelink:link {
+  color: #008000;
+  text-decoration: none;
+}
+a#homelink:visited {
+  color: #008000;
+  text-decoration: none;
+}
+a#homelink:active {
+  color: #008000;
+  text-decoration: none;
+}
+a#homelink:hover {
+  color: #008000;
+  text-decoration: none;
 }
 #logo {
   font-family: Georgia,serif;
   font-weight: bold;
-  font-size: 36px;
-  padding-top: 120px;
-  color: #268bd2;
+  font-size: 60px;
+  top: 55px;
+  position: fixed;
 }
 #tocbox {
-  position: relative;
-  margin-left: 24px;
+  position: absolute;
+  top: 67px;
+  left: 300px;
 }
 .navbutton {
   border: 1px solid #ccc;
@@ -335,4 +364,9 @@ pre.shell code::before {
 }
 #toc ul ul {
   margin-left: 24px;
+}
+#githubfork {
+  position: absolute;
+  top: 0;
+  left: 552px;
 }
