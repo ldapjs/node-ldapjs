@@ -9,8 +9,8 @@ header-font-family: google:Aldrich, Verdana, sans-serif
 
 # Overview
 
-This documents the ldapjs DN API; this assumes that you are familiar with
-LDAP, so if you're not, hit the [guide](http://ldapjs.org/guide.html) first.
+This document covers the ldapjs DN API and assumes that you are familiar
+with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
 
 DNs are LDAP distinguished names, and are composed of a set of RDNs (relative
 distinguished names).  [RFC2253](http://www.ietf.org/rfc/rfc2253.txt) has the

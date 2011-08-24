@@ -9,8 +9,8 @@ header-font-family: google:Aldrich, Verdana, sans-serif
 
 # Overview
 
-This documents the ldapjs Errors API; this assumes that you are familiar with
-LDAP, so if you're not, hit the [guide](http://ldapjs.org/guide.html) first.
+This document covers the ldapjs errors API and assumes that you are familiar
+with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
 
 All errors in the ldapjs framework extend from an abstract error type called
 `LDAPError`. In addition to the properties listed below, all errors will have

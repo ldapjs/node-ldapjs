@@ -9,8 +9,8 @@ header-font-family: google:Aldrich, Verdana, sans-serif
 
 # Overview
 
-This documents the ldapjs server API; this assumes that you are familiar with
-LDAP, so if you're not, hit the [guide](http://ldapjs.org/guide.html) first.
+This document covers the ldapjs filters API and assumes that you are familiar
+with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
 
 LDAP search filters are really the backbone of LDAP search operations, and
 ldapjs tries to get you in "easy" with them if your dataset is small, and also

@@ -9,8 +9,8 @@ header-font-family: google:Aldrich, Verdana, sans-serif
 
 # Overview
 
-This documents the ldapjs server API; this assumes that you are familiar with
-LDAP, so if you're not, hit the [guide](http://ldapjs.org/guide.html) first.
+This document covers the ldapjs server API and assumes that you are familiar
+with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
 
 # Create a server
 
