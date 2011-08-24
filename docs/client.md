@@ -24,13 +24,10 @@ You can use `ldap://` or `ldaps://`; the latter would connect over SSL (note
 this will not use the LDAP TLS extended operation, but literally an SSL
 connection to port 636, as in LDAP v2). Full list of options:
 
-* _url:_ a valid LDAP url
-* _socketPath:_ If you're running an LDAP server over a Unix Domain Socket, use
-this.
-* _log4js:_ You can optionally pass in a log4js instance that the client will
-get a logger from.  You'll need to set the level to `TRACE` To get any output
-from the client.
-* _numConnections:_ The size of the connection pool. Default is 1.
+||url|| a valid LDAP url||
+||socketPath|| If you're running an LDAP server over a Unix Domain Socket, use this||
+||log4js|| You can optionally pass in a log4js instance that the client will get a logger from.  You'll need to set the level to `TRACE` To get any output from the client||
+||numConnections||The size of the connection pool. Default is 1||
 
 ## Connection management
 
@@ -160,12 +157,9 @@ A Change object maps to the LDAP protocol of a modify change, and requires you
 to set the `operation` and `modification`.  The `operation` is a string, and
 must be one of:
 
-* _replace:_ Replaces the attribute referenced in `modification`.  If the
-modification has no values, is equivalent to a delete.
-* _add:_ Adds the attribute value(s) referenced in `modification`.  The
-attribute may or may not already exist.
-* _delete:_ Deletes all the attribute (and all values) referenced in
-`modification`.
+||replace||Replaces the attribute referenced in `modification`.  If the modification has no values, is equivalent to a delete||
+||add||Adds the attribute value(s) referenced in `modification`.  The attribute may or may not already exist||
+||delete||Deletes all the attribute (and all values) referenced in `modification`||
 
 `modification` is just a plain old JS object with the values you want.
 
@@ -198,19 +192,12 @@ GET operation (i.e., base search against the DN, filter set to always match).
 Like every other operation, `base` is a DN string.  Options has the following
 fields:
 
-* _scope:_ One of `base`, `one`, or `sub`. Defaults to `base`.
-* _filter:_ A string version of an LDAP filter (see below), or a programatically
-constructed `Filter` object. Defaults to `(objectclass=*)`.
-* _attributes:_ attributes to select and return (if these are set, the server
-will return *only* these attributes). Defaults to the empty set, which means all
-attributes.
-* _attrsOnly:_ boolean on whether you want the server to only return the names
-of the attributes, and not their values.  Borderline useless.  Defaults to
-false.
-* _sizeLimit:_ the maximum number of entries to return. Defaults to 0
-(unlimited).
-* _timeLimit:_ the maximum amount of time the server should take in responding,
-in seconds. Defaults to 10.  Lots of servers will ignore this.
+||scope||One of `base`, `one`, or `sub`. Defaults to `base`||
+||filter||A string version of an LDAP filter (see below), or a programatically constructed `Filter` object. Defaults to `(objectclass=*)`||
+||attributes||attributes to select and return (if these are set, the server will return *only* these attributes). Defaults to the empty set, which means all attributes||
+||attrsOnly||boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false||
+||sizeLimit||the maximum number of entries to return. Defaults to 0 (unlimited)||
+||timeLimit||the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this||
 
 Responses from the `search` method are an `EventEmitter` where you will get a
 notification for each search entry that comes back from the server.  You will

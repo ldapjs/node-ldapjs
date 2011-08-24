@@ -29,16 +29,16 @@ All Filters in the ldapjs framework extend from `Filter`, which wil have the
 property `type` available; this will return a string name for the filter, and
 will be one of:
 
-* _equal:_ an `EqualityFilter`
-* _present:_ a `PresenceFilter`
-* _substring:_ a `SubstringFilter`
-* _ge:_ a `GreaterThanEqualsFilter`
-* _le:_ a `LessThanEqualsFilter`
-* _and:_ an `AndFilter`
-* _or:_ an `OrFilter`
-* _not:_ a `NotFilter`
-* _approx:_ an `ApproximateMatchFilter` (quasi-supported in ldapjs)
-* _ext:_ an `ExtensibleMatchFilter` (not supported in ldapjs)
+||equal||an `EqualityFilter`||
+||present||a `PresenceFilter`||
+||substring||a `SubstringFilter`||
+||ge||a `GreaterThanEqualsFilter`||
+||le||a `LessThanEqualsFilter`||
+||and||an `AndFilter`||
+||or||an `OrFilter`||
+||not||a `NotFilter`||
+||approx||an `ApproximateMatchFilter` (quasi-supported in ldapjs)||
+||ext||an `ExtensibleMatchFilter` (not supported in ldapjs)||
 
 # parseFilter(filterString)
 

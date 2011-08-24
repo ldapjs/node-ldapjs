@@ -236,15 +236,13 @@ for a moment to explain an /etc/passwd record:
 
 That maps to:
 
-* jsmith: user name.
-* x: historically this contained the password hash, but that's usually in
-/etc/shadow now, so you get an 'x'.
-* 1001: the unix numeric user id.
-* 1000: the unix numeric group id. (primary)
-* 'Joe Smith,...': the "gecos", which is a description, and is usually a comma
-separated list of contact details.
-* /home/jsmith: the user's home directory
-* /bin/sh: the user's shell.
+||jsmith||user name||
+||x||historically this contained the password hash, but that's usually in /etc/shadow now, so you get an 'x'||
+||1001||the unix numeric user id||
+||1000||the unix numeric group id. (primary)||
+||'Joe Smith,...'||the "gecos", which is a description, and is usually a comma separated list of contact details||
+||/home/jsmith||the user's home directory||
+||/bin/sh||the user's shell||
 
 Great, let's some handlers to parse that and transform it into an LDAP search
 record (note, you'll need to add `var fs = require('fs');` at the top of the

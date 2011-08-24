@@ -1,0 +1,32 @@
+</div> <!-- end of #main -->
+</div> <!-- end of #wrapper -->
+
+
+<script type="text/javascript" charset="utf-8">
+$(function () {
+    $("#toc").click(function(event) {
+        // This to ensure clicks in the #toc don't make it up to the
+        // `closeTocOnBodyClick` handler.
+        event.stopPropagation();
+    });
+    $("#toc a").click(function(event) {
+        $("#tocbutton").click();
+    })
+    $("#tocbutton").click(function() {
+        var target = $("#toc");
+        if (target.css("display") !== "block") {
+            $("body").bind("click.tocCloser", function(event) {
+                $("#tocbutton").click();
+                event.stopPropagation();
+            });
+        } else {
+            $("body").unbind("click.tocCloser");
+        }
+        target.slideToggle(100);
+        event.stopPropagation();
+    });
+});
+</script>
+
+</body>
+</html>

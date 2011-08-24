@@ -7,6 +7,11 @@ logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
+# Overview
+
+This page contains a (hopefully) growing list of sample code to get you started
+with ldapjs.
+
 # In-memory server
 
     var ldap = require('ldapjs');

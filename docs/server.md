@@ -20,12 +20,9 @@ The code to create a new server looks like:
 
 Full list of options:
 
-* _log4js:_ You can optionally pass in a log4js instance that the client will
-get a logger from.  You'll need to set the level to `TRACE` To get any output
-from the client.
-* _certificate:_ A PEM-encoded X.509 certificate; will cause this server to
-run in TLS mode.
-* _key:_ A PEM-encoded private key that corresponds to _certificate_ for SSL.
+||log4js||You can optionally pass in a log4js instance that the client will get a logger from.  You'll need to set the level to `TRACE` To get any output from the client||
+||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode||
+||key||A PEM-encoded private key that corresponds to _certificate_ for SSL||
 
 ## Properties on server
 
@@ -289,14 +286,6 @@ Adds a handler for the LDAP search operation. Example:
       console.log('filter: ' + req.filter.toString());
       res.end();
     });
-
-
-  this.derefAliases = options.derefAliases || Protocol.NEVER_DEREF_ALIASES;
-  this.sizeLimit = options.sizeLimit || 0;
-  this.timeLimit = options.timeLimit || 00;
-  this.typesOnly = options.typesOnly || false;
-  this.filter = options.filter || null;
-  this.attributes = options.attributes ? options.attributes.slice(0) : [];
 
 ## SearchRequest
 

@@ -15,10 +15,13 @@ endif
 HAVE_GJSLINT := $(shell which gjslint >/dev/null && echo yes || echo no)
 NPM := npm_config_tar=$(TAR) npm
 
-RESTDOWN = ./node_modules/.restdown/bin/restdown
-#RESTDOWN = restdown
 RESTDOWN_VERSION=1.2.13
 DOCPKGDIR = ./docs/pkg
+
+RESTDOWN = ./node_modules/.restdown/bin/restdown \
+	-b ./docs/branding \
+	-m ${DOCPKGDIR} \
+	-D mediaroot=media
 
 .PHONY:  dep lint test doc clean all
 
@@ -52,13 +55,14 @@ endif
 doc: dep
 	@rm -rf ${DOCPKGDIR}
 	@mkdir -p ${DOCPKGDIR}
-	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/client.md
-	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/dn.md
-	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/errors.md
-	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/examples.md
-	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/filters.md
-	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/guide.md
-	${RESTDOWN} -m ${DOCPKGDIR} -D mediaroot=media ./docs/server.md
+	${RESTDOWN} ./docs/client.md
+	${RESTDOWN} ./docs/dn.md
+	${RESTDOWN} ./docs/errors.md
+	${RESTDOWN} ./docs/examples.md
+	${RESTDOWN} ./docs/filters.md
+	${RESTDOWN} ./docs/guide.md
+	${RESTDOWN} ./docs/index.md
+	${RESTDOWN} ./docs/server.md
 	rm docs/*.json
 	mv docs/*.html ${DOCPKGDIR}
 	(cd ${DOCPKGDIR} && $(TAR) -czf ${SRC}/${NAME}-docs-`git log -1 --pretty='format:%h'`.tar.gz *)
