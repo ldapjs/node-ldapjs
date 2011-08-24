@@ -141,7 +141,17 @@ body {
 #main {
   min-height: 300px;
 }
-
+#header {
+  position: fixed;
+  z-index: 3;
+  height: 80px;
+  top: 0;
+}
+#content {
+  padding-top: 80px;
+  height: 100%;
+  overflow: auto;
+}
 
 
 /* ---- base styles */
@@ -326,4 +336,3 @@ pre.shell code::before {
 #toc ul ul {
   margin-left: 24px;
 }
-
