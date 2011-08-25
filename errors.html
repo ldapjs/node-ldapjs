@@ -41,17 +41,35 @@ h1,h2,h3,h4,h5,h6 {
 <div id="fadeout"></div>
 <div id="header">
   <span id="logo">
-    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
+    <a id="homelink" href="http://ldapjs.org">ldap</a>
   </span>
+
+  <a class="navbutton" href="guide.html">Guide</a>
+
+  <span id="apibox">
+    <span id="apibutton" class="navbutton">API</span>
+    <div id="api" class="popup" style="display: none">
+      <ul>
+        <li><div><a href="server.html">server</a></div></li>
+        <li><div><a href="client.html">client</a></div></li>
+        <li><div><a href="dn.html">dn</a></div></li>
+        <li><div><a href="filters.html">filters</a></div></li>
+        <li><div><a href="errors.html">errors</a></div></li>
+        <li><div><a href="examples.html">examples</a></div></li>
+      </ul>
+    </div>
+  </span>
+
   <span id="tocbox">
-    <span id="tocbutton" class="navbutton">Table of Contents</span>
-    <div id="toc" style="display: none">
+    <span id="tocbutton" class="navbutton">Page Contents</span>
+    <div id="toc" class="popup" style="display: none">
       <ul>
   <li><div><a href="#complete-list-of-ldaperror-subclasses">Complete list of LDAPError subclasses</a></div></li>
 </ul>
 
     </div>
   </span>
+
   <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
     <img src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
          alt="Fork me on GitHub">
@@ -161,7 +179,7 @@ return the appropriate LDAP error message, and stop the handler chain.</p>
 $(function () {
     $("#toc").click(function(event) {
         // This to ensure clicks in the #toc don't make it up to the
-        // `closeTocOnBodyClick` handler.
+        // button handler.
         event.stopPropagation();
     });
     $("#toc a").click(function(event) {
@@ -176,6 +194,28 @@ $(function () {
             });
         } else {
             $("body").unbind("click.tocCloser");
+        }
+        target.slideToggle(100);
+        event.stopPropagation();
+    });
+
+    $("#api").click(function(event) {
+        // This to ensure clicks in the #api don't make it up to the
+        // button handler.
+        event.stopPropagation();
+    });
+    $("#api a").click(function(event) {
+        $("#apibutton").click();
+    })
+    $("#apibutton").click(function() {
+        var target = $("#api");
+        if (target.css("display") !== "block") {
+            $("body").bind("click.apiCloser", function(event) {
+                $("#apibutton").click();
+                event.stopPropagation();
+            });
+        } else {
+            $("body").unbind("click.apiCloser");
         }
         target.slideToggle(100);
         event.stopPropagation();
