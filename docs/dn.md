@@ -1,6 +1,5 @@
 ---
 title: ldapjs
-brand: spartan
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif

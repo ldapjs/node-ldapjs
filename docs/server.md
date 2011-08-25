@@ -18,13 +18,13 @@ The code to create a new server looks like:
 
     var server = ldap.createServer();
 
-Full list of options:
+The full list of options is:
 
-||log4js||You can optionally pass in a log4js instance that the client will get a logger from.  You'll need to set the level to `TRACE` To get any output from the client||
-||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode||
-||key||A PEM-encoded private key that corresponds to _certificate_ for SSL||
+||log4js||You can optionally pass in a log4js instance the client will use to acquire a logger.  You'll need to set the level to `TRACE` to get any output from the client.||
+||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.||
+||key||A PEM-encoded private key that corresponds to _certificate_ for SSL.||
 
-## Properties on server
+## Properties on the server object
 
 ### maxConnections
 
@@ -134,31 +134,30 @@ server up with riak looks like:
                backend.add());
     ...
 
-Basically, the first parameter to an ldapjs route is always the point in the
+The first parameter to an ldapjs route is always the point in the
 tree to mount the handler chain at.  The second argument is _optionally_ a
-backend object, if applicable.  After that you can pass in an arbitrary
-combination of functions in the form `f(req, res, next)` or Arrays of functions
-of the same signature (ldapjs will unroll them).
+backend object.  After that you can pass in an arbitrary combination of
+functions in the form `f(req, res, next)` or arrays of functions of the same
+signature (ldapjs will unroll them).
 
-Unlike HTTP, LDAP operations do not have a heterogenous format, so each
-operation in the rest of the document includes documentation for the
-request/response objects appropriate to that operation type.
+Unlike HTTP, LDAP operations do not have a heterogeneous wire format, so each
+operation requires specific methods/fields on the request/response objects.
 
 ## Common Request Elements
 
-All request objects has the `dn` getter on it, which is "context-sensitive"
+All request objects have the `dn` getter on it, which is "context-sensitive"
 and returns the point in the tree that the operation wants to operate on.  The
 LDAP protocol itself sadly doesn't define operations this way, and has a unique
 name for just about every op.  So, ldapjs calls it `dn`.  The DN object itself
 is documented at [DN](/dn.html).
 
 All requests have an optional array of `Control` objects.  `Control` will have
-the properties `type` (string), `criticality` (boolean), and optionally a string
-`value`.
+the properties `type` (string), `criticality` (boolean), and optionally, a
+string `value`.
 
 All request objects will have a `connection` object, which is the `net.Socket`
 associated to this request.  Off the `connection` object is an `ldap` object.
-The most important property to pay attention to there is the `bindDN` property
+The most important property to pay attention to is the `bindDN` property
 which will be an instance of an `ldap.DN` object.  This is what the client
 authenticated as on this connection. If the client didn't bind, then a DN object
 will be there defaulted to `cn=anonymous`.
@@ -233,7 +232,7 @@ No extra methods above an `LDAPResult` API call.
 
 # Add
 
-Adds a mount in the tree to perform LDAP adds with. Example:
+Adds a mount in the tree to perform LDAP adds with.
 
     server.add('ou=people, o=example', function(req, res, next) {
       console.log('DN: ' + req.dn.toString());
@@ -247,12 +246,12 @@ AddRequest objects have the following properties:
 
 ### entry
 
-The DN the client is attempting to add (note this is the same as the `dn`
+The DN the client is attempting to add (this is the same as the `dn`
 property).
 
 ### attributes
 
-The set of attributes in this entry.  Note that this will be an array of
+The set of attributes in this entry.  This will be an array of
 `Attribute` objects (which have a type and an array of values).  This directly
 maps to how the request came in off the wire.  It's likely you'll want to use
 `toObject()` and iterate that way, since that will transform an AddRequest into
@@ -278,7 +277,7 @@ No extra methods above an `LDAPResult` API call.
 
 # Search
 
-Adds a handler for the LDAP search operation. Example:
+Adds a handler for the LDAP search operation.
 
     server.search('o=example', function(req, res, next) {
       console.log('base object: ' + req.dn.toString());
@@ -305,7 +304,7 @@ The DN the client is attempting to start the search at (equivalent to `dn`).
 
 ### derefAliases
 
-Will be an integer (defined in the LDAP protocol). Defaults to '0' (meaning
+An integer (defined in the LDAP protocol). Defaults to '0' (meaning
 never deref).
 
 ### sizeLimit
@@ -321,13 +320,13 @@ Defaults to '0' (unlimited).
 ### typesOnly
 
 Whether to return only the names of attributes, and not the values.  Defaults to
-false.  Note that ldapjs will take care of this for you.
+'false'.  ldapjs will take care of this for you.
 
 ### filter
 
 The [filter](/filters.html) object that the client requested.  Notably this has
-a `matches()` api on it that you can leverage.  For an example of introspecting
-a filter, take a look at the ldapjs-riak source.
+a `matches()` method on it that you can leverage.  For an example of
+introspecting a filter, take a look at the ldapjs-riak source.
 
 ### attributes
 
@@ -338,10 +337,10 @@ will automatically handle this for you.
 
 ### send(entry)
 
-Allows you to send a `SearchEntry` object.  Note that you do not need to
+Allows you to send a `SearchEntry` object.  You do not need to
 explicitly pass in a `SearchEntry` object, and can instead just send a plain
 JavaScript object that matches the format used from `AddRequest.toObject()`.
-Example:
+
 
     server.search('o=example', function(req, res, next) {
       var obj = {
@@ -360,7 +359,7 @@ Example:
 
 # modify
 
-Allows you to handle an LDAP modify operation. Example:
+Allows you to handle an LDAP modify operation.
 
     server.modify('o=example', function(req, res, next) {
       console.log('DN: ' + req.dn.toString());
@@ -378,7 +377,7 @@ ModifyRequest objects have the following properties:
 
 ### object
 
-The DN the client is attempting to update (note this is the same as the `dn`
+The DN the client is attempting to update (this is the same as the `dn`
 property).
 
 ### changes
@@ -388,11 +387,11 @@ details on the `Change` object.
 
 ## Change
 
-The Change object will have the following properties:
+The `Change` object will have the following properties:
 
 ### operation
 
-A string, and will be one of: 'add', 'delete', 'replace'.
+A string, and will be one of: 'add', 'delete', or 'replace'.
 
 ### modification
 
@@ -405,7 +404,7 @@ No extra methods above an `LDAPResult` API call.
 
 # del
 
-Allows you to handle an LDAP delete operation. Example:
+Allows you to handle an LDAP delete operation.
 
     server.delete('o=example', function(req, res, next) {
       console.log('DN: ' + req.dn.toString());
@@ -416,7 +415,7 @@ Allows you to handle an LDAP delete operation. Example:
 
 ### entry
 
-The DN the client is attempting to delete (note this is the same as the `dn`
+The DN the client is attempting to delete (this is the same as the `dn`
 property).
 
 ## DeleteResponse
@@ -425,7 +424,7 @@ No extra methods above an `LDAPResult` API call.
 
 # compare
 
-Allows you to handle an LDAP compare operation. Example:
+Allows you to handle an LDAP compare operation.
 
     server.compare('o=example', function(req, res, next) {
       console.log('DN: ' + req.dn.toString());
@@ -438,12 +437,12 @@ Allows you to handle an LDAP compare operation. Example:
 
 ### entry
 
-The DN the client is attempting to compare (note this is the same as the `dn`
+The DN the client is attempting to compare (this is the same as the `dn`
 property).
 
 ### attribute
 
-Will be the string name of the attribute to compare values of.
+The string name of the attribute to compare values of.
 
 ### value
 
@@ -452,12 +451,12 @@ The string value of the attribute to compare.
 ## CompareResponse
 
 The `end()` method for compare takes a boolean, as opposed to a numeric code
-(note you can still pass in a numeric LDAP status code if you want). Beyond
+(you can still pass in a numeric LDAP status code if you want). Beyond
 that, there are no extra methods above an `LDAPResult` API call.
 
 # modifyDN
 
-Allows you to handle an LDAP modifyDN operation. Example:
+Allows you to handle an LDAP modifyDN operation.
 
     server.modifyDN('o=example', function(req, res, next) {
       console.log('DN: ' + req.dn.toString());
@@ -473,7 +472,7 @@ Allows you to handle an LDAP modifyDN operation. Example:
 
 ### entry
 
-The DN the client is attempting to rename (note this is the same as the `dn`
+The DN the client is attempting to rename (this is the same as the `dn`
 property).
 
 ### newRdn
@@ -482,13 +481,12 @@ The leaf RDN the client wants to rename this entry to. This will be a DN object.
 
 ### deleteOldRdn
 
-boolean. Whether or not to delete the old RDN (i.e., rename vs copy). Defaults
-to true.
+Whether or not to delete the old RDN (i.e., rename vs copy). Defaults to 'true'.
 
 ### newSuperior
 
 Optional (DN).  If the modifyDN operation wishes to relocate the entry in the
-tree, the newSuperior field will contain the new parent.
+tree, the `newSuperior` field will contain the new parent.
 
 ## ModifyDNResponse
 
@@ -498,10 +496,9 @@ No extra methods above an `LDAPResult` API call.
 
 Allows you to handle an LDAP extended operation. Extended operations are pretty
 much arbitrary extensions, by definition.  Typically the extended 'name' is an
-OID, but ldapjs makes no such restrictions; it just needs to be a string.  Note
-that unlike the other operations, extended operations don't map to any location
-in the tree, so routing here will be exact match, as opposed to subtree.
-Example:
+OID, but ldapjs makes no such restrictions; it just needs to be a string.
+Unlike the other operations, extended operations don't map to any location in
+the tree, so routing here will be exact match, as opposed to subtree.
 
     // LDAP whoami
     server.exop('1.3.6.1.4.1.4203.1.11.3', function(req, res, next) {
@@ -516,8 +513,8 @@ Example:
 
 ### name
 
-String. Will always be a match to the route-defined name.  But the client
-includes this in their requests.
+Will always be a match to the route-defined name.  Clients must include this
+in their requests.
 
 ### value
 
@@ -538,7 +535,8 @@ The arbitrary (string) value to send back as part of the response.
 
 ldapjs by default provides an unbind handler that just disconnects the client
 and cleans up any internals (in ldapjs core).  You can override this handler
-if you need to clean up any items in your backend, for example.
+if you need to clean up any items in your backend, or perform any other cleanup
+tasks you need to.
 
     server.unbind(function(req, res, next) {
       res.end();
@@ -547,5 +545,5 @@ if you need to clean up any items in your backend, for example.
 Note that the LDAP unbind operation actually doesn't send any response (by
 definition in the RFC), so the UnbindResponse is really just a stub that
 ultimately calls `net.Socket.end()` for you. There are no properties available
-on either the request or response objects, except of course for `end()` on the
+on either the request or response objects, except, of course, for `end()` on the
 response.

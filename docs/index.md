@@ -6,13 +6,15 @@ logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
-LDAP for [node.js](http://nodejs.org).
+<div id="indextagline">
+Reimagining <a href="http://tools.ietf.org/html/rfc4510" id="indextaglink">LDAP</a> for <a id="indextaglink" href="http://nodejs.org">Node.js</a>
+</div>
 
 # Overview
 
 ldapjs is a pure JavaScript, from-scratch framework for implementing
 [LDAP](http://tools.ietf.org/html/rfc4510) clients and servers in
-[node.js](http://nodejs.org).  It is intended for developers used to interacting
+[Node.js](http://nodejs.org).  It is intended for developers used to interacting
 with HTTP services in node and [express](http://expressjs.com).
 
     var server = require('ldapjs').createServer();

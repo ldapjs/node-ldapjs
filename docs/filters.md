@@ -1,6 +1,5 @@
 ---
 title: ldapjs
-brand: spartan
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif
@@ -18,8 +17,8 @@ lets you introspect them if you want to write a "query planner".  For reference,
 make sure to read over [RFC2254](http://www.ietf.org/rfc/rfc2254.txt), as this
 explains the LDAPv3 text filter representation.
 
-Basically, ldapjs gives you a distinct object type mapping to each filter that
-is context-sensitive. However, _all_ filters have a `matches()` api on them, if
+ldapjs gives you a distinct object type mapping to each filter that is
+context-sensitive. However, _all_ filters have a `matches()` method on them, if
 that's all you need.  Most filters will have an `attribute` property on them,
 since "simple" filters all operate on an attribute/value assertion.  The
 "complex" filters are really aggregations of other filters (i.e. 'and'), and so
@@ -57,8 +56,8 @@ Is a "simple" filter, and would just return a `PresenceFilter` object. However,
 Would return an `AndFilter`, which would have a `filters` array of two
 `EqualityFilter` objects.
 
-Note that `parseFilter` will throw if an invalid string is passed in
-(that is, a syntactically invalid string). All filter objects in th
+`parseFilter` will throw if an invalid string is passed in (that is, a
+syntactically invalid string). All filter objects in th
 
 # EqualityFilter
 
@@ -79,10 +78,10 @@ key matching `attribute` and a value matching `value`.
     f.matches({cn: 'foo'});  => true
     f.matches({cn: 'bar'});  => false
 
-Note that "strict" equality matching is used, and by default everything in
-ldapjs (and LDAP) is a UTF-8 string.  If you want comparison of numbers, or
-something else, you'll need to use a middleware interceptor that transforms
-values of objects.
+Equality matching uses "strict" type JavaScript comparison, and by default
+everything in ldapjs (and LDAP) is a UTF-8 string.  If you want comparison
+of numbers, or something else, you'll need to use a middleware interceptor
+that transforms values of objects.
 
 # PresenceFilter
 
@@ -113,6 +112,7 @@ optional. The `name` property will be `substring`.
 
 The string syntax for a presence filter is `(attr=foo*bar*cat*dog)`, which would
 map to:
+
     {
       initial: 'foo',
       any: ['bar', 'cat'],
