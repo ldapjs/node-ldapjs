@@ -154,17 +154,16 @@ body {
 #header {
   position: fixed;
   z-index: 100;
-  padding: 24px 0;
+  padding: 48px 0 24px 0;
   top: 0;
   left: auto;
   right: auto;
   width: 100%;
   background: white;
-  height: 86px;
 }
 #content {
   position: relative;
-  top: 200px;
+  top: 150px;
   overflow: auto;
   padding-bottom: 200px;
 }
@@ -301,9 +300,9 @@ pre.shell code::before {
 }
 
 .copy {
-  font-size: 16px;
+  font-size: 90%;
   text-align: center;
-  color: #111;
+  color: #777;
 }
 
 /* ----- top header */
@@ -328,49 +327,54 @@ a#homelink:hover {
   font-weight: bold;
   font-size: 60px;
   top: 55px;
-  position: fixed;
+}
+#apibox,
+#tocbox {
+  position: relative;
 }
 #tocbox {
-  position: absolute;
-  top: 67px;
-  left: 300px;
+  margin-left: 24px;
 }
 .navbutton {
   border: 1px solid #ccc;
-  padding: 5px 10px;
   position: relative;
+  display: inline-block;
+  width: 120px;
+  text-align: center;
   top: -7px;
   font-size: 70%;
   font-weight: bold;
   text-transform: uppercase;
+  text-decoration: none;
+  color: black;
 }
 .navbutton:hover {
   cursor: pointer;
   background-color: #f3f3f3;
 }
-#toc {
+.popup {
   border: 1px solid #ccc;
   padding: 5px 10px;
   background-color: white;
   font-size: 80%;
   line-height: 1.6em;
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 0px;
   width: 200px;
 }
-#toc a {
+.popup a {
   text-decoration: none;
 }
-#toc a:hover {
+.popup a:hover {
   text-decoration: underline;
 }
-#toc ul {
+.popup ul {
   margin: 0;
   padding: 0px;
   list-style-type: none;
 }
-#toc ul ul {
+.popup ul ul {
   margin-left: 24px;
 }
 #githubfork {
