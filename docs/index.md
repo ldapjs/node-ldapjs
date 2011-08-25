@@ -17,16 +17,21 @@ ldapjs is a pure JavaScript, from-scratch framework for implementing
 [Node.js](http://nodejs.org).  It is intended for developers used to interacting
 with HTTP services in node and [express](http://expressjs.com).
 
-    var server = require('ldapjs').createServer();
+    var ldap = require('ldapjs');
+
+    var server = ldap.createServer();
 
     server.search('o=example', function(req, res, next) {
-      res.send({
-        dn: 'o=example',
+      var obj = {
+        dn: req.dn.toString(),
 	attributes: {
-	  o: ['example'],
-	  objectclass: ['organization', 'top']
+	  objectclass: ['organization', 'top'],
+	  o: 'example'
 	}
-      });
+      };
+
+      if (req.filter.matches(obj.attributes))
+        res.send(obj);
 
       res.end();
     });
