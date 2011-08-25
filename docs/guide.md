@@ -244,7 +244,7 @@ The sample record above maps to:
 ||/home/jsmith||the user's home directory.||
 ||/bin/sh||the user's shell.||
 
-Let's some handlers to parse that and transform it into an LDAP search
+Let's write some handlers to parse that and transform it into an LDAP search
 record (note, you'll need to add `var fs = require('fs');` at the top of the
 source file).
 
