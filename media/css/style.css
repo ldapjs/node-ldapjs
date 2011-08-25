@@ -378,3 +378,25 @@ a#homelink:hover {
   top: 0;
   right: 0px;
 }
+#indextagline {
+  font-size: 24px;
+  font-style: italic;
+  text-align: center;
+  color: green;
+}
+a#indextaglink:link {
+  color: #008000;
+  text-decoration: none;
+}
+a#indextaglink:visited {
+  color: #008000;
+  text-decoration: none;
+}
+a#indextaglink:active {
+  color: #008000;
+  text-decoration: none;
+}
+a#indextaglink:hover {
+  color: #008000;
+  text-decoration: none;
+}

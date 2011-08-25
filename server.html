@@ -49,7 +49,7 @@ h1,h2,h3,h4,h5,h6 {
       <ul>
   <li><div><a href="#create-a-server">Create a server</a></div>
   <ul>
-    <li><div><a href="#Properties-on-server"><span class="method name"><span class="name">Properties on server</span></span></a></div></li>
+    <li><div><a href="#Properties-on-the-server-object"><span class="method name"><span class="name">Properties on the server object</span></span></a></div></li>
     <li><div><a href="#Listening-for-requests"><span class="method name"><span class="name">Listening for requests</span></span></a></div></li>
   </ul></li>
   <li><div><a href="#routes">Routes</a></div>
@@ -127,17 +127,17 @@ with LDAP. If you're not, read the <a href="http://ldapjs.org/guide.html">guide<
 <pre><code>var server = ldap.createServer();
 </code></pre>
 
-<p>Full list of options:</p>
+<p>The full list of options is:</p>
 
 <table>
 <tbody>
-<tr><td>log4js</td><td>You can optionally pass in a log4js instance that the client will get a logger from.  You'll need to set the level to <code>TRACE</code> To get any output from the client</td></tr>
-<tr><td>certificate</td><td>A PEM-encoded X.509 certificate; will cause this server to run in TLS mode</td></tr>
-<tr><td>key</td><td>A PEM-encoded private key that corresponds to <em>certificate</em> for SSL</td></tr>
+<tr><td>log4js</td><td>You can optionally pass in a log4js instance the client will use to acquire a logger.  You'll need to set the level to <code>TRACE</code> to get any output from the client.</td></tr>
+<tr><td>certificate</td><td>A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.</td></tr>
+<tr><td>key</td><td>A PEM-encoded private key that corresponds to <em>certificate</em> for SSL.</td></tr>
 </tbody>
 </table>
 
-<h2 id="Properties-on-server"><span class="method name"><span class="name">Properties on server</span></span></h2>
+<h2 id="Properties-on-the-server-object"><span class="method name"><span class="name">Properties on the server object</span></span></h2>
 
 <h3>maxConnections</h3>
 
@@ -253,31 +253,30 @@ server.add("o=example",
 ...
 </code></pre>
 
-<p>Basically, the first parameter to an ldapjs route is always the point in the
+<p>The first parameter to an ldapjs route is always the point in the
 tree to mount the handler chain at.  The second argument is <em>optionally</em> a
-backend object, if applicable.  After that you can pass in an arbitrary
-combination of functions in the form <code>f(req, res, next)</code> or Arrays of functions
-of the same signature (ldapjs will unroll them).</p>
+backend object.  After that you can pass in an arbitrary combination of
+functions in the form <code>f(req, res, next)</code> or arrays of functions of the same
+signature (ldapjs will unroll them).</p>
 
-<p>Unlike HTTP, LDAP operations do not have a heterogenous format, so each
-operation in the rest of the document includes documentation for the
-request/response objects appropriate to that operation type.</p>
+<p>Unlike HTTP, LDAP operations do not have a heterogeneous wire format, so each
+operation requires specific methods/fields on the request/response objects.</p>
 
 <h2 id="Common-Request-Elements"><span class="method name"><span class="name">Common Request Elements</span></span></h2>
 
-<p>All request objects has the <code>dn</code> getter on it, which is "context-sensitive"
+<p>All request objects have the <code>dn</code> getter on it, which is "context-sensitive"
 and returns the point in the tree that the operation wants to operate on.  The
 LDAP protocol itself sadly doesn't define operations this way, and has a unique
 name for just about every op.  So, ldapjs calls it <code>dn</code>.  The DN object itself
 is documented at <a href="/dn.html">DN</a>.</p>
 
 <p>All requests have an optional array of <code>Control</code> objects.  <code>Control</code> will have
-the properties <code>type</code> (string), <code>criticality</code> (boolean), and optionally a string
-<code>value</code>.</p>
+the properties <code>type</code> (string), <code>criticality</code> (boolean), and optionally, a
+string <code>value</code>.</p>
 
 <p>All request objects will have a <code>connection</code> object, which is the <code>net.Socket</code>
 associated to this request.  Off the <code>connection</code> object is an <code>ldap</code> object.
-The most important property to pay attention to there is the <code>bindDN</code> property
+The most important property to pay attention to is the <code>bindDN</code> property
 which will be an instance of an <code>ldap.DN</code> object.  This is what the client
 authenticated as on this connection. If the client didn't bind, then a DN object
 will be there defaulted to <code>cn=anonymous</code>.</p>
@@ -354,7 +353,7 @@ will be the plain-text password.</p>
 
 <h1 id="add">Add</h1>
 
-<p>Adds a mount in the tree to perform LDAP adds with. Example:</p>
+<p>Adds a mount in the tree to perform LDAP adds with.</p>
 
 <pre><code>server.add('ou=people, o=example', function(req, res, next) {
   console.log('DN: ' + req.dn.toString());
@@ -369,12 +368,12 @@ will be the plain-text password.</p>
 
 <h3>entry</h3>
 
-<p>The DN the client is attempting to add (note this is the same as the <code>dn</code>
+<p>The DN the client is attempting to add (this is the same as the <code>dn</code>
 property).</p>
 
 <h3>attributes</h3>
 
-<p>The set of attributes in this entry.  Note that this will be an array of
+<p>The set of attributes in this entry.  This will be an array of
 <code>Attribute</code> objects (which have a type and an array of values).  This directly
 maps to how the request came in off the wire.  It's likely you'll want to use
 <code>toObject()</code> and iterate that way, since that will transform an AddRequest into
@@ -401,7 +400,7 @@ objectclass: ['person', 'top']
 
 <h1 id="search">Search</h1>
 
-<p>Adds a handler for the LDAP search operation. Example:</p>
+<p>Adds a handler for the LDAP search operation.</p>
 
 <pre><code>server.search('o=example', function(req, res, next) {
   console.log('base object: ' + req.dn.toString());
@@ -431,7 +430,7 @@ objectclass: ['person', 'top']
 
 <h3>derefAliases</h3>
 
-<p>Will be an integer (defined in the LDAP protocol). Defaults to '0' (meaning
+<p>An integer (defined in the LDAP protocol). Defaults to '0' (meaning
 never deref).</p>
 
 <h3>sizeLimit</h3>
@@ -447,13 +446,13 @@ Defaults to '0' (unlimited).</p>
 <h3>typesOnly</h3>
 
 <p>Whether to return only the names of attributes, and not the values.  Defaults to
-false.  Note that ldapjs will take care of this for you.</p>
+'false'.  ldapjs will take care of this for you.</p>
 
 <h3>filter</h3>
 
 <p>The <a href="/filters.html">filter</a> object that the client requested.  Notably this has
-a <code>matches()</code> api on it that you can leverage.  For an example of introspecting
-a filter, take a look at the ldapjs-riak source.</p>
+a <code>matches()</code> method on it that you can leverage.  For an example of
+introspecting a filter, take a look at the ldapjs-riak source.</p>
 
 <h3>attributes</h3>
 
@@ -464,10 +463,9 @@ will automatically handle this for you.</p>
 
 <h3>send(entry)</h3>
 
-<p>Allows you to send a <code>SearchEntry</code> object.  Note that you do not need to
+<p>Allows you to send a <code>SearchEntry</code> object.  You do not need to
 explicitly pass in a <code>SearchEntry</code> object, and can instead just send a plain
-JavaScript object that matches the format used from <code>AddRequest.toObject()</code>.
-Example:</p>
+JavaScript object that matches the format used from <code>AddRequest.toObject()</code>.</p>
 
 <pre><code>server.search('o=example', function(req, res, next) {
   var obj = {
@@ -487,7 +485,7 @@ attributes: {
 
 <h1 id="modify">modify</h1>
 
-<p>Allows you to handle an LDAP modify operation. Example:</p>
+<p>Allows you to handle an LDAP modify operation.</p>
 
 <pre><code>server.modify('o=example', function(req, res, next) {
   console.log('DN: ' + req.dn.toString());
@@ -506,7 +504,7 @@ console.log('  modification: ' + c.modification.toString());
 
 <h3>object</h3>
 
-<p>The DN the client is attempting to update (note this is the same as the <code>dn</code>
+<p>The DN the client is attempting to update (this is the same as the <code>dn</code>
 property).</p>
 
 <h3>changes</h3>
@@ -516,11 +514,11 @@ details on the <code>Change</code> object.</p>
 
 <h2 id="Change"><span class="method name"><span class="name">Change</span></span></h2>
 
-<p>The Change object will have the following properties:</p>
+<p>The <code>Change</code> object will have the following properties:</p>
 
 <h3>operation</h3>
 
-<p>A string, and will be one of: 'add', 'delete', 'replace'.</p>
+<p>A string, and will be one of: 'add', 'delete', or 'replace'.</p>
 
 <h3>modification</h3>
 
@@ -533,7 +531,7 @@ details on the <code>Change</code> object.</p>
 
 <h1 id="del">del</h1>
 
-<p>Allows you to handle an LDAP delete operation. Example:</p>
+<p>Allows you to handle an LDAP delete operation.</p>
 
 <pre><code>server.delete('o=example', function(req, res, next) {
   console.log('DN: ' + req.dn.toString());
@@ -545,7 +543,7 @@ details on the <code>Change</code> object.</p>
 
 <h3>entry</h3>
 
-<p>The DN the client is attempting to delete (note this is the same as the <code>dn</code>
+<p>The DN the client is attempting to delete (this is the same as the <code>dn</code>
 property).</p>
 
 <h2 id="DeleteResponse"><span class="method name"><span class="name">DeleteResponse</span></span></h2>
@@ -554,7 +552,7 @@ property).</p>
 
 <h1 id="compare">compare</h1>
 
-<p>Allows you to handle an LDAP compare operation. Example:</p>
+<p>Allows you to handle an LDAP compare operation.</p>
 
 <pre><code>server.compare('o=example', function(req, res, next) {
   console.log('DN: ' + req.dn.toString());
@@ -568,12 +566,12 @@ property).</p>
 
 <h3>entry</h3>
 
-<p>The DN the client is attempting to compare (note this is the same as the <code>dn</code>
+<p>The DN the client is attempting to compare (this is the same as the <code>dn</code>
 property).</p>
 
 <h3>attribute</h3>
 
-<p>Will be the string name of the attribute to compare values of.</p>
+<p>The string name of the attribute to compare values of.</p>
 
 <h3>value</h3>
 
@@ -582,12 +580,12 @@ property).</p>
 <h2 id="CompareResponse"><span class="method name"><span class="name">CompareResponse</span></span></h2>
 
 <p>The <code>end()</code> method for compare takes a boolean, as opposed to a numeric code
-(note you can still pass in a numeric LDAP status code if you want). Beyond
+(you can still pass in a numeric LDAP status code if you want). Beyond
 that, there are no extra methods above an <code>LDAPResult</code> API call.</p>
 
 <h1 id="modifydn">modifyDN</h1>
 
-<p>Allows you to handle an LDAP modifyDN operation. Example:</p>
+<p>Allows you to handle an LDAP modifyDN operation.</p>
 
 <pre><code>server.modifyDN('o=example', function(req, res, next) {
   console.log('DN: ' + req.dn.toString());
@@ -604,7 +602,7 @@ that, there are no extra methods above an <code>LDAPResult</code> API call.</p>
 
 <h3>entry</h3>
 
-<p>The DN the client is attempting to rename (note this is the same as the <code>dn</code>
+<p>The DN the client is attempting to rename (this is the same as the <code>dn</code>
 property).</p>
 
 <h3>newRdn</h3>
@@ -613,13 +611,12 @@ property).</p>
 
 <h3>deleteOldRdn</h3>
 
-<p>boolean. Whether or not to delete the old RDN (i.e., rename vs copy). Defaults
-to true.</p>
+<p>Whether or not to delete the old RDN (i.e., rename vs copy). Defaults to 'true'.</p>
 
 <h3>newSuperior</h3>
 
 <p>Optional (DN).  If the modifyDN operation wishes to relocate the entry in the
-tree, the newSuperior field will contain the new parent.</p>
+tree, the <code>newSuperior</code> field will contain the new parent.</p>
 
 <h2 id="ModifyDNResponse"><span class="method name"><span class="name">ModifyDNResponse</span></span></h2>
 
@@ -629,10 +626,9 @@ tree, the newSuperior field will contain the new parent.</p>
 
 <p>Allows you to handle an LDAP extended operation. Extended operations are pretty
 much arbitrary extensions, by definition.  Typically the extended 'name' is an
-OID, but ldapjs makes no such restrictions; it just needs to be a string.  Note
-that unlike the other operations, extended operations don't map to any location
-in the tree, so routing here will be exact match, as opposed to subtree.
-Example:</p>
+OID, but ldapjs makes no such restrictions; it just needs to be a string.
+Unlike the other operations, extended operations don't map to any location in
+the tree, so routing here will be exact match, as opposed to subtree.</p>
 
 <pre><code>// LDAP whoami
 server.exop('1.3.6.1.4.1.4203.1.11.3', function(req, res, next) {
@@ -648,8 +644,8 @@ server.exop('1.3.6.1.4.1.4203.1.11.3', function(req, res, next) {
 
 <h3>name</h3>
 
-<p>String. Will always be a match to the route-defined name.  But the client
-includes this in their requests.</p>
+<p>Will always be a match to the route-defined name.  Clients must include this
+in their requests.</p>
 
 <h3>value</h3>
 
@@ -670,7 +666,8 @@ operation.</p>
 
 <p>ldapjs by default provides an unbind handler that just disconnects the client
 and cleans up any internals (in ldapjs core).  You can override this handler
-if you need to clean up any items in your backend, for example.</p>
+if you need to clean up any items in your backend, or perform any other cleanup
+tasks you need to.</p>
 
 <pre><code>server.unbind(function(req, res, next) {
   res.end();
@@ -680,7 +677,7 @@ if you need to clean up any items in your backend, for example.</p>
 <p>Note that the LDAP unbind operation actually doesn't send any response (by
 definition in the RFC), so the UnbindResponse is really just a stub that
 ultimately calls <code>net.Socket.end()</code> for you. There are no properties available
-on either the request or response objects, except of course for <code>end()</code> on the
+on either the request or response objects, except, of course, for <code>end()</code> on the
 response.</p>
 
     </div>

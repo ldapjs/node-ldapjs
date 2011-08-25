@@ -60,6 +60,7 @@ h1,h2,h3,h4,h5,h6 {
     <li><div><a href="#Modify"><span class="method name"><span class="name">Modify</span></span></a></div></li>
     <li><div><a href="#Delete"><span class="method name"><span class="name">Delete</span></span></a></div></li>
   </ul></li>
+  <li><div><a href="#where-to-go-from-here">Where to go from here</a></div></li>
 </ul>
 
     </div>
@@ -76,10 +77,10 @@ h1,h2,h3,h4,h5,h6 {
 
 
 <p>This guide was written assuming that you (1) don't know anything about ldapjs,
-and perhaps more importantly (2) know little if anything about LDAP.  If you're
+and perhaps more importantly (2) know little, if anything about LDAP.  If you're
 already an LDAP whiz, please don't read this and feel it's condescending.  Most
 people don't know how LDAP works, other than that "it's that thing that has my
-password".</p>
+password."</p>
 
 <p>By the end of this guide, we'll have a simple LDAP server that accomplishes a
 "real" task.</p>
@@ -88,18 +89,19 @@ password".</p>
 </div>
 <h1 id="what-exactly-is-ldap">What exactly is LDAP?</h1>
 
-<p>If you haven't already read the <a href="http://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">wikipedia</a>
-entry, LDAP is the "Lightweight Directory Access Protocol".  A directory service
-basically breaks down as follows:</p>
+<p>If you haven't already read the
+<a href="http://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">wikipedia</a>
+entry (which you should go do right now), LDAP is the "Lightweight Directory
+Access Protocol".  A directory service basically breaks down as follows:</p>
 
 <ul>
-<li>A directory is a tree of entries (similar to but different than a FS).</li>
+<li>A directory is a tree of entries (similar to but different than an FS).</li>
 <li>Every entry has a unique name in the tree.</li>
 <li>An entry is a set of attributes.</li>
-<li>An attribute is a key/value(s) pairing (multival is natural).</li>
+<li>An attribute is a key/value(s) pairing (multivalue is natural).</li>
 </ul>
 
-<p>It might be helpful to visualize that:</p>
+<p>It might be helpful to visualize:</p>
 
 <pre><code>              o=example
               /       \
@@ -110,7 +112,7 @@ basically breaks down as follows:</p>
 keyid=foo
 </code></pre>
 
-<p>And let's say we wanted to look at the record cn=john in that tree:</p>
+<p>Let's say we wanted to look at the record cn=john:</p>
 
 <pre><code>dn: cn=john, ou=users, o=example
 cn: john
@@ -120,7 +122,7 @@ email: john.smith@example.com
 objectClass: person
 </code></pre>
 
-<p>Then there's a few things to note:</p>
+<p>A few things to note:</p>
 
 <ul>
 <li>All names in a directory tree are actually referred to as a <em>distinguished
@@ -135,47 +137,46 @@ traditional ORM.</li>
 analogy, an <em>attribute</em> would be like a column).</li>
 </ul>
 
-<p>That's really it. LDAP really then is the protocol for interacting with the
-directory tree, and it's pretty comprehensively specified for common operations,
-like add/update/delete and importantly, search.  Really, the power of LDAP
-really comes through the search operations defined in the protocol, which are
-richer than HTTP query string filtering, but less powerful than full SQL.  If it
-helps, you can think of LDAP as a NoSQL/document store with a well-defined query
-syntax.</p>
+<p>That's it. LDAP, then, is the protocol for interacting with the directory tree,
+and it's comprehensively specified for common operations, like
+add/update/delete and importantly, search.  Really, the power of LDAP comes
+through the search operations defined in the protocol, which are richer
+than HTTP query string filtering, but less powerful than full SQL.  You can
+think of LDAP as a NoSQL/document store with a well-defined query syntax.</p>
 
 <p>So, why isn't LDAP more popular for a lot of applications? Like anything else
 that has "simple" or "lightweight" in the name, it's not really that
-lightweight, and in particular, almost all of the implementations of LDAP stem
+lightweight. In particular, almost all of the implementations of LDAP stem
 from the original University of Michigan codebase written in 1996. At that
 time, the original intention of LDAP was to be an IP-accessible gateway to the
-much more complex X.500 directories,  which really means that a lot of that
+much more complex X.500 directories,  which means that a lot of that
 baggage has carried through to today.  That makes for a high barrier to entry,
-when really most applications just don't need most of those features.</p>
+when most applications just don't need most of those features.</p>
 
 <h2 id="How-is-ldapjs-any-different?"><span class="method name"><span class="name">How is ldapjs any different?</span></span></h2>
 
 <p>Well, on the one hand, since ldapjs has to be 100% wire compatible with LDAP to
-be useful, it's not, but on the other hand, there are no forced assumptions
-about what you need and don't for your use of a directory system.  For example,
+be useful, it's not. On the other hand, there are no forced assumptions about
+what you need and don't need for your use of a directory system.  For example,
 want to run with no-schema in OpenLDAP/389DS/et al? Good luck.  Most of the
 server implementations support arbitrary "backends" for persistence, but really
 you'll be using <a href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index.html">BDB</a>.</p>
 
-<p>Want to run schemaless in ldapjs, or wire it up with some mongoose models? No
+<p>Want to run schema-less in ldapjs, or wire it up with some mongoose models? No
 problem.  Want to back it to redis? Should be able to get some basics up in a
 day or two.</p>
 
 <p>Basically, the ldapjs philospohy is to deal with the "muck" of LDAP, and then
-get out of the way so you can just use the "good parts".</p>
+get out of the way so you can just use the "good parts."</p>
 
 <h1 id="ok-cool-learn-me-some-ldap">Ok, cool. Learn me some LDAP!</h1>
 
-<p>Ok, so with the initial fluff out of the way, let's do something crazy to teach
+<p>With the initial fluff out of the way, let's do something crazy to teach
 you some LDAP.  Let's put an LDAP server up over the top of your (Linux) host's
-/etc/passwd and /etc/group files. Usually sysadmins "go the other way", and
-replace /etc/passwd with a PAM module to LDAP, so while this is probably not
+/etc/passwd and /etc/group files. Usually sysadmins "go the other way," and
+replace /etc/passwd with a PAM module to LDAP. While this is probably not
 a super useful real-world use case, it will teach you some of the basics.
-Oh, and if it is useful to you, then that's gravy.</p>
+If it is useful to you, then that's gravy.</p>
 
 <h2 id="Install"><span class="method name"><span class="name">Install</span></span></h2>
 
@@ -186,9 +187,10 @@ respectively.  After that, run:</p>
 <pre class="shell"><code>npm install ldapjs
 </code></pre>
 
-<p>Also, rather than overload you with client-side programming for now, we'll use
+<p>Rather than overload you with client-side programming for now, we'll use
 the OpenLDAP CLI to interact with our server.  It's almost certainly already
-installed on your system, but if not, you can get it from brew/apt/yum/...</p>
+installed on your system, but if not, you can get it from brew/apt/yum/your
+package manager here.</p>
 
 <p>To get started, open some file, and let's get the library loaded and a server
 created:</p>
@@ -223,9 +225,9 @@ LDAP clients will initiate a bind anyway (OpenLDAP will), so let's add it in
 and get it out of our way.</p>
 
 <p>What we're going to do is add a "root" user to our LDAP server.  This root user
-has no correspondance to our Unix root user, it's just something we're making up
-and going to use for allowing an (LDAP) admin to do anything.  Great, so go
-ahead and add this code into your file:</p>
+has no correspondence to our Unix root user, it's just something we're making up
+and going to use for allowing an (LDAP) admin to do anything.  To do so, add
+this code into your file:</p>
 
 <pre><code>server.bind('cn=root', function(req, res, next) {
   if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret')
@@ -246,8 +248,8 @@ handlers in, as we'll see later.</p>
 <pre><code>if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret')
 </code></pre>
 
-<p>So, the first part <code>req.dn.toString() !== 'cn=root'</code>:  you're probably thinking
-"wtf?!? does ldapjs allow something other than cn=root into this handler?" Sort
+<p>The first part <code>req.dn.toString() !== 'cn=root'</code>:  you're probably thinking
+"WTF?!? Does ldapjs allow something other than cn=root into this handler?" Sort
 of.  It allows cn=root <em>and any children</em> into that handler.  So the entries
 <code>cn=root</code> and <code>cn=evil, cn=root</code> would both match and flow into this handler.
 Hence that check.  The second check <code>req.credentials</code> is probably obvious, but
@@ -284,11 +286,10 @@ Additional information: No tree found for: o=myhost
 </code></pre>
 
 <p>Don't worry about all the flags we're passing into OpenLDAP, that's just to make
-their CLI less annonyingly noisy.  Note that this time, we got another
-<code>No such object</code> error, but this time note that it's for the tree
-<code>o=myhost</code>. That means our bind went through, and our search failed,
-since we haven't yet added a search handler. Just one more small thing to do
-first.</p>
+their CLI less annonyingly noisy.  This time, we got another <code>No such object</code>
+error, but it's for the tree <code>o=myhost</code>. That means our bind went through, and
+our search failed, since we haven't yet added a search handler. Just one more
+small thing to do first.</p>
 
 <p>Remember earlier I said there was no authorization rules baked into LDAP? Well,
 we added a bind route, so the only user that can authenticate is <code>cn=root</code>, but
@@ -310,32 +311,31 @@ oriented, so we check that the connection remote user was indeed our <code>cn=ro
 
 <h2 id="Search"><span class="method name"><span class="name">Search</span></span></h2>
 
-<p>Ok, we said we wanted to allow LDAP operations over /etc/passwd, so let's detour
-for a moment to explain an /etc/passwd record:</p>
+<p>We said we wanted to allow LDAP operations over /etc/passwd, so let's detour
+for a moment to explain an /etc/passwd record.</p>
 
 <pre><code>jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8910,(234)555-0044,email:/home/jsmith:/bin/sh
 </code></pre>
 
-<p>That maps to:</p>
+<p>The sample record above maps to:</p>
 
 <table>
 <tbody>
-<tr><td>jsmith</td><td>user name</td></tr>
-<tr><td>x</td><td>historically this contained the password hash, but that's usually in /etc/shadow now, so you get an 'x'</td></tr>
-<tr><td>1001</td><td>the unix numeric user id</td></tr>
-<tr><td>1000</td><td>the unix numeric group id. (primary)</td></tr>
-<tr><td>'Joe Smith,...'</td><td>the "gecos", which is a description, and is usually a comma separated list of contact details</td></tr>
-<tr><td>/home/jsmith</td><td>the user's home directory</td></tr>
-<tr><td>/bin/sh</td><td>the user's shell</td></tr>
+<tr><td>jsmith</td><td>user name.</td></tr>
+<tr><td>x</td><td>historically this contained the password hash, but that's usually in /etc/shadow now, so you get an 'x'.</td></tr>
+<tr><td>1001</td><td>the unix numeric user id.</td></tr>
+<tr><td>1000</td><td>the unix numeric group id. (primary).</td></tr>
+<tr><td>'Joe Smith,...'</td><td>the "gecos," which is a description, and is usually a comma separated list of contact details.</td></tr>
+<tr><td>/home/jsmith</td><td>the user's home directory.</td></tr>
+<tr><td>/bin/sh</td><td>the user's shell.</td></tr>
 </tbody>
 </table>
 
-<p>Great, let's some handlers to parse that and transform it into an LDAP search
+<p>Let's some handlers to parse that and transform it into an LDAP search
 record (note, you'll need to add <code>var fs = require('fs');</code> at the top of the
-source file):</p>
+source file).</p>
 
-<p>First, let's make a handler that just loads the "user database" for us in a
-"pre" handler:</p>
+<p>First, make a handler that just loads the "user database" in a "pre" handler:</p>
 
 <pre><code>function loadPasswdFile(req, res, next) {
   fs.readFile('/etc/passwd', 'utf8', function(err, data) {
@@ -427,25 +427,25 @@ the tree for entries that might match the search filter, which above is
 <code>cn=root</code>.</p>
 
 <p>In this little LDAP example, we're mostly throwing out any qualification of the
-"tree", since there's not actually a tree in /etc/passwd (we will extend later
+"tree," since there's not actually a tree in /etc/passwd (we will extend later
 with /etc/group).  Remember how I said ldapjs gets out of the way and doesn't
-force anything on you.  Here's an example.  If we wanted an LDAP server to run
+force anything on you?  Here's an example.  If we wanted an LDAP server to run
 over the filesystem, we actually would use this, but here, meh.</p>
 
-<p>Next, "cn=root" is the search 'filter'.  LDAP has a rich specification of
+<p>Next, <code>cn=root</code> is the search "filter".  LDAP has a rich specification of
 filters, where you can specify <code>and</code>, <code>or</code>, <code>not</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>equal</code>,
 <code>wildcard</code>, <code>present</code> and a few other esoteric things.  Really, <code>equal</code>,
 <code>wildcard</code>, <code>present</code> and the boolean operators are all you'll likely ever need.
-So, the filter <code>cn=root</code> is an 'equality' filter, and says to only return
+So, the filter <code>cn=root</code> is an "equality" filter, and says to only return
 entries that have attributes that match that.  In the second invocation, we used
 a 'presence' filter, to say 'return any entries that have an objectclass'
-attribute, which in LDAP parlance is saying "give me everything".</p>
+attribute, which in LDAP parlance is saying "give me everything."</p>
 
 <h3>The code</h3>
 
-<p>So in the code above, let's ignore the fs and split stuff, since really all we
+<p>In the code above, let's ignore the fs and split stuff, since really all we
 did was read in /etc/passwd line by line.  After that, we looked at each record
-and made the cheesiest transform ever, which is making up a "search entry". A
+and made the cheesiest transform ever, which is making up a "search entry." A
 search entry <em>must</em> have a DN so the client knows what record it is, and a set
 of attributes.  So that's why we did this:</p>
 
@@ -465,9 +465,9 @@ of attributes.  So that's why we did this:</p>
 
 <p>Next, we let ldapjs do all the hard work of figuring out LDAP search filters
 for us by calling <code>req.filter.matches</code>.  If it matched, we return the whole
-record with <code>res.send</code>.  Note in this little example we're running O(n), so for
+record with <code>res.send</code>.  In this little example we're running O(n), so for
 something big and/or slow, you'd have to do some work to effectively write a
-query planner (or just not support it...); for some reference code, check out
+query planner (or just not support it...). For some reference code, check out
 <code>node-ldapjs-riak</code>, which takes on the fairly difficult task of writing a 'full'
 LDAP server over riak.</p>
 
@@ -563,7 +563,7 @@ shell: /bin/bash
 description: Created via ldapadd
 </code></pre>
 
-<p>Now go ahead and invoke like:</p>
+<p>Now go ahead and invoke with:</p>
 
 <pre class="shell"><code>ldapadd -H ldap://localhost:1389 -x -D cn=root -w secret -f ./user.ldif
 adding new entry "cn=ldapjs, ou=users, o=myhost"
@@ -597,7 +597,7 @@ objectclass: unixUser
     return next(new ldap.ConstraintViolation('entry must be a unixUser'));
 </code></pre>
 
-<p>Here's a few new things:</p>
+<p>A few new things:</p>
 
 <ul>
 <li>We mounted this handler at <code>ou=users, o=myhost</code>. Why? What if we want to
@@ -621,16 +621,16 @@ lower case (note the client sent <em>objectClass</em> over the wire).</li>
 </ul></li>
 </ul>
 
-<p>After that, we really just delegated off to the <em>useradd</em> command.  AFAIK there
-is not a node.js module that wraps up <code>getpwent</code> and friends, otherwise we'd use
-that.</p>
+<p>After that, we really just delegated off to the <em>useradd</em> command.  As far as I
+know, there is not a node.js module that wraps up <code>getpwent</code> and friends,
+otherwise we'd use that.</p>
 
 <p>Now, what's missing?  Oh, right, we need to let you set a password.  Well, let's
 support that via the <em>modify</em> command.</p>
 
 <h2 id="Modify"><span class="method name"><span class="name">Modify</span></span></h2>
 
-<p>So unlike HTTP "partial" document updates are fully specified as part of the
+<p>Unlike HTTP, "partial" document updates are fully specified as part of the
 RFC, so appending, removing, or replacing a single attribute is pretty natural.
 Go ahead and add the following code into your source file:</p>
 
@@ -673,10 +673,10 @@ Go ahead and add the following code into your source file:</p>
 
 <p>Basically, we made sure the remote client was targeting an entry that exists,
 ensuring that they were asking to "replace" the <code>userPassword</code> attribute (which
-is the 'standard' LDAP attribute for passwords, for whatever that's worth; if
-you think it's easier to use 'password', knock yourself out), and then just
-delegating to the <code>chpasswd</code> command (which lets you change a user's password
-over stdin).  Next, go ahead and create a <code>passwd.ldif</code> file:</p>
+is the 'standard' LDAP attribute for passwords; if you think it's easier to use
+'password', knock yourself out), and then just delegating to the <code>chpasswd</code>
+command (which lets you change a user's password over stdin).  Next, go ahead
+and create a <code>passwd.ldif</code> file:</p>
 
 <pre><code>dn: cn=ldapjs, ou=users, o=myhost
 changetype: modify
@@ -685,18 +685,18 @@ userPassword: secret
 -
 </code></pre>
 
-<p>And then run the OpenLDAP CLI like:</p>
+<p>And then run the OpenLDAP CLI:</p>
 
 <pre class="shell"><code>ldapmodify -H ldap://localhost:1389 -x -D cn=root -w secret -f ./passwd.ldif
 </code></pre>
 
-<p>You should now be able to login to your box as the ldapjs user. Ok, let's get
-the last "mainline" piece of work out of the way, and delte the user.</p>
+<p>You should now be able to login to your box as the ldapjs user. Let's get
+the last "mainline" piece of work out of the way, and delete the user.</p>
 
 <h2 id="Delete"><span class="method name"><span class="name">Delete</span></span></h2>
 
 <p>Delete is pretty straightforward. The client gives you a dn to delete, and you
-delete it :).  Go ahead and add the following code into your server:</p>
+delete it :).  Add the following code into your server:</p>
 
 <pre><code>server.del('ou=users, o=myhost', pre, function(req, res, next) {
   if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
@@ -731,7 +731,18 @@ delete it :).  Go ahead and add the following code into your server:</p>
 <pre class="shell"><code>ldapdelete -H ldap://localhost:1389 -x -D cn=root -w secret "cn=ldapjs, ou=users, o=myhost"
 </code></pre>
 
-<p>This should be pretty much self-explanatory by now :)</p>
+<h1 id="where-to-go-from-here">Where to go from here</h1>
+
+<p>The complete source code for this example server is available in
+<a href="/examples.html">examples</a>.  Make sure to read up on the <a href="/server.html">server</a>
+and <a href="/client.html">client</a> APIs.  If you're looking for a "drop in" solution,
+take a look at <a href="https://github.com/mcavage/node-ldapjs-riak">ldapjs-riak</a>.</p>
+
+<p><a href="https://wiki.mozilla.org/Mozilla_LDAP_SDK_Programmer%27s_Guide/Understanding_LDAP">Mozilla</a>
+still maintains some web pages with LDAP overviews if you look around, if you're
+looking for more tutorials.  After that, you'll need to work your way through
+the <a href="http://tools.ietf.org/html/rfc4510">RFCs</a> as you work through the APIs in
+ldapjs.</p>
 
     </div>
 <div id="footer">

@@ -61,7 +61,9 @@ h1,h2,h3,h4,h5,h6 {
   </a>
 </div>
     <div id="content">
-<p>LDAP for <a href="http://nodejs.org">node.js</a>.</p>
+<div id="indextagline">
+Reimagining <a href="http://tools.ietf.org/html/rfc4510" id="indextaglink">LDAP</a> for <a id="indextaglink" href="http://nodejs.org">Node.js</a>
+</div>
 
 
 <h1>Overview</h1>
@@ -70,19 +72,24 @@ h1,h2,h3,h4,h5,h6 {
 
 <p>ldapjs is a pure JavaScript, from-scratch framework for implementing
 <a href="http://tools.ietf.org/html/rfc4510">LDAP</a> clients and servers in
-<a href="http://nodejs.org">node.js</a>.  It is intended for developers used to interacting
+<a href="http://nodejs.org">Node.js</a>.  It is intended for developers used to interacting
 with HTTP services in node and <a href="http://expressjs.com">express</a>.</p>
 
-<pre><code>var server = require('ldapjs').createServer();
+<pre><code>var ldap = require('ldapjs');
+
+var server = ldap.createServer();
 
 server.search('o=example', function(req, res, next) {
-  res.send({
-    dn: 'o=example',
+  var obj = {
+    dn: req.dn.toString(),
 attributes: {
-  o: ['example'],
-  objectclass: ['organization', 'top']
+  objectclass: ['organization', 'top'],
+  o: 'example'
 }
-  });
+  };
+
+  if (req.filter.matches(obj.attributes))
+    res.send(obj);
 
   res.end();
 });

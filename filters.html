@@ -81,8 +81,8 @@ lets you introspect them if you want to write a "query planner".  For reference,
 make sure to read over <a href="http://www.ietf.org/rfc/rfc2254.txt">RFC2254</a>, as this
 explains the LDAPv3 text filter representation.</p>
 
-<p>Basically, ldapjs gives you a distinct object type mapping to each filter that
-is context-sensitive. However, <em>all</em> filters have a <code>matches()</code> api on them, if
+<p>ldapjs gives you a distinct object type mapping to each filter that is
+context-sensitive. However, <em>all</em> filters have a <code>matches()</code> method on them, if
 that's all you need.  Most filters will have an <code>attribute</code> property on them,
 since "simple" filters all operate on an attribute/value assertion.  The
 "complex" filters are really aggregations of other filters (i.e. 'and'), and so
@@ -128,8 +128,8 @@ var f = parseFilter('(objectclass=*)');
 <p>Would return an <code>AndFilter</code>, which would have a <code>filters</code> array of two
 <code>EqualityFilter</code> objects.</p>
 
-<p>Note that <code>parseFilter</code> will throw if an invalid string is passed in
-(that is, a syntactically invalid string). All filter objects in th</p>
+<p><code>parseFilter</code> will throw if an invalid string is passed in (that is, a
+syntactically invalid string). All filter objects in th</p>
 
 <h1 id="equalityfilter">EqualityFilter</h1>
 
@@ -151,10 +151,10 @@ f.matches({cn: 'foo'});  =&gt; true
 f.matches({cn: 'bar'});  =&gt; false
 </code></pre>
 
-<p>Note that "strict" equality matching is used, and by default everything in
-ldapjs (and LDAP) is a UTF-8 string.  If you want comparison of numbers, or
-something else, you'll need to use a middleware interceptor that transforms
-values of objects.</p>
+<p>Equality matching uses "strict" type JavaScript comparison, and by default
+everything in ldapjs (and LDAP) is a UTF-8 string.  If you want comparison
+of numbers, or something else, you'll need to use a middleware interceptor
+that transforms values of objects.</p>
 
 <h1 id="presencefilter">PresenceFilter</h1>
 
@@ -185,12 +185,14 @@ which will be the suffix match of the string. <code>any</code> and <code>final</
 optional. The <code>name</code> property will be <code>substring</code>.</p>
 
 <p>The string syntax for a presence filter is <code>(attr=foo*bar*cat*dog)</code>, which would
-map to:
-    {
-      initial: 'foo',
-      any: ['bar', 'cat'],
-      final: 'dog'
-    }</p>
+map to:</p>
+
+<pre><code>{
+  initial: 'foo',
+  any: ['bar', 'cat'],
+  final: 'dog'
+}
+</code></pre>
 
 <p>The <code>matches()</code> method will return true IFF the passed in object has a
 key matching <code>attribute</code> and the "regex" matches the value</p>
