@@ -300,9 +300,9 @@ pre.shell code::before {
 }
 
 .copy {
-  font-size: 16px;
+  font-size: 90%;
   text-align: center;
-  color: #111;
+  color: #777;
 }
 
 /* ----- top header */
