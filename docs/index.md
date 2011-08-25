@@ -24,10 +24,10 @@ with HTTP services in node and [express](http://expressjs.com).
     server.search('o=example', function(req, res, next) {
       var obj = {
         dn: req.dn.toString(),
-	attributes: {
-	  objectclass: ['organization', 'top'],
-	  o: 'example'
-	}
+        attributes: {
+          objectclass: ['organization', 'top'],
+          o: 'example'
+        }
       };
 
       if (req.filter.matches(obj.attributes))

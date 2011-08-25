@@ -204,12 +204,12 @@ the filters in the `filters` array.
       filters: [
         new EqualityFilter({
           attribute: 'cn',
-	  value: 'foo'
+          value: 'foo'
         }),
-	new EqualityFilter({
+        new EqualityFilter({
           attribute: 'sn',
-	  value: 'bar'
-	})
+          value: 'bar'
+        })
       ]
     });
 
@@ -234,12 +234,12 @@ of the filters in the `filters` array.
       filters: [
         new EqualityFilter({
           attribute: 'cn',
-	  value: 'foo'
+          value: 'foo'
         }),
-	new EqualityFilter({
+        new EqualityFilter({
           attribute: 'sn',
-	  value: 'bar'
-	})
+          value: 'bar'
+        })
       ]
     });
 
@@ -263,7 +263,7 @@ the filter in the `filter` property.
     var f = new NotFilter({
       filter: new EqualityFilter({
           attribute: 'cn',
-	  value: 'foo'
+          value: 'foo'
         })
     });
 

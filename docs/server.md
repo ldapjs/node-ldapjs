@@ -267,7 +267,7 @@ like:
       attributes: {
         cn: ['foo'],
         sn: ['bar'],
-	objectclass: ['person', 'top']
+        objectclass: ['person', 'top']
       }
     }
 
@@ -345,10 +345,10 @@ JavaScript object that matches the format used from `AddRequest.toObject()`.
     server.search('o=example', function(req, res, next) {
       var obj = {
         dn: 'o=example',
-	attributes: {
-	  objectclass: ['top', 'organization'],
-	  o: ['example']
-	}
+        attributes: {
+          objectclass: ['top', 'organization'],
+          o: ['example']
+        }
       };
 
       if (req.filter.matches(obj))
@@ -366,7 +366,7 @@ Allows you to handle an LDAP modify operation.
       console.log('changes:');
       req.changes.forEach(function(c) {
         console.log('  operation: ' + c.operation);
-	console.log('  modification: ' + c.modification.toString());
+        console.log('  modification: ' + c.modification.toString());
       });
       res.end();
     });
