@@ -1,12 +1,12 @@
 ---
-title: ldapjs
+title: DN API | ldapjs
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
-# Overview
+# ldapjs DN API
 
 This document covers the ldapjs DN API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
