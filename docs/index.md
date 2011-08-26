@@ -50,7 +50,7 @@ ldapjs implements most of the common operations in the LDAP v3 RFC(s), for
 both client and server.  It is 100% wire-compatible with the LDAP protocol
 itself, and is interoperable with [OpenLDAP](http://openldap.org) and any other
 LDAPv3-compliant implementation.  ldapjs gives you a powerful routing and
-intercepting filter" pattern for implementing server(s).  It is intended
+"intercepting filter" pattern for implementing server(s).  It is intended
 that you can build LDAP over anything you want, not just traditional databases.
 
 # Getting started

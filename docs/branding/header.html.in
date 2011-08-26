@@ -24,7 +24,7 @@
 <div id="fadeout"></div>
 <div id="header">
   <span id="logo">
-    <a id="homelink" href="http://ldapjs.org">ldap</a>
+    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
   </span>
 
   <a class="navbutton" href="guide.html">Guide</a>
