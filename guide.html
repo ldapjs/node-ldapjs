@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ldapjs</title>
+  <title>LDAP Guide | ldapjs</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" type="text/css" href="media/css/style.css">
   <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
@@ -90,7 +90,7 @@ h1,h2,h3,h4,h5,h6 {
 </div>
     <div id="content">
 
-<h1>This guide</h1>
+<h1>LDAP Guide</h1>
 <div class="intro">
 
 
@@ -192,9 +192,11 @@ get out of the way so you can just use the "good parts."</p>
 <p>With the initial fluff out of the way, let's do something crazy to teach
 you some LDAP.  Let's put an LDAP server up over the top of your (Linux) host's
 /etc/passwd and /etc/group files. Usually sysadmins "go the other way," and
-replace /etc/passwd with a PAM module to LDAP. While this is probably not
-a super useful real-world use case, it will teach you some of the basics.
-If it is useful to you, then that's gravy.</p>
+replace /etc/passwd with a
+<a href="http://en.wikipedia.org/wiki/Pluggable_authentication_module" title="Pluggable
+authentication module">PAM</a> module to LDAP. While this is probably not a super
+useful real-world use case, it will teach you some of the basics. If it is
+useful to you, then that's gravy.</p>
 
 <h2 id="Install"><span class="method name"><span class="name">Install</span></span></h2>
 
@@ -309,7 +311,7 @@ error, but it's for the tree <code>o=myhost</code>. That means our bind went thr
 our search failed, since we haven't yet added a search handler. Just one more
 small thing to do first.</p>
 
-<p>Remember earlier I said there was no authorization rules baked into LDAP? Well,
+<p>Remember earlier I said there were no authorization rules baked into LDAP? Well,
 we added a bind route, so the only user that can authenticate is <code>cn=root</code>, but
 what if the remote end doesn't authenticate at all? Right, nothing says they
 <em>have to</em> bind, that's just what the common clients do.  Let's add a quick
