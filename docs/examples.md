@@ -1,13 +1,12 @@
 ---
-title: ldapjs
-brand: spartan
+title: Examples | ldapjs
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
-# Overview
+# ldapjs Examples
 
 This page contains a (hopefully) growing list of sample code to get you started
 with ldapjs.

@@ -1,12 +1,12 @@
 ---
-title: ldapjs
+title: Filters API | ldapjs
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
-# Overview
+# ldapjs Filters API
 
 This document covers the ldapjs filters API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.

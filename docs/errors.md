@@ -1,13 +1,12 @@
 ---
-title: ldapjs
-brand: spartan
+title: Errors API | ldapjs
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
-# Overview
+# ldapjs Errors API
 
 This document covers the ldapjs errors API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
