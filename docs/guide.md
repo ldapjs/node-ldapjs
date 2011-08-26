@@ -1,13 +1,12 @@
 ---
-title: ldapjs
-brand: spartan
+title: LDAP Guide | ldapjs
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
-# This guide
+# LDAP Guide
 
 This guide was written assuming that you (1) don't know anything about ldapjs,
 and perhaps more importantly (2) know little, if anything about LDAP.  If you're
@@ -100,9 +99,11 @@ get out of the way so you can just use the "good parts."
 With the initial fluff out of the way, let's do something crazy to teach
 you some LDAP.  Let's put an LDAP server up over the top of your (Linux) host's
 /etc/passwd and /etc/group files. Usually sysadmins "go the other way," and
-replace /etc/passwd with a PAM module to LDAP. While this is probably not
-a super useful real-world use case, it will teach you some of the basics.
-If it is useful to you, then that's gravy.
+replace /etc/passwd with a
+[PAM](http://en.wikipedia.org/wiki/Pluggable_authentication_module "Pluggable
+authentication module") module to LDAP. While this is probably not a super
+useful real-world use case, it will teach you some of the basics. If it is
+useful to you, then that's gravy.
 
 ## Install
 
@@ -210,7 +211,7 @@ error, but it's for the tree `o=myhost`. That means our bind went through, and
 our search failed, since we haven't yet added a search handler. Just one more
 small thing to do first.
 
-Remember earlier I said there was no authorization rules baked into LDAP? Well,
+Remember earlier I said there were no authorization rules baked into LDAP? Well,
 we added a bind route, so the only user that can authenticate is `cn=root`, but
 what if the remote end doesn't authenticate at all? Right, nothing says they
 *have to* bind, that's just what the common clients do.  Let's add a quick

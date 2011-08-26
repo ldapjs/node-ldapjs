@@ -1,13 +1,12 @@
 ---
-title: ldapjs
-brand: spartan
+title: Server API | ldapjs
 markdown2extras: wiki-tables
 logo-color: green
 logo-font-family: google:Aldrich, Verdana, sans-serif
 header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
-# Overview
+# ldapjs Server API
 
 This document covers the ldapjs server API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
