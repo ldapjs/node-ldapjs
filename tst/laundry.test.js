@@ -20,7 +20,7 @@ test('setup', function(t) {
   server = ldap.createServer();
   t.ok(server);
   server.listen(SOCKET, function() {
-    client  =    client = ldap.createClient({
+    client = ldap.createClient({
       socketPath: SOCKET
     });
     t.ok(client);
