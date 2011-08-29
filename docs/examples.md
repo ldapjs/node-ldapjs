@@ -421,3 +421,119 @@ with ldapjs.
     server.listen(1389, '127.0.0.1', function() {
       console.log('/etc/passwd LDAP server up at: %s', server.url);
     });
+
+# Address Book
+
+This is example is courtesy of [Diogo Resende](https://github.com/dresende) and
+illustrates setting up an address book for typical mail clients such as
+Thunderbird or Evolution over a MySQL database.
+
+    // MySQL test: (create on database 'abook' with username 'abook' and password 'abook')
+    //
+    // CREATE TABLE IF NOT EXISTS `users` (
+    //   `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+    //   `username` varchar(50) NOT NULL,
+    //   `password` varchar(50) NOT NULL,
+    //   PRIMARY KEY (`id`),
+    //   KEY `username` (`username`)
+    // ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+    // INSERT INTO `users` (`username`, `password`) VALUES
+    // ('demo', 'demo');
+    // CREATE TABLE IF NOT EXISTS `contacts` (
+    //   `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+    //   `user_id` int(5) unsigned NOT NULL,
+    //   `name` varchar(100) NOT NULL,
+    //   `email` varchar(255) NOT NULL,
+    //   PRIMARY KEY (`id`),
+    //   KEY `user_id` (`user_id`)
+    // ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+    // INSERT INTO `contacts` (`user_id`, `name`, `email`) VALUES
+    // (1, 'John Doe', 'john.doe@example.com'),
+    // (1, 'Jane Doe', 'jane.doe@example.com');
+    //
+
+    var ldap = require('ldapjs'),
+        mysql = require("mysql"),
+        server = ldap.createServer(),
+        addrbooks = {}, userinfo = {},
+        ldap_port = 389,
+        basedn = "dc=example, dc=com",
+        company = "Example",
+        db = mysql.createClient({
+          user: "abook",
+          password: "abook",
+          database: "abook"
+        });
+
+    db.query("SELECT c.*,u.username,u.password " +
+             "FROM contacts c JOIN users u ON c.user_id=u.id",
+             function(err, contacts) {
+      if (err) {
+        console.log("Error fetching contacts", err);
+        process.exit(1);
+      }
+
+      for (var i = 0; i < contacts.length; i++) {
+        if (!addrbooks.hasOwnProperty(contacts[i].username)) {
+          addrbooks[contacts[i].username] = [];
+          userinfo["cn=" + contacts[i].username + ", " + basedn] = {
+            abook: addrbooks[contacts[i].username],
+            pwd: contacts[i].password
+          };
+        }
+
+        var p = contacts[i].name.indexOf(" ");
+        if (p != -1)
+          contacts[i].firstname = contacts[i].name.substr(0, p);
+
+        p = contacts[i].name.lastIndexOf(" ");
+        if (p != -1)
+          contacts[i].surname = contacts[i].name.substr(p + 1);
+
+        addrbooks[contacts[i].username].push({
+          dn: "cn=" + contacts[i].name + ", " + basedn,
+          attributes: {
+            objectclass: [ "top" ],
+            cn: contacts[i].name,
+            mail: contacts[i].email,
+            givenname: contacts[i].firstname,
+            sn: contacts[i].surname,
+            ou: company
+          }
+        });
+      }
+
+      server.bind(basedn, function (req, res, next) {
+        var username = req.dn.toString(),
+            password = req.credentials;
+
+        if (!userinfo.hasOwnProperty(username) ||
+             userinfo[username].pwd != password) {
+          return next(new ldap.InvalidCredentialsError());
+        }
+
+        res.end();
+        return next();
+      });
+
+      server.search(basedn, function(req, res, next) {
+        var binddn = req.connection.ldap.bindDN.toString();
+
+        if (userinfo.hasOwnProperty(binddn)) {
+          for (var i = 0; i < userinfo[binddn].abook.length; i++) {
+            if (req.filter.matches(userinfo[binddn].abook[i].attributes))
+              res.send(userinfo[binddn].abook[i]);
+          }
+        }
+        res.end();
+      });
+
+      server.listen(ldap_port, function() {
+        console.log("Addressbook started at %s", server.url);
+      });
+    });
+
+To test out this example, try:
+
+    $ ldapsearch -H ldap://localhost:389 -x -D cn=demo,dc=example,dc=com \
+      -w demo -b "dc=example,dc=com" objectclass=*
