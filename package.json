@@ -3,14 +3,14 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
   },
   "main": "lib/index.js",
   "engines": {
-    "node": ">=0.4.10"
+    "node": ">=0.4"
   },
   "dependencies": {
     "asn1": "~0.1.5",
