@@ -193,7 +193,7 @@ $(function () {
     $("#toc a").click(function(event) {
         $("#tocbutton").click();
     })
-    $("#tocbutton").click(function() {
+    $("#tocbutton").click(function(event) {
         var target = $("#toc");
         if (target.css("display") !== "block") {
             $("body").bind("click.tocCloser", function(event) {
@@ -215,7 +215,7 @@ $(function () {
     $("#api a").click(function(event) {
         $("#apibutton").click();
     })
-    $("#apibutton").click(function() {
+    $("#apibutton").click(function(event) {
         var target = $("#api");
         if (target.css("display") !== "block") {
             $("body").bind("click.apiCloser", function(event) {

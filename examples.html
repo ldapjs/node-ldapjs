@@ -66,7 +66,7 @@ h1,h2,h3,h4,h5,h6 {
       <ul>
   <li><div><a href="#in-memory-server">In-memory server</a></div></li>
   <li><div><a href="#etcpasswd-server">/etc/passwd server</a></div></li>
-  <li><div><a href="#address-book-thunderbirdevolution-integration">Address Book (Thunderbird/Evolution integration)</a></div></li>
+  <li><div><a href="#address-book">Address Book</a></div></li>
 </ul>
 
     </div>
@@ -501,11 +501,11 @@ server.listen(1389, '127.0.0.1', function() {
 });
 </code></pre>
 
-<h1 id="address-book-thunderbirdevolution-integration">Address Book (Thunderbird/Evolution integration)</h1>
+<h1 id="address-book">Address Book</h1>
 
 <p>This is example is courtesy of <a href="https://github.com/dresende">Diogo Resende</a> and
-illustrates setting up an address book for typical mail clients over a MySQL
-database.</p>
+illustrates setting up an address book for typical mail clients such as
+Thunderbird or Evolution over a MySQL database.</p>
 
 <pre><code>// MySQL test: (create on database 'abook' with username 'abook' and password 'abook')
 //
@@ -635,7 +635,7 @@ $(function () {
     $("#toc a").click(function(event) {
         $("#tocbutton").click();
     })
-    $("#tocbutton").click(function() {
+    $("#tocbutton").click(function(event) {
         var target = $("#toc");
         if (target.css("display") !== "block") {
             $("body").bind("click.tocCloser", function(event) {
@@ -657,7 +657,7 @@ $(function () {
     $("#api a").click(function(event) {
         $("#apibutton").click();
     })
-    $("#apibutton").click(function() {
+    $("#apibutton").click(function(event) {
         var target = $("#api");
         if (target.css("display") !== "block") {
             $("body").bind("click.apiCloser", function(event) {
