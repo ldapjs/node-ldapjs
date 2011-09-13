@@ -184,7 +184,7 @@ key matching `attribute` and the value is `<=` this filter's `value`.
     });
 
     f.matches({cn: 'abc'});  => true
-    f.matches({cn: 'foo'});  => false
+    f.matches({cn: 'foobar'});  => false
 
 # AndFilter
 

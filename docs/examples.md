@@ -424,7 +424,7 @@ with ldapjs.
 
 # Address Book
 
-This is example is courtesy of [Diogo Resende](https://github.com/dresende) and
+This example is courtesy of [Diogo Resende](https://github.com/dresende) and
 illustrates setting up an address book for typical mail clients such as
 Thunderbird or Evolution over a MySQL database.
 
