@@ -229,6 +229,14 @@ test('exop invalid', function(t) {
 });
 
 
+test('bogus exop (GH-17)', function(t) {
+  client.exop('cn=root', function(err, value) {
+    t.ok(err);
+    t.end();
+  });
+});
+
+
 test('modify success', function(t) {
   var change = new Change({
     type: 'Replace',
