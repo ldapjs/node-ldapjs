@@ -110,3 +110,16 @@ test('parent of', function(t) {
   t.ok(dn1.parentOf(dn.parse('cn=moo, cn=foo, dc=bar')));
   t.end();
 });
+
+
+test('empty DNs GH-16', function(t) {
+  var _dn = dn.parse('');
+  var _dn2 = dn.parse('cn=foo');
+  t.notOk(_dn.equals('cn=foo'));
+  t.notOk(_dn2.equals(''));
+  t.notOk(_dn.parentOf('cn=foo'));
+  t.notOk(_dn.childOf('cn=foo'));
+  t.notOk(_dn2.parentOf(''));
+  t.notOk(_dn2.childOf(''));
+  t.end();
+});
