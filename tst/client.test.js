@@ -96,10 +96,11 @@ test('setup', function(t) {
 
   server.listen(SOCKET, function() {
     client = ldap.createClient({
-      socketPath: SOCKET
+      socketPath: SOCKET,
+      reconnect: false // turn this off for unit testing
     });
     t.ok(client);
-    // client.log4js.setLevel('Debug');
+    client.log4js.setLevel('Trace');
     t.end();
   });
 

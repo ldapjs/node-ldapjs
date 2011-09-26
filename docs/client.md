@@ -28,22 +28,21 @@ client is:
 ||socketPath|| If you're running an LDAP server over a Unix Domain Socket, use this.||
 ||log4js|| You can optionally pass in a log4js instance the client will use to acquire a logger.  The client logs all messages at the `Trace` level.||
 ||numConnections||The size of the connection pool. Default is 1.||
+||reconnect||Whether or not to automatically reconnect (and rebind) on socket errors. Takes amount of time in millliseconds. Default is 1000. 0/false will disable altogether.||
 
 ## Connection management
 
-If you'll recall, the LDAP protocol is connection-oriented, and completely
-asynchronous on a connection (meaning you can send as many requests as you want
-without waiting for responses).  However, our friend `bind` is a little
-different in that you generally want to wait for binds to be completed since
-subsequent operations assume that level of privilege.
+As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
+down from underneath you is difficult to deal with. As such, the ldapjs client
+will automatically reconnect when the underlying socket has errors.  You can
+disable this behavior by passing `reconnect=false` in the options at construct
+time, or just setting the reconnect property to false at any time.
 
-The ldapjs client deals with this by maintaing a connection pool, and splaying
-requests across that connection pool, with the exception of `bind` and `unbind`,
-which it will apply to all connections in the pool.  By default,  a client will
-have one connection in the pool (since it's async already, you don't always need
-the complexity of a pool).  And after that, the operations in the client are
-pretty much a mapping of the LDAP C API, but made higher-level, so they make
-sense in JS.
+On reconnect, the client will additionally automatically rebind (assuming you
+ever successfully called bind).  Only after the rebind succeeds will other
+operations be allowed back through; in the meantime all callbacks will receive
+a `DisconnectedError`. If you never called `bind`, the client will allow
+operations when the socket is connected.
 
 ## Common patterns
 
