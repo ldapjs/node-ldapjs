@@ -405,7 +405,7 @@ No extra methods above an `LDAPResult` API call.
 
 Allows you to handle an LDAP delete operation.
 
-    server.delete('o=example', function(req, res, next) {
+    server.del('o=example', function(req, res, next) {
       console.log('DN: ' + req.dn.toString());
       res.end();
     });
