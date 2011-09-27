@@ -76,15 +76,21 @@ test('setup', function(t) {
   });
 
   server.search(SUFFIX, function(req, res, next) {
-    var e = res.createSearchEntry({
-      objectName: req.dn,
-      attributes: {
-        cn: ['unit', 'test'],
-        sn: 'testy'
-      }
-    });
-    res.send(e);
-    res.send(e);
+
+    if (!req.dn.equals('cn=ref,' + SUFFIX)) {
+      var e = res.createSearchEntry({
+        objectName: req.dn,
+        attributes: {
+          cn: ['unit', 'test'],
+          sn: 'testy'
+        }
+      });
+      res.send(e);
+      res.send(e);
+    } else {
+      res.send(res.createSearchReference('ldap://localhost'));
+    }
+
     res.end();
     return next();
   });
@@ -338,6 +344,37 @@ test('search basic', function(t) {
       t.ok(res instanceof ldap.SearchResponse);
       t.equal(res.status, 0);
       t.equal(gotEntry, 2);
+      t.end();
+    });
+  });
+});
+
+
+test('search referral', function(t) {
+  client.search('cn=ref, ' + SUFFIX, '(objectclass=*)', function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    var gotEntry = 0;
+    var gotReferral = false;
+    res.on('searchEntry', function(entry) {
+      gotEntry++;
+    });
+    res.on('searchReference', function(referral) {
+      gotReferral = true;
+      t.ok(referral);
+      t.ok(referral instanceof ldap.SearchReference);
+      t.ok(referral.uris);
+      t.ok(referral.uris.length);
+    });
+    res.on('error', function(err) {
+      t.fail(err);
+    });
+    res.on('end', function(res) {
+      t.ok(res);
+      t.ok(res instanceof ldap.SearchResponse);
+      t.equal(res.status, 0);
+      t.equal(gotEntry, 0);
+      t.ok(gotReferral);
       t.end();
     });
   });
