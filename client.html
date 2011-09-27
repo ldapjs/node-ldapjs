@@ -125,24 +125,23 @@ client is:</p>
 <tr><td>socketPath</td><td>If you're running an LDAP server over a Unix Domain Socket, use this.</td></tr>
 <tr><td>log4js</td><td>You can optionally pass in a log4js instance the client will use to acquire a logger.  The client logs all messages at the <code>Trace</code> level.</td></tr>
 <tr><td>numConnections</td><td>The size of the connection pool. Default is 1.</td></tr>
+<tr><td>reconnect</td><td>Whether or not to automatically reconnect (and rebind) on socket errors. Takes amount of time in millliseconds. Default is 1000. 0/false will disable altogether.</td></tr>
 </tbody>
 </table>
 
 <h2 id="Connection-management"><span class="method name"><span class="name">Connection management</span></span></h2>
 
-<p>If you'll recall, the LDAP protocol is connection-oriented, and completely
-asynchronous on a connection (meaning you can send as many requests as you want
-without waiting for responses).  However, our friend <code>bind</code> is a little
-different in that you generally want to wait for binds to be completed since
-subsequent operations assume that level of privilege.</p>
+<p>As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
+down from underneath you is difficult to deal with. As such, the ldapjs client
+will automatically reconnect when the underlying socket has errors.  You can
+disable this behavior by passing <code>reconnect=false</code> in the options at construct
+time, or just setting the reconnect property to false at any time.</p>
 
-<p>The ldapjs client deals with this by maintaing a connection pool, and splaying
-requests across that connection pool, with the exception of <code>bind</code> and <code>unbind</code>,
-which it will apply to all connections in the pool.  By default,  a client will
-have one connection in the pool (since it's async already, you don't always need
-the complexity of a pool).  And after that, the operations in the client are
-pretty much a mapping of the LDAP C API, but made higher-level, so they make
-sense in JS.</p>
+<p>On reconnect, the client will additionally automatically rebind (assuming you
+ever successfully called bind).  Only after the rebind succeeds will other
+operations be allowed back through; in the meantime all callbacks will receive
+a <code>DisconnectedError</code>. If you never called <code>bind</code>, the client will allow
+operations when the socket is connected.</p>
 
 <h2 id="Common-patterns"><span class="method name"><span class="name">Common patterns</span></span></h2>
 
@@ -330,13 +329,14 @@ fields:</p>
 </table>
 
 <p>Responses from the <code>search</code> method are an <code>EventEmitter</code> where you will get a
-notification for each search entry that comes back from the server.  You will
-additionally be able to listen for an <code>error</code> and <code>end</code> event.  Note that the
-<code>error</code> event will only be for client/TCP errors, not LDAP error codes like the
-other APIs.  You'll want to check the LDAP status code (likely for <code>0</code>) on the
-<code>end</code> event to assert success.  LDAP search results can give you a lot of status
-codes, such as time or size exceeded, busy, inappropriate matching, etc.,
-which is why this method doesn't try to wrap up the code matching.</p>
+notification for each <code>searchEntry</code> that comes back from the server.  You will
+additionally be able to listen for a <code>searchReference</code>, <code>error</code> and <code>end</code> event.
+Note that the <code>error</code> event will only be for client/TCP errors, not LDAP error
+codes like the other APIs.  You'll want to check the LDAP status code
+(likely for <code>0</code>) on the <code>end</code> event to assert success.  LDAP search results
+can give you a lot of status codes, such as time or size exceeded, busy,
+inappropriate matching, etc., which is why this method doesn't try to wrap up
+the code matching.</p>
 
 <p>Example:</p>
 
@@ -350,6 +350,9 @@ client.search('o=example', opts, function(err, res) {
 
   res.on('searchEntry', function(entry) {
     console.log('entry: ' + JSON.stringify(entry.object));
+  });
+  res.on('searchReference', function(referral) {
+    console.log('referral: ' + referral.uris.join());
   });
   res.on('error', function(err) {
     console.error('error: ' + err.message);

@@ -551,7 +551,7 @@ details on the <code>Change</code> object.</p>
 
 <p>Allows you to handle an LDAP delete operation.</p>
 
-<pre><code>server.delete('o=example', function(req, res, next) {
+<pre><code>server.del('o=example', function(req, res, next) {
   console.log('DN: ' + req.dn.toString());
   res.end();
 });
