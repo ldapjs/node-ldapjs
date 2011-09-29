@@ -80,7 +80,6 @@ Since most developers and system(s) adminstrators struggle with some of the
 esoteric features of LDAP, not all features in LDAP are implemented here.
 Specifically:
 
-* Referrals
 * LDIF
 * Aliases
 * Attributes by OID
