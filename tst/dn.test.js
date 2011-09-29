@@ -123,3 +123,11 @@ test('empty DNs GH-16', function(t) {
   t.notOk(_dn2.childOf(''));
   t.end();
 });
+
+
+test('case insensitive attribute names GH-20', function(t) {
+  var dn1 = dn.parse('CN=foo, dc=bar');
+  t.ok(dn1.equals('cn=foo, dc=bar'));
+  t.ok(dn1.equals(dn.parse('cn=foo, DC=bar')));
+  t.end();
+});
