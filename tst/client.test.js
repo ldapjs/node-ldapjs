@@ -95,6 +95,18 @@ test('setup', function(t) {
     return next();
   });
 
+  server.search('dc=empty', function(req, res, next) {
+    res.send({
+      dn: 'dc=empty',
+      attributes: {
+        member: [],
+        'member;range=0-1': ['cn=user1, dc=empty','cn=user2, dc=empty']
+      }
+    });
+    res.end();
+    return next();
+  });
+
   server.unbind(function(req, res, next) {
     res.end();
     return next();
@@ -375,6 +387,34 @@ test('search referral', function(t) {
       t.equal(res.status, 0);
       t.equal(gotEntry, 0);
       t.ok(gotReferral);
+      t.end();
+    });
+  });
+});
+
+
+test('search empty attribute', function(t) {
+  client.search('dc=empty', '(objectclass=*)', function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    var gotEntry = 0;
+    res.on('searchEntry', function(entry) {
+      var obj = entry.toObject();
+      t.equal('dc=empty', obj.dn);
+      t.ok(obj.member);
+      t.equal(obj.member.length, 0);
+      t.ok(obj['member;range=0-1']);
+      t.ok(obj['member;range=0-1'].length);
+      gotEntry++;
+    });
+    res.on('error', function(err) {
+      t.fail(err);
+    });
+    res.on('end', function(res) {
+      t.ok(res);
+      t.ok(res instanceof ldap.SearchResponse);
+      t.equal(res.status, 0);
+      t.equal(gotEntry, 1);
       t.end();
     });
   });
