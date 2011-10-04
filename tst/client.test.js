@@ -82,7 +82,7 @@ test('setup', function(t) {
         objectName: req.dn,
         attributes: {
           cn: ['unit', 'test'],
-          sn: 'testy'
+          SN: 'testy'
         }
       });
       res.send(e);
@@ -345,6 +345,8 @@ test('search basic', function(t) {
       t.equal(entry.dn.toString(), 'cn=test, ' + SUFFIX);
       t.ok(entry.attributes);
       t.ok(entry.attributes.length);
+      t.equal(entry.attributes[0].type, 'cn');
+      t.equal(entry.attributes[1].type, 'SN');
       t.ok(entry.object);
       gotEntry++;
     });
