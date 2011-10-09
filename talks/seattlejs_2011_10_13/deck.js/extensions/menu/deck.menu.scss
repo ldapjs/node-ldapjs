@@ -1,0 +1,29 @@
+.deck-menu {
+	> .slide {
+		float:left;
+		width:22%;
+		height:22%;
+		min-height:0;
+		margin:1%;
+		font-size:0.22em;
+		overflow:hidden;
+		padding:0 0.5%;
+	}
+	
+	.slide {
+		background:#eee;
+		position:relative;
+		left:0;
+		top:0;
+		visibility:visible;
+		cursor:pointer;
+	}
+	
+	iframe, img, video {
+		max-width:100%;
+	}
+	
+	.deck-current, .no-touch & .slide:hover {
+		background:#ddf;
+	}
+}

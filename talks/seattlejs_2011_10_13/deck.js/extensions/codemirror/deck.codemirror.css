@@ -1,0 +1,83 @@
+.deck-container .slide {
+  font-weight: normal; }
+  .deck-container .slide .deck-codemirror-result {
+    border: 1px solid #ddd;
+    border-top: none;
+    padding: 10px;
+    font-family: monospace; }
+  .deck-container .slide .CodeMirror {
+    line-height: 1em;
+    font-family: monospace;
+    overflow: auto;
+    height: 100%;
+    border: 1px solid #ddd; }
+    .deck-container .slide .CodeMirror .button {
+      padding: 5px;
+      cursor: pointer;
+      background-color: #ddd;
+      position: relative;
+      float: right;
+      font-size: 11px;
+      line-height: 16px;
+      padding: 2px 6px;
+      margin-bottom: -20px;
+      margin-right: 10px;
+      border-radius: 4px;
+      -moz-border-radius: 4px;
+      -webkit-border-radius: 4px;
+      z-index: 1;
+      top: 8px; }
+    .deck-container .slide .CodeMirror .button:hover {
+      background-color: #eee; }
+  .deck-container .slide .CodeMirror-scroll {
+      overflow: auto
+    }
+  .deck-container .slide .CodeMirror-gutter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    background-color: #f7f7f7;
+    border-right: 1px solid #eee;
+    min-width: 2em;
+    height: 100%; }
+  .deck-container .slide .CodeMirror-gutter-text {
+    color: #aaa;
+    text-align: right;
+    padding: .4em .2em .4em .4em; }
+  .deck-container .slide .CodeMirror-lines {
+    padding: .4em; }
+  .deck-container .slide .CodeMirror pre {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    margin: 0;
+    white-space: pre;
+    word-wrap: normal; }
+  .deck-container .slide .CodeMirror textarea {
+    font-family: inherit !important;
+    font-size: inherit !important; }
+  .deck-container .slide .CodeMirror-cursor {
+    z-index: 10;
+    position: absolute;
+    visibility: hidden;
+    border-left: 1px solid black !important; }
+  .deck-container .slide .CodeMirror-focused .CodeMirror-cursor {
+    visibility: visible; }
+  .deck-container .slide span.CodeMirror-selected {
+    background: #ccc !important;
+    color: HighlightText !important; }
+  .deck-container .slide .CodeMirror-focused span.CodeMirror-selected {
+    background: Highlight !important; }
+  .deck-container .slide .CodeMirror-matchingbracket {
+    color: #0f0 !important; }
+  .deck-container .slide .CodeMirror-nonmatchingbracket {
+    color: #f22 !important; }

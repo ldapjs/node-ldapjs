@@ -1,0 +1,392 @@
+<html>
+  <head lang="en-US">
+
+    <meta charset="utf-8"/>
+    <meta name="description" content="A general overview of ldapjs" />
+    <meta name="viewport" content="width=1024, user-scalable=no" />
+
+    <title>ldapjs: @SeattleJS 2011-10-13</title>
+
+    <link rel="stylesheet" href="deck.js/core/deck.core.css">
+    <link rel="stylesheet" href="deck.js/extensions/goto/deck.goto.css">
+    <link rel="stylesheet" href="deck.js/extensions/menu/deck.menu.css">
+    <link rel="stylesheet" href="deck.js/extensions/navigation/deck.navigation.css">
+    <link rel="stylesheet" href="deck.js/extensions/status/deck.status.css">
+    <link rel="stylesheet" href="deck.js/extensions/hash/deck.hash.css">
+
+    <link rel="stylesheet" href="deck.js/themes/style/swiss.css">
+    <link rel="stylesheet" href="deck.js/extensions/codemirror/deck.codemirror.css">
+    <link rel="stylesheet" href="deck.js/extensions/codemirror/themes/default.css">
+
+    <link rel="stylesheet" id="transition-theme-link" href="deck.js/themes/transition/horizontal-slide.css">
+
+    <link rel="stylesheet" href="index.css">
+    <script src="deck.js/modernizr.custom.js"></script>
+  </head>
+  <body>
+    <article class="deck-container">
+
+
+      <section class="slide" id="intro">
+        <h1 id="title">
+	  <a class="titlelink" href="http://ldapjs.org">ldapjs:</a> LDAP on <a class="titlelink" href="http://nodejs.org">node.js</a>
+	</h1>
+	<h3><a href="https://github.com/mcavage">Mark Cavage</a></h3>
+	<h3><a href="http://www.meetup.com/seattlejs/">@SeattleJS</a> October 13, 2011</h3>
+      </section>
+
+
+      <section class="slide" id="whoami">
+        <h2>Who am I?</h2>
+        <ul>
+          <li>
+            <h3>Distrbuted/Systems Programmer</h3>
+            <p>Various systems/network/application jobs at Nortel, IBM,
+              Amazon (AWS), and now Joyent.</p>
+          </li>
+          <li>
+            <h3>High-Performance network applications have been my focus</h3>
+            <p>
+              In about every language/framework:
+              <ul>
+                <li>C/C++</li>
+                <li>Perl</li>
+                <li>Java</li>
+                <li>Ruby</li>
+                <li>Python</li>
+                <li>...</li>
+                <li>JavaScript</li>
+              </ul>
+            </p>
+          </li>
+          <li>
+            <h3>&#10084; Node.js</h3>
+            <p>
+              I don't consider myself a master engineer, but I've been around
+	      the block enough to know that this thing is the proverbial shit.
+            </p>
+          </li>
+        </ul>
+      </section>
+
+
+      <section class="slide" id="agenda">
+        <h2>Agenda</h2>
+        <ul>
+          <li>
+            <h3>Crash Course</h3>
+            <p>Everyone's heard of it, most developers know very little about
+              it. I'll try to explain it in < 5m.</p>
+          </li>
+          <li>
+            <h3>Why the f#$k would I want LDAP in JavaScript?</h3>
+            <p>
+              Mmmm...good question.  We'll talk about why you should care.
+            </p>
+          </li>
+          <li>
+            <h3>Demo</h3>
+            <p>
+              If I convinced you that you should care, I cooked up a cheezy
+              demo for this talk.
+            </p>
+          </li>
+          <li>
+            <h3>Some notes on bringing LDAP to Node.js</h3>
+            <p>
+              It wasn't the hardest problem, but it wasn't cake either. Mostly
+              I hope to see others implement some  of the "RFC Rolodex" in node,
+              so I'll briefly describe a few sticking points.  And then it's
+	      open season for questions (or beer, but I'm not paying).
+            </p>
+          </li>
+        </ul>
+      </section>
+
+
+      <section class="slide" id="whatsldap">
+        <h2>What's LDAP?</h2>
+        <img src="images/balrog.png" />
+        <p class="caption"><em>
+          X.500: a demon of the ancient world.
+        </em></p>
+      </section>
+
+
+      <section class="slide" id="whatsldap2">
+        <h2>Ok seriously, What's LDAP?</h2>
+        <ul>
+          <li class="slide">
+            <h3>Directory Service</h3>
+            <p>
+              Directory service is a broad term.  Think of it as a key/value
+              store, where keys are stored hierarchically.  Oh wait, think of it
+              like a file system where the "files" have are structured/have a
+              schema &#9786;.
+            </p>
+          </li>
+          <li class="slide">
+            <h3>LDAP was meant to be a gateway to X.500</h3>
+            <p>
+              You see, X.500 actually runs on the OSI stack, not TCP/IP.
+          </li>
+          <li class="slide">
+            <h3>It now stands alone</h3>
+            <p>
+              Eventually the world figured out X.500 really was a Balrog.  LDAP
+              got stood with a storage engine, and it's been the de facto
+	      standard directory service since.
+            </p>
+          </li>
+        </ul>
+      </section>
+
+
+      <section class="slide" id="sampleentry">
+        <h2>Here's a sample entry, in LDIF (the human-viewable mode for LDAP)</h2>
+        <div><textarea class="code" name="code" mode="yaml" style="display: none;">
+          # DN is special, and is the "key" that uniquely identifies every record in the tree
+          #
+          # Everything else is an attribute/value pair in the entry. Attributes can be multi-valued.
+          # Note that objectclass is "special". In a standard LDAP directory, it
+          # denotes the schema of "this".
+          #
+
+          dn: login=mcavage, ou=people, o=joyent
+          login: mcavage
+          email: mcavage@gmail.com
+          email: mark@bluesnoop.com
+          twitter: @mcavage
+          city: Seattle
+          state: WA
+          postalcode: 98118
+          country: USA
+          objectclass: person
+        </textarea></div>
+      </section>
+
+
+      <section class="slide" id="itsatree">
+        <h2>Put records like that in a tree, and that's LDAP</h2>
+        <img src="images/ldap-dn-rdn.gif" />
+        <p class="caption"><em>
+	    Image courtesy of <a href="http://zytrax.com">zytrax.com</a>.
+	</em></p>
+      </section>
+
+
+      <section class="slide" id="searchfilters">
+        <h2>LDAP has a rich search filter syntax</h2>
+        <ul>
+          <li>
+            <h3>It's not SQL, but it does have full boolean logic</h3>
+            <p>
+              You can use "&amp;", "|", "!", "=", "&gt;=", "&lt;=", and "*".
+            </p>
+          </li>
+        </ul>
+        <div><textarea class="code" name="code" style="display: none;">
+          (login=mcavage)
+
+          (&amp;(city=Seattle)(email=*@bluesnoop.com))
+
+          (|(postalcode&gt;=98110)(!(login=ryah))
+        </textarea></div>
+      </section>
+
+
+      <section class="slide" id="ldapoldguard">
+        <h2>Tell me some more. Who uses it and why?</h2>
+        <ul>
+          <li class="slide">
+            <h3>Ubiquitous on-premise for low write, high read information</h3>
+            <p>
+              Pretty much everybody has an LDAP for "whitepages".  On top of
+              that, lots of folks use it for tracking machines, networks,
+              deploys, etc. And then there's ActiveDirectory.
+            </p>
+          </li>
+          <li class="slide">
+            <h3>Because of that, lots of applications already speak LDAP!</h3>
+            <p>
+              For example, stuff like Thunderbird, Jira, Peoplesoft, J2EE crap,
+              Nagios, Switches, etc. all integrate "nicely" with LDAP. The list
+              is seriously really long.
+            </p>
+          </li>
+          <li class="slide">
+            <h3>But here's the rub. LDAP implementations suck...</h3>
+            <div><ol>
+              <li>You'll be using BDB. Whether that works for you or not.</li>
+              <li>Replication sucks. It's a bunch of multi-master garbage.</li>
+              <li>It was designed by Telcos and nameless enterprise
+                conglomerates. It's hard to use.</li>
+              <li>There's an entire consulting industry around
+                "directory synchronization".</li>
+              <li>Nobody thought about building it to run over <strong>your</strong>
+                application.</li>
+            </ol></div>
+          </li>
+        </ul>
+      </section>
+
+
+      <section class="slide" id="whynode">
+        <h2>So why do this in Node.js?</h2>
+        <ul>
+          <li class="slide" id="whynodesomething">
+            <h3>I had to do it in something</h3>
+            <p>
+              For all the reasons on the previous slide, I wanted to decouple
+              the protocol from the implementation.  When starting from scratch,
+              assess all your options.
+          </li>
+          <li class="slide" id="whynodestateful">
+            <h3>LDAP is a stateful protocol</h3>
+            <p>
+              Unlike HTTP, LDAP is binary on the wire, and connection-oriented.
+              That means you need a server framework that can handle loads of
+              concurrent connections, and do it at low latency.
+            </p>
+          </li>
+          <li class="slide" id="whynodenoterlang">
+            <h3>That's in Node's wheelhouse</h3>
+            <p>
+              Node.js is really good at managing connections. V8 is
+              impressively fast (and erlang makes me throw up in my mouth).
+            </p>
+          </li>
+          <li class="slide" id="whynodeexpress">
+            <h3>Paradigm to let you build over anything</h3>
+            <p>
+              Express is a nice API.  Mimicing that, you end up with an easy to
+              embed way of putting LDAP <em>anywhere</em>.
+            </p>
+          </li>
+        </ul>
+      </section>
+
+
+      <section class="slide" id="helloworld">
+        <h2>Simple Search Server</h2>
+        <div><textarea class="code" name="code" mode="javascript" style="display: none;">
+          var ldap = require('ldapjs');
+
+          var server = ldap.createServer();
+
+          server.search('o=seattlejs', function(req, res, next) {
+            var obj = {
+              dn: o=seattlejs’,
+              attributes: {
+                objectclass: ['organization', 'top'],
+                o: 'seattlejs'
+              }
+            };
+
+            if (req.filter.matches(obj.attributes))
+              res.send(obj);
+
+            res.end();
+          });
+
+          server.listen(389, function() {
+            console.log('LDAP server listening at %s', server.url);
+          });
+        </textarea></div>
+      </section>
+
+
+      <section class="slide" id="demo">
+	<h2>Demo: ldapjs over GitHub API</h2>
+	<img src="images/disapproval.jpg"/>
+	<p class="caption"><em>
+	    I'm sure you're bored. May the demo gods be gracious!
+	</em></p>
+	<p>If you're reading these outside of the talk, the code is on
+	  <a href="https://gist.github.com/1274280">github</a>.
+      </section>
+
+
+      <section class="slide" id="lessonslearned">
+        <h2>Some general advice, should you choose to cowboy up</h2>
+        <ul>
+          <li class="slide">
+            <h3>Use buffertools</h3>
+            <p>
+	      The Node buffers API isn't quite at the same level of usability as
+	      something like <a href="http://www.jboss.org/netty">Netty</a>. I
+	      used <a href="https://github.com/bnoordhuis/node-buffertools">
+		buffertools</a> to work around most of it.  There are still
+	      cases in ldapjs where I end up copying.
+	    </p>
+          </li>
+          <li class="slide">
+            <h3>Message framing is a PITA</h3>
+            <p>
+	      So LDAP isn't like HTTP where it's easy to stream.  It's possible
+	      to write a truly streaming parser, but it's just not worth it
+	      (IMO). You really need to drive your stack to test
+	      under/over-runs.
+            </p>
+          </li>
+          <li class="slide">
+            <h3>V8 is impressively fast</h3>
+            <p>
+	      When I started, I wasn't sure if I'd have to do the wire-bits in
+	      C++ for performance. There is a big performance gain to doing so
+	      (2-3x?), but given LDAP is almost always over something else
+	      (slower) that hasn't been the bottleneck.
+            </p>
+          </li>
+        </ul>
+      </section>
+
+
+      <section class="slide" id="endoftalk">
+        <h2>Questions?</h2>
+	<img src="images/questions.jpg" />
+      </section>
+
+      <a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+      <a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+      <p class="deck-status">
+        <span class="deck-status-current"></span>
+        /
+        <span class="deck-status-total"></span>
+      </p>
+
+      <form action="." method="get" class="goto-form">
+        <label for="goto-slide">Go to slide:</label>
+        <input type="number" name="slidenum" id="goto-slide">
+        <input type="submit" value="Go">
+      </form>
+
+      <a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+    </article>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+    <script>window.jQuery || document.write('<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js">\x3C/script>')</script>
+
+<!-- Deck Core and extensions -->
+<script src="deck.js/core/deck.core.js"></script>
+<script src="deck.js/extensions/menu/deck.menu.js"></script>
+<script src="deck.js/extensions/goto/deck.goto.js"></script>
+<script src="deck.js/extensions/status/deck.status.js"></script>
+<script src="deck.js/extensions/navigation/deck.navigation.js"></script>
+<script src="deck.js/extensions/hash/deck.hash.js"></script>
+
+<!-- include the base codemirror code. -->
+<script src="deck.js/extensions/codemirror/codemirror.js"></script>
+
+<!-- include the code syntax you want to highlight -->
+<script src="deck.js/extensions/codemirror/mode/javascript/javascript.js"></script>
+<script src="deck.js/extensions/codemirror/mode/yaml/yaml.js"></script>
+
+<script src="deck.js/extensions/codemirror/deck.codemirror.js"></script>
+
+<!-- Stuff specific to this page -->
+<script src="index.js"></script>
+
+</body>
+</html>

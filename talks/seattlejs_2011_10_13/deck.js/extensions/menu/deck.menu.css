@@ -1,0 +1,24 @@
+.deck-menu > .slide {
+  float: left;
+  width: 22%;
+  height: 22%;
+  min-height: 0;
+  margin: 1%;
+  font-size: 0.22em;
+  overflow: hidden;
+  padding: 0 0.5%;
+}
+.deck-menu .slide {
+  background: #eee;
+  position: relative;
+  left: 0;
+  top: 0;
+  visibility: visible;
+  cursor: pointer;
+}
+.deck-menu iframe, .deck-menu img, .deck-menu video {
+  max-width: 100%;
+}
+.deck-menu .deck-current, .no-touch .deck-menu .slide:hover {
+  background: #ddf;
+}
