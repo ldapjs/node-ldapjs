@@ -50,11 +50,8 @@
               In about every language/framework:
               <ul>
                 <li>C/C++</li>
-                <li>Perl</li>
                 <li>Java</li>
-                <li>Ruby</li>
-                <li>Python</li>
-                <li>...</li>
+                <li>Perl, Ruby, Python, ...</li>
                 <li>JavaScript</li>
               </ul>
             </p>
@@ -145,11 +142,12 @@
       <section class="slide" id="sampleentry">
         <h2>Here's a sample entry, in LDIF (the human-viewable mode for LDAP)</h2>
         <div><textarea class="code" name="code" mode="yaml" style="display: none;">
-          # DN is special, and is the "key" that uniquely identifies every record in the tree
+          # DN is special, and is the "key" that uniquely identifies
+	  # every record in the tree.
           #
-          # Everything else is an attribute/value pair in the entry. Attributes can be multi-valued.
-          # Note that objectclass is "special". In a standard LDAP directory, it
-          # denotes the schema of "this".
+          # Everything else is an attribute/value pair in the entry. Attributes
+	  # can be multi-valued. Note that objectclass is "special". In a
+	  # standard LDAP directory, it denotes the schema of "this".
           #
 
           dn: login=mcavage, ou=people, o=joyent
@@ -214,34 +212,29 @@
               is seriously really long.
             </p>
           </li>
-          <li class="slide">
-            <h3>But here's the rub. LDAP implementations suck...</h3>
-            <div><ol>
-              <li>You'll be using BDB. Whether that works for you or not.</li>
-              <li>Replication sucks. It's a bunch of multi-master garbage.</li>
-              <li>It was designed by Telcos and nameless enterprise
-                conglomerates. It's hard to use.</li>
-              <li>There's an entire consulting industry around
-                "directory synchronization".</li>
-              <li>Nobody thought about building it to run over <strong>your</strong>
-                application.</li>
-            </ol></div>
-          </li>
         </ul>
+      </section>
+
+
+      <section class="slide" id="theresalwaysacatch">
+        <h2>But here's the rub. LDAP implementations suck...</h2>
+        <ul>
+           <li>You'll be using BDB. Whether that works for you or not.</li>
+           <li>Replication sucks. It's a bunch of multi-master garbage.</li>
+           <li>It was designed by Telcos and nameless enterprise
+             conglomerates. It's hard to use.</li>
+           <li>There's an entire consulting industry around
+             "directory synchronization".</li>
+           <li>Nobody thought about building it to run over <strong>your</strong>
+             application.</li>
+	</ul>
       </section>
 
 
       <section class="slide" id="whynode">
         <h2>So why do this in Node.js?</h2>
         <ul>
-          <li class="slide" id="whynodesomething">
-            <h3>I had to do it in something</h3>
-            <p>
-              For all the reasons on the previous slide, I wanted to decouple
-              the protocol from the implementation.  When starting from scratch,
-              assess all your options.
-          </li>
-          <li class="slide" id="whynodestateful">
+          <li class="slide">
             <h3>LDAP is a stateful protocol</h3>
             <p>
               Unlike HTTP, LDAP is binary on the wire, and connection-oriented.
@@ -249,14 +242,14 @@
               concurrent connections, and do it at low latency.
             </p>
           </li>
-          <li class="slide" id="whynodenoterlang">
+          <li class="slide">
             <h3>That's in Node's wheelhouse</h3>
             <p>
               Node.js is really good at managing connections. V8 is
               impressively fast (and erlang makes me throw up in my mouth).
             </p>
           </li>
-          <li class="slide" id="whynodeexpress">
+          <li class="slide">
             <h3>Paradigm to let you build over anything</h3>
             <p>
               Express is a nice API.  Mimicking that, you end up with an easy to
