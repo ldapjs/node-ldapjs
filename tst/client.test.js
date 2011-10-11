@@ -84,6 +84,7 @@ test('setup', function(t) {
         objectName: req.dn,
         attributes: {
           'foo;binary': 'wr0gKyDCvCA9IMK+',
+          'gb18030': new Buffer([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]),
           'objectclass': 'binary'
         }
       }));
@@ -438,6 +439,7 @@ test('GH-21 binary attributes', function(t) {
     t.ok(res);
     var gotEntry = 0;
     var expect = new Buffer('\u00bd + \u00bc = \u00be', 'utf8');
+    var expect2 = new Buffer([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]);
     res.on('searchEntry', function(entry) {
       t.ok(entry);
       t.ok(entry instanceof ldap.SearchEntry);
@@ -448,6 +450,13 @@ test('GH-21 binary attributes', function(t) {
       t.equal(entry.attributes[0].vals[0], expect.toString('base64'));
       t.equal(entry.attributes[0].buffers[0].toString('base64'),
               expect.toString('base64'));
+
+      t.ok(entry.attributes[1].type, 'gb18030');
+      t.equal(entry.attributes[1].buffers.length, 1);
+      t.equal(expect2.length, entry.attributes[1].buffers[0].length);
+      for (var i = 0; i < expect2.length; i++)
+        t.equal(expect2[i], entry.attributes[1].buffers[0][i]);
+
       t.ok(entry.object);
       gotEntry++;
     });
