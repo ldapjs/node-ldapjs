@@ -83,7 +83,8 @@ test('setup', function(t) {
       res.send(res.createSearchEntry({
         objectName: req.dn,
         attributes: {
-          'foo;binary': '\u00bd + \u00bc = \u00be'
+          'foo;binary': 'wr0gKyDCvCA9IMK+',
+          'objectclass': 'binary'
         }
       }));
     } else {
@@ -415,6 +416,39 @@ test('search empty attribute', function(t) {
       t.equal(obj.member.length, 0);
       t.ok(obj['member;range=0-1']);
       t.ok(obj['member;range=0-1'].length);
+      gotEntry++;
+    });
+    res.on('error', function(err) {
+      t.fail(err);
+    });
+    res.on('end', function(res) {
+      t.ok(res);
+      t.ok(res instanceof ldap.SearchResponse);
+      t.equal(res.status, 0);
+      t.equal(gotEntry, 1);
+      t.end();
+    });
+  });
+});
+
+
+test('GH-21 binary attributes', function(t) {
+  client.search('cn=bin, ' + SUFFIX, '(objectclass=*)', function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    var gotEntry = 0;
+    var expect = new Buffer('\u00bd + \u00bc = \u00be', 'utf8');
+    res.on('searchEntry', function(entry) {
+      t.ok(entry);
+      t.ok(entry instanceof ldap.SearchEntry);
+      t.equal(entry.dn.toString(), 'cn=bin, ' + SUFFIX);
+      t.ok(entry.attributes);
+      t.ok(entry.attributes.length);
+      t.equal(entry.attributes[0].type, 'foo;binary');
+      t.equal(entry.attributes[0].vals[0], expect.toString('base64'));
+      t.equal(entry.attributes[0].buffers[0].toString('base64'),
+              expect.toString('base64'));
+      t.ok(entry.object);
       gotEntry++;
     });
     res.on('error', function(err) {

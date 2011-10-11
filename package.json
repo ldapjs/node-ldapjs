@@ -13,7 +13,7 @@
     "node": ">=0.4"
   },
   "dependencies": {
-    "asn1": "~0.1.5",
+    "asn1": "~0.1.6",
     "buffertools": "~1.0.3",
     "dtrace-provider": "~0.0.3",
     "sprintf": "~0.1.1"
