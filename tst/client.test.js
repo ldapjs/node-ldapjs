@@ -77,7 +77,16 @@ test('setup', function(t) {
 
   server.search(SUFFIX, function(req, res, next) {
 
-    if (!req.dn.equals('cn=ref,' + SUFFIX)) {
+    if (req.dn.equals('cn=ref,' + SUFFIX)) {
+      res.send(res.createSearchReference('ldap://localhost'));
+    } else if (req.dn.equals('cn=bin,' + SUFFIX)) {
+      res.send(res.createSearchEntry({
+        objectName: req.dn,
+        attributes: {
+          'foo;binary': '\u00bd + \u00bc = \u00be'
+        }
+      }));
+    } else {
       var e = res.createSearchEntry({
         objectName: req.dn,
         attributes: {
@@ -87,9 +96,8 @@ test('setup', function(t) {
       });
       res.send(e);
       res.send(e);
-    } else {
-      res.send(res.createSearchReference('ldap://localhost'));
     }
+
 
     res.end();
     return next();
@@ -454,6 +462,41 @@ test('GH-23 case insensitive attribute filtering', function(t) {
     });
   });
 });
+
+
+test('GH-24 attribute selection of *', function(t) {
+  var opts = {
+    filter: '(objectclass=*)',
+    attributes: ['*']
+  };
+  client.search('cn=test, ' + SUFFIX, opts, function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    var gotEntry = 0;
+    res.on('searchEntry', function(entry) {
+      t.ok(entry);
+      t.ok(entry instanceof ldap.SearchEntry);
+      t.equal(entry.dn.toString(), 'cn=test, ' + SUFFIX);
+      t.ok(entry.attributes);
+      t.ok(entry.attributes.length);
+      t.equal(entry.attributes[0].type, 'cn');
+      t.equal(entry.attributes[1].type, 'SN');
+      t.ok(entry.object);
+      gotEntry++;
+    });
+    res.on('error', function(err) {
+      t.fail(err);
+    });
+    res.on('end', function(res) {
+      t.ok(res);
+      t.ok(res instanceof ldap.SearchResponse);
+      t.equal(res.status, 0);
+      t.equal(gotEntry, 2);
+      t.end();
+    });
+  });
+});
+
 
 test('shutdown', function(t) {
   client.unbind(function() {
