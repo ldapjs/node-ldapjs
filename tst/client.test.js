@@ -423,6 +423,38 @@ test('search empty attribute', function(t) {
 });
 
 
+test('GH-23 case insensitive attribute filtering', function(t) {
+  var opts = {
+    filter: '(objectclass=*)',
+    attributes: ['Cn']
+  };
+  client.search('cn=test, ' + SUFFIX, opts, function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    var gotEntry = 0;
+    res.on('searchEntry', function(entry) {
+      t.ok(entry);
+      t.ok(entry instanceof ldap.SearchEntry);
+      t.equal(entry.dn.toString(), 'cn=test, ' + SUFFIX);
+      t.ok(entry.attributes);
+      t.ok(entry.attributes.length);
+      t.equal(entry.attributes[0].type, 'cn');
+      t.ok(entry.object);
+      gotEntry++;
+    });
+    res.on('error', function(err) {
+      t.fail(err);
+    });
+    res.on('end', function(res) {
+      t.ok(res);
+      t.ok(res instanceof ldap.SearchResponse);
+      t.equal(res.status, 0);
+      t.equal(gotEntry, 2);
+      t.end();
+    });
+  });
+});
+
 test('shutdown', function(t) {
   client.unbind(function() {
     server.on('close', function() {
