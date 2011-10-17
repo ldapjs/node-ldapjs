@@ -110,7 +110,7 @@ test('setup', function(t) {
       dn: 'dc=empty',
       attributes: {
         member: [],
-        'member;range=0-1': ['cn=user1, dc=empty','cn=user2, dc=empty']
+        'member;range=0-1': ['cn=user1, dc=empty', 'cn=user2, dc=empty']
       }
     });
     res.end();
