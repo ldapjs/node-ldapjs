@@ -33,12 +33,14 @@ var opts = {
   'debug': Number,
   'base': ldap.DN,
   'binddn': ldap.DN,
+  'control': Array,
   'password': String,
   'scope': String,
   'url': url
 };
 
 var shortOpts = {
+  'c': ['--control'],
   'd': ['--debug'],
   'b': ['--base'],
   'D': ['--binddn'],
@@ -117,6 +119,8 @@ if (!parsed.password)
   parsed.password = '';
 if (!parsed.base)
   parsed.base = '';
+if (!parsed.control)
+  parsed.control = [];
 
 var client = ldap.createClient({
   url: parsed.url,
@@ -131,12 +135,19 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
   if (err)
     perror(err);
 
+  var controls = [];
+  parsed.control.forEach(function(c) {
+    controls.push(new ldap.Control({
+      type: c,
+      criticality: true
+    }));
+  });
   var req = {
     scope: parsed.scope || 'sub',
     filter: parsed.argv.remain[0],
     attributes: parsed.argv.remain.length > 1 ? parsed.argv.remain.slice(1) : []
   };
-  client.search(parsed.base, req, function(err, res) {
+  client.search(parsed.base, req, controls, function(err, res) {
     if (err)
       perror(err);
 
