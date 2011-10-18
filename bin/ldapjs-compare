@@ -28,9 +28,8 @@ var opts = {
   'binddn': ldap.DN,
   'file': String,
   'password': String,
-  'type': String,
   'url': url,
-  'value': Array,
+  'value': String,
 };
 
 var shortOpts = {
@@ -39,7 +38,6 @@ var shortOpts = {
   'D': ['--binddn'],
   'f': ['--file'],
   'w': ['--password'],
-  't': ['--type'],
   'u': ['--url'],
   'v': ['--value']
 };
@@ -105,9 +103,7 @@ try {
   usage(1, e.toString());
 }
 
-if (!parsed.type)
-  parsed.type = 'replace';
-if (!parsed.attribute || !Array.isArray(parsed.value))
+if (!parsed.attribute || typeof(parsed.value) !== 'string')
   usage(1, 'attribute and value required');
 
 if (parsed.debug)
@@ -133,28 +129,18 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
     perror(err);
 
   var finished = 0;
-  var mod = {};
-  mod[parsed.attribute] = [];
-  parsed.value.forEach(function(v) {
-    mod[parsed.attribute].push(v);
-  });
-  var change = new ldap.Change({
-    type: parsed.type,
-    modification: mod
-  });
-
-  function callback(err) {
-    if (err)
-      perror(err);
-
-    if (++finished === parsed.argv.remain.length) {
-      client.unbind(function() {
-        return;
-      });
-    }
-  }
-
   parsed.argv.remain.forEach(function(dn) {
-    client.modify(dn, change, callback);
+    client.compare(dn, parsed.attribute, parsed.value, function(err, match) {
+      if (err)
+        perror(err);
+
+      process.stdout.write(match + '\n');
+
+      if (++finished === parsed.argv.remain.length) {
+        client.unbind(function() {
+          return;
+        });
+      }
+    });
   });
 });
