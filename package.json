@@ -3,7 +3,7 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
@@ -13,9 +13,10 @@
     "node": ">=0.4"
   },
   "dependencies": {
-    "asn1": "~0.1.6",
+    "asn1": "~0.1.7",
     "buffertools": "~1.0.3",
     "dtrace-provider": "~0.0.3",
+    "nopt": "~1.0.10",
     "sprintf": "~0.1.1"
   },
   "devDependencies": {
