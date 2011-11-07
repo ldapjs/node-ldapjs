@@ -17,15 +17,15 @@
     "node": ">=0.4"
   },
   "dependencies": {
-    "asn1": "~0.1.7",
-    "buffertools": "~1.0.3",
-    "dtrace-provider": "~0.0.3",
-    "nopt": "~1.0.10",
-    "sprintf": "~0.1.1"
+    "asn1": "0.1.8",
+    "buffertools": "1.0.5",
+    "dtrace-provider": "0.0.3",
+    "nopt": "1.0.10",
+    "sprintf": "0.1.1"
   },
   "devDependencies": {
-    "tap": "~0.0.9",
-    "node-uuid": "~1.2.0"
+    "tap": "0.0.12",
+    "node-uuid": "1.2.0"
   },
   "scripts": {
     "test": "./node_modules/.bin/tap ./tst"

@@ -541,6 +541,14 @@ test('GH-24 attribute selection of *', function(t) {
 });
 
 
+test('abandon (GH-27)', function(t) {
+  client.abandon(401876543, function(err) {
+    t.ifError(err);
+    t.end();
+  });
+});
+
+
 test('shutdown', function(t) {
   client.unbind(function() {
     server.on('close', function() {
