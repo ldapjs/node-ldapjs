@@ -324,6 +324,23 @@ test('modify array success', function(t) {
 });
 
 
+test('modify change plain object success (GH-31)', function(t) {
+  var change = {
+    type: 'replace',
+    modification: {
+      cn: 'test',
+      sn: 'bar'
+    }
+  };
+  client.modify('cn=modify, ' + SUFFIX, change, function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    t.equal(res.status, 0);
+    t.end();
+  });
+});
+
+
 test('modify DN new RDN only', function(t) {
   client.modifyDN('cn=old, ' + SUFFIX, 'cn=new', function(err, res) {
     t.ifError(err);

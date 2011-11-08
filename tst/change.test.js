@@ -50,6 +50,23 @@ test('new with args', function(t) {
 });
 
 
+test('GH-31 (multiple attributes per Change)', function(t) {
+  try {
+    var change = new Change({
+      operation: 'replace',
+      modification: {
+        cn: 'foo',
+        sn: 'bar'
+      }
+    });
+    t.fail('should have thrown');
+  } catch (e) {
+    t.ok(e);
+    t.end();
+  }
+});
+
+
 test('toBer', function(t) {
   var change = new Change({
     operation: 'Add',
