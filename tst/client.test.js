@@ -566,19 +566,16 @@ test('abandon (GH-27)', function(t) {
 });
 
 
-test('unbind and reconnect (GH-30)', function(t) {
+test('unbind (GH-30)', function(t) {
   client.unbind(function(err) {
     t.ifError(err);
-    client.once('connect', function() {
-      t.end();
-    });
-    client.connect();
+    t.end();
   });
 });
 
+
 test('shutdown', function(t) {
   client.unbind(function(err) {
-    t.ifError(err);
     server.on('close', function() {
       t.end();
     });
