@@ -11,10 +11,10 @@ For full docs, head on over to <http://ldapjs.org>.
     server.search('dc=example', function(req, res, next) {
       var obj = {
         dn: req.dn.toString(),
-	attributes: {
-	  objectclass: ['organization', 'top'],
-	  o: 'example'
-	}
+        attributes: {
+          objectclass: ['organization', 'top'],
+              o: 'example'
+        }
       };
 
       if (req.filter.matches(obj.attributes))
