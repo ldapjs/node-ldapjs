@@ -34,7 +34,7 @@ test('Construct no args', function(t) {
 test('Construct args', function(t) {
   var f = new ExtensibleFilter({
     matchType: 'foo',
-    value: 'bar',
+    value: 'bar'
   });
   t.ok(f);
   t.equal(f.matchType, 'foo');

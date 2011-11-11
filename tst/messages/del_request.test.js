@@ -46,7 +46,7 @@ test('parse', function(t) {
   var req = new DeleteRequest();
   var reader = new BerReader(ber.buffer);
   reader.readSequence(0x4a);
-  t.ok(req.parse(reader.buffer, reader.length));
+  t.ok(req.parse(reader, reader.length));
   t.equal(req.dn.toString(), 'cn=test');
   t.end();
 });

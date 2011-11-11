@@ -128,7 +128,8 @@ test('setup', function(t) {
       reconnect: false // turn this off for unit testing
     });
     t.ok(client);
-    client.log4js.setLevel('Trace');
+    // client.log4js.setLevel('Trace');
+    // server.log4js.setLevel('Trace');
     t.end();
   });
 
