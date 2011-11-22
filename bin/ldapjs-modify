@@ -6,7 +6,6 @@ var fs = require('fs');
 var path = require('path');
 var url = require('url');
 
-var log4js = require('log4js');
 var nopt = require('nopt');
 
 var ldap = require('../lib/index');
@@ -14,6 +13,8 @@ var ldap = require('../lib/index');
 
 
 ///--- Globals
+
+var log4js = ldap.log4js;
 
 nopt.typeDefs.DN = {
   type: ldap.DN,
