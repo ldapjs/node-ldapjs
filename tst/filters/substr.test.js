@@ -78,6 +78,16 @@ test('match false', function(t) {
 });
 
 
+test('match any', function(t) {
+  var f = new SubstringFilter({
+    attribute: 'foo',
+    initial: 'bar'
+  });
+  t.ok(f);
+  t.ok(f.matches({ foo: ['beuha', 'barista']}));
+  t.end();
+});
+
 test('parse ok', function(t) {
   var writer = new BerWriter();
   writer.writeString('foo');
