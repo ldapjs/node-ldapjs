@@ -57,6 +57,16 @@ test('match true', function(t) {
 });
 
 
+test('match multiple', function(t) {
+  var f = new GreaterThanEqualsFilter({
+    attribute: 'foo',
+    value: 'bar'
+  });
+  t.ok(f);
+  t.ok(f.matches({ foo: ['beuha', 'baz'] }));
+  t.end();
+});
+
 test('match false', function(t) {
   var f = new GreaterThanEqualsFilter({
     attribute: 'foo',
