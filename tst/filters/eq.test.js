@@ -57,6 +57,17 @@ test('match true', function(t) {
 });
 
 
+test('match multiple', function(t) {
+  var f = new EqualityFilter({
+    attribute: 'foo',
+    value: 'bar'
+  });
+  t.ok(f);
+  t.ok(f.matches({ foo: ['plop', 'bar'] }));
+  t.end();
+});
+
+
 test('match false', function(t) {
   var f = new EqualityFilter({
     attribute: 'foo',

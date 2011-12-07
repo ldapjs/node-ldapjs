@@ -57,6 +57,17 @@ test('match true', function(t) {
 });
 
 
+test('match multiple', function(t) {
+  var f = new LessThanEqualsFilter({
+    attribute: 'foo',
+    value: 'bar'
+  });
+  t.ok(f);
+  t.ok(f.matches({ foo: ['abc', 'beuha'] }));
+  t.end();
+});
+
+
 test('match false', function(t) {
   var f = new LessThanEqualsFilter({
     attribute: 'foo',
