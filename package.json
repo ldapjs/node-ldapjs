@@ -17,7 +17,7 @@
     "node": ">=0.4"
   },
   "dependencies": {
-    "asn1": "0.1.8",
+    "asn1": "0.1.10",
     "buffertools": "1.0.5",
     "dtrace-provider": "0.0.3",
     "nopt": "1.0.10",

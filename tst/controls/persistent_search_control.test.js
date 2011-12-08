@@ -3,24 +3,21 @@
 var test = require('tap').test;
 
 var asn1 = require('asn1');
-var log4js = require('log4js');
-var sys = require('sys');
 
 var BerReader = asn1.BerReader;
 var BerWriter = asn1.BerWriter;
 var getControl;
 var PersistentSearchControl;
 
-///--- Globals
-var LOG = log4js.getLogger('persistent_search_control.test');
+
 
 ///--- Tests
 
 test('load library', function(t) {
   PersistentSearchControl =
-   require('../../lib/controls/index').PersistentSearchControl;
+    require('../../lib/controls').PersistentSearchControl;
   t.ok(PersistentSearchControl);
-  getControl = require('../../lib/controls/index').getControl;
+  getControl = require('../../lib/controls').getControl;
   t.ok(getControl);
   t.end();
 });
@@ -33,7 +30,7 @@ test('new no args', function(t) {
 
 
 test('new with args', function(t) {
-  var options = {
+  var c = new PersistentSearchControl({
     type: '2.16.840.1.113730.3.4.3',
     criticality: true,
     value: {
@@ -41,10 +38,7 @@ test('new with args', function(t) {
       changesOnly: false,
       returnECs: false
     }
-  };
-
-  var c = new PersistentSearchControl();
-  c.get(options);
+  });
   t.ok(c);
   t.equal(c.type, '2.16.840.1.113730.3.4.3');
   t.ok(c.criticality);
@@ -87,7 +81,6 @@ test('getControl with args', function(t) {
 
   var ber = new BerReader(buf);
   var psc = getControl(ber);
-  LOG.info(psc.value);
   t.ok(psc);
   t.equal(psc.type, '2.16.840.1.113730.3.4.3');
   t.equal(psc.criticality, false);
@@ -98,8 +91,7 @@ test('getControl with args', function(t) {
 });
 
 test('tober', function(t) {
-  var ber = new BerWriter();
-  var options = {
+  var psc = new PersistentSearchControl({
     type: '2.16.840.1.113730.3.4.3',
     criticality: true,
     value: {
@@ -107,10 +99,9 @@ test('tober', function(t) {
       changesOnly: false,
       returnECs: false
     }
-  };
+  });
 
-  var psc = new PersistentSearchControl();
-  psc.get(options);
+  var ber = new BerWriter();
   psc.toBer(ber);
 
   var c = getControl(new BerReader(ber.buffer));
