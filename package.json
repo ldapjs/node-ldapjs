@@ -20,6 +20,7 @@
     "asn1": "0.1.8",
     "buffertools": "1.0.5",
     "dtrace-provider": "0.0.3",
+    "log4js": "0.4.1",
     "nopt": "1.0.10",
     "sprintf": "0.1.1"
   },

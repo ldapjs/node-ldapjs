@@ -10,6 +10,7 @@ var asn1 = require('asn1');
 var BerReader = asn1.BerReader;
 var BerWriter = asn1.BerWriter;
 var Control;
+var getControl;
 
 
 ///--- Tests
@@ -17,6 +18,8 @@ var Control;
 test('load library', function(t) {
   Control = require('../lib/index').Control;
   t.ok(Control);
+  getControl = require('../lib/index').getControl;
+  t.ok(getControl);
   t.end();
 });
 
@@ -47,9 +50,7 @@ test('parse', function(t) {
   ber.writeString('foo');
   ber.endSequence();
 
-  var c = new Control();
-  t.ok(c);
-  t.ok(c.parse(new BerReader(ber.buffer)));
+  var c = getControl(new BerReader(ber.buffer));
 
   t.ok(c);
   t.equal(c.type, '2.16.840.1.113730.3.4.2');
