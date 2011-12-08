@@ -17,9 +17,10 @@ var LOG = log4js.getLogger('persistent_search_control.test');
 ///--- Tests
 
 test('load library', function(t) {
-  PersistentSearchControl = require('../lib/index').PersistentSearchControl;
+  PersistentSearchControl =
+   require('../../lib/controls/index').PersistentSearchControl;
   t.ok(PersistentSearchControl);
-  getControl = require('../lib/index').getControl;
+  getControl = require('../../lib/controls/index').getControl;
   t.ok(getControl);
   t.end();
 });
@@ -75,14 +76,14 @@ test('getControl with args', function(t) {
     0xff, 0x01, 0x01, 0xff]);
 
   var options = {
-      type: '2.16.840.1.113730.3.4.3',
-      criticality: false,
-      value: {
-        changeTypes: 15,
-        changesOnly: true,
-        returnECs: true
-      }
-    };
+    type: '2.16.840.1.113730.3.4.3',
+    criticality: false,
+    value: {
+      changeTypes: 15,
+      changesOnly: true,
+      returnECs: true
+    }
+  };
 
   var ber = new BerReader(buf);
   var psc = getControl(ber);
