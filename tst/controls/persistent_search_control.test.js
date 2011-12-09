@@ -14,10 +14,9 @@ var PersistentSearchControl;
 ///--- Tests
 
 test('load library', function(t) {
-  PersistentSearchControl =
-    require('../../lib/controls').PersistentSearchControl;
+  PersistentSearchControl = require('../../lib').PersistentSearchControl;
   t.ok(PersistentSearchControl);
-  getControl = require('../../lib/controls').getControl;
+  getControl = require('../../lib').getControl;
   t.ok(getControl);
   t.end();
 });

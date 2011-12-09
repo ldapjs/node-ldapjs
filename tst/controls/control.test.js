@@ -16,9 +16,9 @@ var getControl;
 ///--- Tests
 
 test('load library', function(t) {
-  Control = require('../../lib/controls/index').Control;
+  Control = require('../../lib/index').Control;
   t.ok(Control);
-  getControl = require('../../lib/controls/index').getControl;
+  getControl = require('../../lib/index').getControl;
   t.ok(getControl);
   t.end();
 });
