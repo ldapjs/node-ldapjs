@@ -19,7 +19,7 @@
   "dependencies": {
     "asn1": "0.1.10",
     "buffertools": "1.0.5",
-    "dtrace-provider": "0.0.3",
+    "dtrace-provider": "0.0.4",
     "nopt": "1.0.10",
     "sprintf": "0.1.1"
   },
