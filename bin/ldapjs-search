@@ -167,7 +167,6 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
     if (err)
       perror(err);
 
-    var entries = [];
     res.on('searchEntry', function(entry) {
       process.stdout.write(JSON.stringify(entry.object, null, 2) + '\n');
     });
