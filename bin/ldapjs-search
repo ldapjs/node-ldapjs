@@ -36,6 +36,7 @@ var opts = {
   'binddn': ldap.DN,
   'control': Array,
   'password': String,
+  'persistent': Boolean,
   'scope': String,
   'url': url
 };
@@ -46,6 +47,7 @@ var shortOpts = {
   'b': ['--base'],
   'D': ['--binddn'],
   'w': ['--password'],
+  'p': ['--persistent'],
   's': ['--scope'],
   'u': ['--url']
 };
@@ -122,6 +124,8 @@ if (!parsed.base)
   parsed.base = '';
 if (!parsed.control)
   parsed.control = [];
+if (!parsed.persistent)
+  parsed.persistent = false;
 
 var client = ldap.createClient({
   url: parsed.url,
@@ -143,6 +147,17 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
       criticality: true
     }));
   });
+  if (parsed.persistent) {
+    var pCtrl = new ldap.PersistentSearchControl({
+      type: '2.16.840.1.113730.3.4.3',
+      value: {
+        changeTypes: 15,
+        changesOnly: false,
+        returnECs: true
+      }
+    });
+    controls.push(pCtrl);
+  }
   var req = {
     scope: parsed.scope || 'sub',
     filter: parsed.argv.remain[0],
@@ -154,13 +169,12 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
 
     var entries = [];
     res.on('searchEntry', function(entry) {
-      entries.push(entry.object);
+      process.stdout.write(JSON.stringify(entry.object, null, 2) + '\n');
     });
     res.on('error', function(err) {
       perror(err);
     });
     res.on('end', function(res) {
-      process.stdout.write(JSON.stringify(entries, null, 2) + '\n');
       if (res.status !== 0)
         process.stderr.write(ldap.getMessage(res.status) + '\n');
       client.unbind(function() {
