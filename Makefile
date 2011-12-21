@@ -28,7 +28,7 @@ RESTDOWN = ./node_modules/.restdown/bin/restdown \
 all:: test doc
 
 node_modules/.ldapjs.npm.installed:
-	$(NPM) install --dev
+	$(NPM) install
 	if [[ ! -d node_modules/.restdown ]]; then \
 		git clone git://github.com/trentm/restdown.git node_modules/.restdown; \
 	else \
