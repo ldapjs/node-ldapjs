@@ -1,5 +1,10 @@
 {
   "author": "Mark Cavage <mcavage@gmail.com>",
+  "contributors": [
+    "Mathieu Lecarme <mathieu@garambrogne.net>>",
+    "Trent Mick <trentm@gmail.com>",
+    "Yunong Xiao <yunong@joyent.com>"
+  ],
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
