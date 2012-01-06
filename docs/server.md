@@ -140,7 +140,14 @@ functions in the form `f(req, res, next)` or arrays of functions of the same
 signature (ldapjs will unroll them).
 
 Unlike HTTP, LDAP operations do not have a heterogeneous wire format, so each
-operation requires specific methods/fields on the request/response objects.
+operation requires specific methods/fields on the request/response
+objects.  However, there is a `.use()` method availabe, similar to
+that on express/connect, allowing you to chain up "middleware":
+
+    server.use(function(req, res, next) {
+      console.log('hello world');
+      return next();
+    });
 
 ## Common Request Elements
 
