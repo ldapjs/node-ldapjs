@@ -278,7 +278,15 @@ functions in the form <code>f(req, res, next)</code> or arrays of functions of t
 signature (ldapjs will unroll them).</p>
 
 <p>Unlike HTTP, LDAP operations do not have a heterogeneous wire format, so each
-operation requires specific methods/fields on the request/response objects.</p>
+operation requires specific methods/fields on the request/response
+objects.  However, there is a <code>.use()</code> method availabe, similar to
+that on express/connect, allowing you to chain up "middleware":</p>
+
+<pre><code>server.use(function(req, res, next) {
+  console.log('hello world');
+  return next();
+});
+</code></pre>
 
 <h2 id="Common-Request-Elements"><span class="method name"><span class="name">Common Request Elements</span></span></h2>
 

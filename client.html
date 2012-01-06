@@ -109,7 +109,8 @@ with LDAP. If you're not, read the <a href="http://ldapjs.org/guide.html">guide<
 
 <p>The code to create a new client looks like:</p>
 
-<pre><code>var client = ldap.createClient({
+<pre><code>var ldap = require('ldapjs');
+var client = ldap.createClient({
   url: 'ldap://127.0.0.1:1389'
 });
 </code></pre>
@@ -252,8 +253,8 @@ pass in a single <code>Change</code> or an array of <code>Change</code> objects.
 
 <p>Example:</p>
 
-<pre><code>var change = new Change({
-  type: 'add',
+<pre><code>var change = new ldap.Change({
+  operation: 'add',
   modification: {
     pets: ['cat', 'dog']
   }
