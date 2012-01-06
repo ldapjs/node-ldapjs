@@ -58,3 +58,19 @@ test('parse', function(t) {
   t.equal(c.value, 'foo');
   t.end();
 });
+
+
+test('parse no value', function(t) {
+  var ber = new BerWriter();
+  ber.startSequence();
+  ber.writeString('2.16.840.1.113730.3.4.2');
+  ber.endSequence();
+
+  var c = getControl(new BerReader(ber.buffer));
+
+  t.ok(c);
+  t.equal(c.type, '2.16.840.1.113730.3.4.2');
+  t.equal(c.criticality, false);
+  t.notOk(c.value, null);
+  t.end();
+});
