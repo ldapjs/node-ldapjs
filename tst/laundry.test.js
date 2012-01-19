@@ -9,9 +9,34 @@ var ldap = require('../lib/index');
 ///--- Globals
 
 var SOCKET = '/tmp/.' + uuid();
+var SUFFIX = 'dc=' + uuid();
 
 var client;
 var server;
+
+
+
+///--- Helper
+
+function search(t, options, callback) {
+  client.search(SUFFIX, options, function(err, res) {
+    t.ifError(err);
+    t.ok(res);
+    var found = false;
+    res.on('searchEntry', function(entry) {
+      t.ok(entry);
+      found = true;
+    });
+    res.on('end', function() {
+      t.ok(found);
+      if (callback)
+        return callback();
+
+      t.end();
+    });
+  });
+}
+
 
 
 ///--- Tests
@@ -24,32 +49,30 @@ test('setup', function(t) {
       socketPath: SOCKET
     });
     t.ok(client);
-    // client.log4js.setLevel('Debug');
     t.end();
+  });
+
+  server.search(SUFFIX, function(req, res, next) {
+    var entry = {
+      dn: 'cn=foo, ' + SUFFIX,
+      attributes: {
+        objectclass: ['person', 'top'],
+        cn: 'Pogo Stick',
+        sn: 'Stick',
+        givenname: 'ogo',
+        mail: uuid() + '@pogostick.org'
+      }
+    };
+    
+    if (req.filter.matches(entry.attributes))
+      res.send(entry);
+
+    res.end();
   });
 });
 
 
 test('Evolution search filter (GH-3)', function(t) {
-  var suffix = 'dc=' + uuid();
-  var entry = {
-    dn: 'cn=foo, ' + suffix,
-    attributes: {
-      objectclass: ['person', 'top'],
-      cn: 'Pogo Stick',
-      sn: 'Stick',
-      givenname: 'ogo',
-      mail: uuid() + '@pogostick.org'
-    }
-  };
-
-  server.search(suffix, function(req, res, next) {
-    console.log(req.filter.filters[0].type);
-    if (req.filter.matches(entry.attributes))
-      res.send(entry);
-    res.end();
-  });
-
   // This is what Evolution sends, when searching for a contact 'ogo'. Wow.
   var filter =
     '(|(cn=ogo*)(givenname=ogo*)(sn=ogo*)(mail=ogo*)(member=ogo*)' +
@@ -69,19 +92,17 @@ test('Evolution search filter (GH-3)', function(t) {
     '(anniversary=ogo*)(birthdate=ogo*)(mailer=ogo*)(fileas=ogo*)' +
     '(category=ogo*)(calcaluri=ogo*)(calfburl=ogo*)(icscalendar=ogo*))';
 
-  client.search(suffix, filter, function(err, res) {
-    t.ifError(err);
-    t.ok(res);
-    var found = false;
-    res.on('searchEntry', function(entry) {
-      t.ok(entry);
-      found = true;
-    });
-    res.on('end', function() {
-      t.ok(found);
-      t.end();
-    });
-  });
+  return search(t, filter);
+});
+
+
+test('GH-49 Client errors on bad attributes', function(t) {
+  var searchOpts = {
+    filter: 'cn=*ogo*',
+    scope: 'one',
+    attributes: 'dn'
+  };
+  return search(t, searchOpts);
 });
 
 
