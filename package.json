@@ -3,12 +3,13 @@
   "contributors": [
     "Mathieu Lecarme <mathieu@garambrogne.net>>",
     "Trent Mick <trentm@gmail.com>",
-    "Yunong Xiao <yunong@joyent.com>"
+    "Yunong Xiao <yunong@joyent.com>",
+    "Craig Baker"
   ],
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
