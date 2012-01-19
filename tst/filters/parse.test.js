@@ -29,3 +29,53 @@ test('GH-50 = in filter', function(t) {
           'uuid=930896af-bf8c-48d4-885c-6573a94b1853, ou=users, o=smartdc');
   t.end();
 });
+
+
+test('( in filter', function(t) {
+  var str = '(foo=bar\\()';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'bar(');
+  t.end();
+});
+
+
+test(') in filter', function(t) {
+  var str = '(foo=bar\\))';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'bar)');
+  t.end();
+});
+
+
+test('\\ in filter', function(t) {
+  var str = '(foo=bar\\\\)';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'bar\\');
+  t.end();
+});
+
+
+test('* in equality filter', function(t) {
+  var str = '(foo=bar\\*)';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'bar*');
+  t.end();
+});
+
+
+test('* substr filter (prefix)', function(t) {
+  var str = '(foo=bar*)';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'foo');
+  t.equal(f.initial, 'bar');
+  t.end();
+});

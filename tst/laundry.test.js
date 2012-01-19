@@ -44,7 +44,7 @@ test('Evolution search filter (GH-3)', function(t) {
   };
 
   server.search(suffix, function(req, res, next) {
-    console.log(req.filter.toString());
+    console.log(req.filter.filters[0].type);
     if (req.filter.matches(entry.attributes))
       res.send(entry);
     res.end();
