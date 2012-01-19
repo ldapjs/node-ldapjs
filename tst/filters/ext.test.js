@@ -108,3 +108,4 @@ test('parse RFC example 5', function(t) {
   t.ok(f.dnAttributes);
   t.end();
 });
+
