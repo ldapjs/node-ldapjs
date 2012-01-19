@@ -17,3 +17,15 @@ test('GH-48 XML Strings in filter', function(t) {
   });
   t.end();
 });
+
+
+test('GH-50 = in filter', function(t) {
+  var str = '(uniquemember=uuid=930896af-bf8c-48d4-885c-6573a94b1853, ' +
+    'ou=users, o=smartdc)';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'uniquemember');
+  t.equal(f.value,
+          'uuid=930896af-bf8c-48d4-885c-6573a94b1853, ou=users, o=smartdc');
+  t.end();
+});
