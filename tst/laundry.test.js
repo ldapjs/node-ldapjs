@@ -63,7 +63,7 @@ test('setup', function(t) {
         mail: uuid() + '@pogostick.org'
       }
     };
-    
+
     if (req.filter.matches(entry.attributes))
       res.send(entry);
 

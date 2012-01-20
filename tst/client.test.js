@@ -75,6 +75,10 @@ test('setup', function(t) {
     return next();
   });
 
+  server.search('dc=timeout', function(req, res, next) {
+    // Haha client!
+  });
+
   server.search(SUFFIX, function(req, res, next) {
 
     if (req.dn.equals('cn=ref,' + SUFFIX)) {
@@ -570,6 +574,15 @@ test('abandon (GH-27)', function(t) {
 test('unbind (GH-30)', function(t) {
   client.unbind(function(err) {
     t.ifError(err);
+    t.end();
+  });
+});
+
+
+test('search timeout (GH-51)', function(t) {
+  client.timeout = 250;
+  client.search('dc=timeout', 'objectclass=*', function(err, res) {
+    t.ok(err);
     t.end();
   });
 });

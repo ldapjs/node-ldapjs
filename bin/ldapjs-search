@@ -38,6 +38,7 @@ var opts = {
   'password': String,
   'persistent': Boolean,
   'scope': String,
+  'timeout': Number,
   'url': url
 };
 
@@ -49,6 +50,7 @@ var shortOpts = {
   'w': ['--password'],
   'p': ['--persistent'],
   's': ['--scope'],
+  't': ['--timeout'],
   'u': ['--url']
 };
 
@@ -129,11 +131,17 @@ if (!parsed.persistent)
 
 var client = ldap.createClient({
   url: parsed.url,
-  log4js: log4js
+  log4js: log4js,
+  timeout: parsed.timeout || false
 });
 
 client.on('error', function(err) {
   perror(err);
+});
+
+client.on('timeout', function(req) {
+  process.stderr.write('Timeout reached\n');
+  process.exit(1);
 });
 
 client.bind(parsed.binddn, parsed.password, function(err, res) {
