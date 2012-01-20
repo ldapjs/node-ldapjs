@@ -125,7 +125,8 @@ client is:</p>
 <tr><td>url</td><td>a valid LDAP url.</td></tr>
 <tr><td>socketPath</td><td>If you're running an LDAP server over a Unix Domain Socket, use this.</td></tr>
 <tr><td>log4js</td><td>You can optionally pass in a log4js instance the client will use to acquire a logger.  The client logs all messages at the <code>Trace</code> level.</td></tr>
-<tr><td>numConnections</td><td>The size of the connection pool. Default is 1.</td></tr>
+<tr><td>timeout</td><td>How long the client should let operations live for before timing out. Default is Infinity.</td></tr>
+<tr><td>connectTimeout</td><td>How long the client should wait before timing out on TCP connections. Default is up to the OS.</td></tr>
 <tr><td>reconnect</td><td>Whether or not to automatically reconnect (and rebind) on socket errors. Takes amount of time in millliseconds. Default is 1000. 0/false will disable altogether.</td></tr>
 </tbody>
 </table>
@@ -143,6 +144,14 @@ ever successfully called bind).  Only after the rebind succeeds will other
 operations be allowed back through; in the meantime all callbacks will receive
 a <code>DisconnectedError</code>. If you never called <code>bind</code>, the client will allow
 operations when the socket is connected.</p>
+
+<p>Also, note that the client will emit a <code>timeout</code> event if an operation
+times out, and you'll be passed in the request object that was offending. You
+probably don't <em>need</em> to listen on it, as the client will also return an error
+in the callback of that request.  However, it is useful if you want to have a
+catch-all.  An event of <code>connectTimout</code> will be emitted when the client fails to
+get a socket in time; there are no arguments.  Note that this event will be
+emitted (potentially) in reconnect scenarios as well.</p>
 
 <h2 id="Common-patterns"><span class="method name"><span class="name">Common patterns</span></span></h2>
 
