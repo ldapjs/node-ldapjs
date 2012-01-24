@@ -23,7 +23,7 @@ RESTDOWN = ./node_modules/.restdown/bin/restdown \
 	-m ${DOCPKGDIR} \
 	-D mediaroot=media
 
-.PHONY:  dep lint test doc clean all
+.PHONY:  dep lint test doc clean all install
 
 all:: test doc
 
@@ -38,6 +38,7 @@ node_modules/.ldapjs.npm.installed:
 	@touch ./node_modules/.ldapjs.npm.installed
 
 dep:	./node_modules/.ldapjs.npm.installed
+install: dep
 
 gjslint:
 	gjslint --nojsdoc -r lib -r tst

@@ -79,3 +79,18 @@ test('* substr filter (prefix)', function(t) {
   t.equal(f.initial, 'bar');
   t.end();
 });
+
+
+test('GH-53 NotFilter', function(t) {
+  var str = '(&(objectClass=person)(!(objectClass=shadowAccount)))';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.type, 'and');
+  t.equal(f.filters.length, 2);
+  t.equal(f.filters[0].type, 'equal');
+  t.equal(f.filters[1].type, 'not');
+  t.equal(f.filters[1].filter.type, 'equal');
+  t.equal(f.filters[1].filter.attribute, 'objectClass');
+  t.equal(f.filters[1].filter.value, 'shadowAccount');
+  t.end();
+});

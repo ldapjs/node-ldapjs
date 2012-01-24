@@ -26,12 +26,7 @@ test('load library', function(t) {
 
 
 test('Construct no args', function(t) {
-  try {
-    new NotFilter();
-    t.fail('should have thrown');
-  } catch (e) {
-    t.ok(e instanceof TypeError);
-  }
+  t.ok(new NotFilter());
   t.end();
 });
 
