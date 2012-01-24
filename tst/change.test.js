@@ -52,7 +52,7 @@ test('new with args', function(t) {
 
 test('GH-31 (multiple attributes per Change)', function(t) {
   try {
-    var change = new Change({
+    new Change({
       operation: 'replace',
       modification: {
         cn: 'foo',
