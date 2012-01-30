@@ -52,6 +52,10 @@ test('setup', function(t) {
     t.end();
   });
 
+  server.bind('cn=root', function(req, res, next) {
+    res.end();
+    return next();
+  });
   server.search(SUFFIX, function(req, res, next) {
     var entry = {
       dn: 'cn=foo, ' + SUFFIX,
@@ -103,6 +107,26 @@ test('GH-49 Client errors on bad attributes', function(t) {
     attributes: 'dn'
   };
   return search(t, searchOpts);
+});
+
+
+test('GH-55 Client emits connect multiple times', function(t) {
+  var c = ldap.createClient({
+    socketPath: SOCKET
+  });
+
+  var count = 0;
+  c.on('connect', function(socket) {
+    t.ok(socket);
+    count++;
+  });
+  c.bind('cn=root', 'secret', function(err, res) {
+    t.ifError(err);
+    c.unbind(function() {
+      t.equal(count, 1);
+      t.end();
+    });
+  });
 });
 
 
