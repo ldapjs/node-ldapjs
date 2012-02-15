@@ -82,4 +82,4 @@ test: dep lint
 	$(NPM) test
 
 clean:
-	@rm -fr ${DOCPKGDIR} node_modules *.log *.tar.gz
+	@rm -fr ${DOCPKGDIR} *.log *.tar.gz
