@@ -1,8 +1,9 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
-var test = require('tap').test;
 
 var asn1 = require('asn1');
+var Logger = require('bunyan');
+var test = require('tap').test;
 
 
 ///--- Globals
@@ -43,7 +44,9 @@ test('parse', function (t) {
   var ber = new BerWriter();
   ber.writeString('cn=test', 0x4a);
 
-  var req = new DeleteRequest();
+  var req = new DeleteRequest({
+    log: new Logger({name: 'del_request.test.js'})
+  });
   var reader = new BerReader(ber.buffer);
   reader.readSequence(0x4a);
   t.ok(req.parse(reader, reader.length));

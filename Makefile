@@ -42,8 +42,8 @@ all:
 	$(NPM) install
 
 .PHONY: test
-test: $(TAP)
-	$(TAP) test/*.test.js
+test:
+	$(NPM) test
 
 include ./Makefile.deps
 include ./Makefile.targ
