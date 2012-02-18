@@ -119,12 +119,12 @@ test('GH-55 Client emits connect multiple times', function (t) {
   c.on('connect', function (socket) {
     t.ok(socket);
     count++;
-  });
-  c.bind('cn=root', 'secret', function (err, res) {
-    t.ifError(err);
-    c.unbind(function () {
-      t.equal(count, 1);
-      t.end();
+    c.bind('cn=root', 'secret', function (err, res) {
+      t.ifError(err);
+      c.unbind(function () {
+        t.equal(count, 1);
+        t.end();
+      });
     });
   });
 });
