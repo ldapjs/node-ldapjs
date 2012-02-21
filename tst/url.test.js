@@ -67,7 +67,7 @@ test('parse full', function(t) {
   t.equal(u.attributes[0], 'cn');
   t.equal(u.attributes[1], 'sn');
   t.equal(u.scope, 'sub');
-  t.equal(u.filter, '(cn=Babs Jensen)');
+  t.equal(u.filter.toString(), '(cn=Babs Jensen)');
 
   t.end();
 });
