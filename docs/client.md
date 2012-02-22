@@ -28,7 +28,8 @@ client is:
 ||url|| a valid LDAP url.||
 ||socketPath|| If you're running an LDAP server over a Unix Domain Socket, use this.||
 ||log4js|| You can optionally pass in a log4js instance the client will use to acquire a logger.  The client logs all messages at the `Trace` level.||
-||numConnections||The size of the connection pool. Default is 1.||
+||timeout||How long the client should let operations live for before timing out. Default is Infinity.||
+||connectTimeout||How long the client should wait before timing out on TCP connections. Default is up to the OS.||
 ||reconnect||Whether or not to automatically reconnect (and rebind) on socket errors. Takes amount of time in millliseconds. Default is 1000. 0/false will disable altogether.||
 
 ## Connection management
@@ -44,6 +45,14 @@ ever successfully called bind).  Only after the rebind succeeds will other
 operations be allowed back through; in the meantime all callbacks will receive
 a `DisconnectedError`. If you never called `bind`, the client will allow
 operations when the socket is connected.
+
+Also, note that the client will emit a `timeout` event if an operation
+times out, and you'll be passed in the request object that was offending. You
+probably don't _need_ to listen on it, as the client will also return an error
+in the callback of that request.  However, it is useful if you want to have a
+catch-all.  An event of `connectTimout` will be emitted when the client fails to
+get a socket in time; there are no arguments.  Note that this event will be
+emitted (potentially) in reconnect scenarios as well.
 
 ## Common patterns
 
