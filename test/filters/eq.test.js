@@ -91,6 +91,17 @@ test('parse ok', function (t) {
   t.end();
 });
 
+test('escape EqualityFilter inputs', function (t) {
+  var f = new EqualityFilter({
+    attribute: '(|(foo',
+    value: 'bar))('
+  });
+
+  t.equal(f.attribute, '\\28|\\28foo');
+  t.equal(f.value, 'bar\\29\\29\\28');
+  t.end();
+});
+
 
 test('parse bad', function (t) {
   var writer = new BerWriter();
