@@ -36,17 +36,36 @@ test('( in filter', function (t) {
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar(');
+  t.equal(f.value, 'bar\\28');
   t.end();
 });
-
 
 test(') in filter', function (t) {
   var str = '(foo=bar\\))';
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar)');
+  t.equal(f.value, 'bar\\29');
+  t.end();
+});
+
+
+test('( in filter', function (t) {
+  var str = 'foo(bar=baz\\()';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'foo\\28bar');
+  t.equal(f.value, 'baz\\28\\29');
+  t.end();
+});
+
+
+test('( in filter', function (t) {
+  var str = 'foo)(&(bar=baz)(';
+  var f = parse(str);
+  t.ok(f);
+  t.equal(f.attribute, 'foo\\29\\28&\\28bar');
+  t.equal(f.value, 'baz\\29\\28');
   t.end();
 });
 
@@ -56,7 +75,7 @@ test('\\ in filter', function (t) {
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar\\');
+  t.equal(f.value, 'bar\\5c');
   t.end();
 });
 
@@ -66,7 +85,7 @@ test('* in equality filter', function (t) {
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar*');
+  t.equal(f.value, 'bar\\2a');
   t.end();
 });
 
