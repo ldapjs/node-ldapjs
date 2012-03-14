@@ -1,11 +1,11 @@
 {
   "author": "Mark Cavage <mcavage@gmail.com>",
   "contributors": [
-    "Craig Baker"
-    "Austin King <shout@ozten.com>"
+    "Craig Baker",
+    "Austin King <shout@ozten.com>",
     "Mathieu Lecarme <mathieu@garambrogne.net>>",
     "Trent Mick <trentm@gmail.com>",
-    "Yunong Xiao <yunong@joyent.com>",
+    "Yunong Xiao <yunong@joyent.com>"
   ],
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
