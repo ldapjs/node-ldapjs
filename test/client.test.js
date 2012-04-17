@@ -569,6 +569,16 @@ test('abandon (GH-27)', function (t) {
 });
 
 
+test('search timeout (GH-51)', function (t) {
+  client.timeout = 250;
+  client.search('dc=timeout', 'objectclass=*', function (err, res) {
+    t.ifError(err);
+    res.on('error', function () {
+      t.end();
+    });
+  });
+});
+
 test('unbind (GH-30)', function (t) {
   client.unbind(function (err) {
     t.ifError(err);
@@ -577,20 +587,9 @@ test('unbind (GH-30)', function (t) {
 });
 
 
-test('search timeout (GH-51)', function (t) {
-  client.timeout = 250;
-  client.search('dc=timeout', 'objectclass=*', function (err, res) {
-    t.ok(err);
+test('shutdown', function (t) {
+  server.on('close', function () {
     t.end();
   });
-});
-
-
-test('shutdown', function (t) {
-  client.unbind(function (err) {
-    server.on('close', function () {
-      t.end();
-    });
-    server.close();
-  });
+  server.close();
 });
