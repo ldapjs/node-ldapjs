@@ -1,5 +1,7 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
+var Logger = require('bunyan');
+
 var test = require('tap').test;
 var uuid = require('node-uuid');
 
@@ -129,22 +131,19 @@ test('setup', function (t) {
   server.listen(SOCKET, function () {
     client = ldap.createClient({
       socketPath: SOCKET,
-      reconnect: false // turn this off for unit testing
+      maxConnections: process.env.LDAP_MAX_CONNS || 5,
+      log: new Logger({
+        name: 'ldapjs_unit_test',
+        stream: process.stderr,
+        level: (process.env.LOG_LEVEL || 'info'),
+        serializers: Logger.stdSerializers,
+        idleTimeoutMillis: 10
+      })
     });
     t.ok(client);
     t.end();
   });
 
-});
-
-
-test('simple bind success', function (t) {
-  client.bind(BIND_DN, BIND_PW, function (err, res) {
-    t.ifError(err);
-    t.ok(res);
-    t.equal(res.status, 0);
-    t.end();
-  });
 });
 
 
@@ -159,6 +158,16 @@ test('simple bind failure', function (t) {
     t.ok(err.message);
     t.ok(err.stack);
 
+    t.end();
+  });
+});
+
+
+test('simple bind success', function (t) {
+  client.bind(BIND_DN, BIND_PW, function (err, res) {
+    t.ifError(err);
+    t.ok(res);
+    t.equal(res.status, 0);
     t.end();
   });
 });
@@ -578,6 +587,7 @@ test('search timeout (GH-51)', function (t) {
     });
   });
 });
+
 
 test('unbind (GH-30)', function (t) {
   client.unbind(function (err) {
