@@ -132,12 +132,12 @@ test('setup', function (t) {
     client = ldap.createClient({
       socketPath: SOCKET,
       maxConnections: process.env.LDAP_MAX_CONNS || 5,
+      idleTimeoutMillis: 10,
       log: new Logger({
         name: 'ldapjs_unit_test',
         stream: process.stderr,
         level: (process.env.LOG_LEVEL || 'info'),
-        serializers: Logger.stdSerializers,
-        idleTimeoutMillis: 10
+        serializers: Logger.stdSerializers
       })
     });
     t.ok(client);
