@@ -27,7 +27,11 @@ DOC_FILES	 =	client.md	\
 			dn.md		\
 			errors.md	\
 			examples.md	\
-			filters.md
+			filters.md      \
+                        guide.md        \
+                        index.md        \
+                        persistent_search.md    \
+                        server.md
 
 JS_FILES	:= $(shell find lib test -name '*.js')
 JSL_CONF_NODE	 = tools/jsl.node.conf
