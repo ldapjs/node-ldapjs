@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ldapjs</title>
+  <title>Persistent_search</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" type="text/css" href="media/css/style.css">
   <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
@@ -64,10 +64,8 @@ h1,h2,h3,h4,h5,h6 {
     <span id="tocbutton" class="navbutton">Page Contents</span>
     <div id="toc" class="popup" style="display: none">
       <ul>
-  <li><div><a href="#features">Features</a></div></li>
-  <li><div><a href="#getting-started">Getting started</a></div></li>
-  <li><div><a href="#more-information">More information</a></div></li>
-  <li><div><a href="#whats-not-in-the-box">What's not in the box?</a></div></li>
+  <li><div><a href="#addclientreq-res-callback">addClient(req, res, callback)</a></div></li>
+  <li><div><a href="#removeclientreq-res-callback">removeClient(req, res, callback)</a></div></li>
 </ul>
 
     </div>
@@ -79,105 +77,26 @@ h1,h2,h3,h4,h5,h6 {
   </a>
 </div>
     <div id="content">
-<div id="indextagline">
-Reimagining <a href="http://tools.ietf.org/html/rfc4510" id="indextaglink">LDAP</a> for <a id="indextaglink" href="http://nodejs.org">Node.js</a>
-</div>
 
-
-<h1>Overview</h1>
+<h1>ldapjs Persistent Search Cache API</h1>
 <div class="intro">
 
 
-<p>ldapjs is a pure JavaScript, from-scratch framework for implementing
-<a href="http://tools.ietf.org/html/rfc4510">LDAP</a> clients and servers in
-<a href="http://nodejs.org">Node.js</a>.  It is intended for developers used to interacting
-with HTTP services in node and <a href="http://expressjs.com">express</a>.</p>
+<p>This document covers the ldapjs Persistent Search Cache API and assumes you are familiar with LDAP. If you're not, read the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
 
-<pre><code>var ldap = require('ldapjs');
+<p>This document also assumes you are familiar with LDAP persistent search. If you're not, read the <a href="http://tools.ietf.org/id/draft-ietf-ldapext-psearch-03.txt">rfc</a> first.</p>
 
-var server = ldap.createServer();
-
-server.search('o=example', function(req, res, next) {
-  var obj = {
-    dn: req.dn.toString(),
-    attributes: {
-      objectclass: ['organization', 'top'],
-      o: 'example'
-    }
-  };
-
-  if (req.filter.matches(obj.attributes))
-    res.send(obj);
-
-  res.end();
-});
-
-server.listen(1389, function() {
-  console.log('LDAP server listening at %s', server.url);
-});
-</code></pre>
-
-<p>Try hitting that with:</p>
-
-<pre class="shell"><code>ldapsearch -H ldap://localhost:1389 -x -b o=example objectclass=*
-</code></pre>
+<p>Note this API is a cache used to store all connected persistent search clients, and does not actually implement persistent search.</p>
 
 
 </div>
-<h1 id="features">Features</h1>
+<h1 id="addclientreq-res-callback">addClient(req, res, callback)</h1>
 
-<p>ldapjs implements most of the common operations in the LDAP v3 RFC(s), for
-both client and server.  It is 100% wire-compatible with the LDAP protocol
-itself, and is interoperable with <a href="http://openldap.org">OpenLDAP</a> and any other
-LDAPv3-compliant implementation.  ldapjs gives you a powerful routing and
-"intercepting filter" pattern for implementing server(s).  It is intended
-that you can build LDAP over anything you want, not just traditional databases.</p>
+<p>Adds a client to the cache.</p>
 
-<h1 id="getting-started">Getting started</h1>
+<h1 id="removeclientreq-res-callback">removeClient(req, res, callback)</h1>
 
-<pre class="shell"><code>npm install ldapjs
-</code></pre>
-
-<p>If you're new to LDAP, check out the <a href="/guide.html">guide</a>.  Otherwise, the
-API documentation is:</p>
-
-<table>
-<tbody>
-<tr><td><a href="/server.html">server</a></td><td>Reference for implementing LDAP servers.</td></tr>
-<tr><td><a href="/client.html">client</a></td><td>Reference for implementing LDAP clients.</td></tr>
-<tr><td><a href="/dn.html">dn</a></td><td>API reference for the DN class.</td></tr>
-<tr><td><a href="/filters.html">filters</a></td><td>API reference for LDAP search filters.</td></tr>
-<tr><td><a href="/errors.html">errors</a></td><td>Listing of all ldapjs Error objects.</td></tr>
-<tr><td><a href="/examples.html">examples</a></td><td>Collection of sample/getting started code.</td></tr>
-</tbody>
-</table>
-
-<h1 id="more-information">More information</h1>
-
-<table>
-<tbody>
-<tr><td>License</td><td><a href="http://opensource.org/licenses/mit-license.php">MIT</a></td></tr>
-<tr><td>Code</td><td><a href="https://github.com/mcavage/node-ldapjs">mcavage/node-ldapjs</a></td></tr>
-<tr><td>node.js version</td><td>&gt;=0.6</td></tr>
-<tr><td>Twitter</td><td><a href="http://twitter.com/mcavage">@mcavage</a></td></tr>
-</tbody>
-</table>
-
-<h1 id="whats-not-in-the-box">What's not in the box?</h1>
-
-<p>Since most developers and system(s) adminstrators struggle with some of the
-esoteric features of LDAP, not all features in LDAP are implemented here.
-Specifically:</p>
-
-<ul>
-<li>LDIF</li>
-<li>Aliases</li>
-<li>Attributes by OID</li>
-<li>TLS extended operation (seriously, just use SSL)</li>
-<li>Extensible matching</li>
-</ul>
-
-<p>There are a few others, but those are the "big" ones.</p>
+<p>Removes a client from the cache.</p>
 
     </div>
 <div id="footer">
