@@ -130,15 +130,16 @@ test('setup', function (t) {
 
   server.listen(SOCKET, function () {
     client = ldap.createClient({
-      connectTimeout: 100,
+      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
-      maxConnections: process.env.LDAP_MAX_CONNS || 5,
+      maxConnections: parseInt(process.env.LDAP_MAX_CONNS || 5, 10),
       idleTimeoutMillis: 10,
       log: new Logger({
         name: 'ldapjs_unit_test',
         stream: process.stderr,
         level: (process.env.LOG_LEVEL || 'info'),
-        serializers: Logger.stdSerializers
+        serializers: Logger.stdSerializers,
+        src: true
       })
     });
     t.ok(client);
@@ -149,7 +150,6 @@ test('setup', function (t) {
 
 
 test('simple bind failure', function (t) {
-  try {
   client.bind(BIND_DN, uuid(), function (err, res) {
     t.ok(err);
     t.notOk(res);
@@ -162,10 +162,6 @@ test('simple bind failure', function (t) {
 
     t.end();
   });
-  } catch (e) {
-    console.log(e.stack);
-    process.exit(1);
-  }
 });
 
 
