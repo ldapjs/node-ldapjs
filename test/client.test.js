@@ -130,6 +130,7 @@ test('setup', function (t) {
 
   server.listen(SOCKET, function () {
     client = ldap.createClient({
+      connectTimeout: 100,
       socketPath: SOCKET,
       maxConnections: process.env.LDAP_MAX_CONNS || 5,
       idleTimeoutMillis: 10,
@@ -148,6 +149,7 @@ test('setup', function (t) {
 
 
 test('simple bind failure', function (t) {
+  try {
   client.bind(BIND_DN, uuid(), function (err, res) {
     t.ok(err);
     t.notOk(res);
@@ -160,6 +162,10 @@ test('simple bind failure', function (t) {
 
     t.end();
   });
+  } catch (e) {
+    console.log(e.stack);
+    process.exit(1);
+  }
 });
 
 

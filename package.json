@@ -10,7 +10,7 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
@@ -21,10 +21,11 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">=0.6"
+    "node": "~0.6"
   },
   "dependencies": {
     "asn1": "0.1.11",
+    "assert-plus": "0.1.0",
     "buffertools": "1.1.0",
     "bunyan": "0.10.0",
     "dtrace-provider": "0.0.9",
