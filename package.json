@@ -10,7 +10,7 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
@@ -30,7 +30,7 @@
     "bunyan": "0.10.0",
     "dtrace-provider": "0.0.9",
     "nopt": "1.0.10",
-    "pooling": "0.2.1"
+    "pooling": "0.2.2"
   },
   "devDependencies": {
     "tap": "0.2.5",
