@@ -9,11 +9,12 @@ var nopt = require('nopt');
 
 var ldap = require('../lib/index');
 
+var bunyan = require('bunyan');
 
 
 ///--- Globals
 
-var log4js = ldap.log4js;
+var log = bunyan.createLogger({ name: 'ldap-search' });
 
 nopt.typeDefs.DN = {
   type: ldap.DN,
@@ -37,6 +38,7 @@ var opts = {
   'control': Array,
   'password': String,
   'persistent': Boolean,
+  'paged': Number,
   'scope': String,
   'timeout': Number,
   'url': url
@@ -49,6 +51,7 @@ var shortOpts = {
   'D': ['--binddn'],
   'w': ['--password'],
   'p': ['--persistent'],
+  'g': ['--paged'],
   's': ['--scope'],
   't': ['--timeout'],
   'u': ['--url']
@@ -93,7 +96,6 @@ function perror(err) {
 
 ///--- Mainline
 
-log4js.setGlobalLogLevel('INFO');
 var parsed;
 
 try {
@@ -115,7 +117,7 @@ try {
 
 
 if (parsed.debug)
-  log4js.setGlobalLogLevel(parsed.debug > 1 ? 'TRACE' : 'DEBUG');
+  log.level(parsed.debug > 1 ? 'trace' : 'debug')
 if (!parsed.url)
   parsed.url = 'ldap://127.0.0.1:389';
 if (!parsed.binddn)
@@ -131,7 +133,7 @@ if (!parsed.persistent)
 
 var client = ldap.createClient({
   url: parsed.url,
-  log4js: log4js,
+  log: log,
   timeout: parsed.timeout || false
 });
 
@@ -165,6 +167,11 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
       }
     });
     controls.push(pCtrl);
+  }
+  if (parsed.paged) {
+    log.info('paged search (size %d)', parsed.paged);
+    var ctrl = new ldap.PagedResultsControl({ value: { size: parsed.paged } });
+    controls.push(ctrl);
   }
   var req = {
     scope: parsed.scope || 'sub',
