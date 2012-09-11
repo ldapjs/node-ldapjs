@@ -27,8 +27,8 @@
     "asn1": "0.1.11",
     "assert-plus": "0.1.0",
     "buffertools": "1.1.0",
-    "bunyan": "0.10.0",
-    "dtrace-provider": "0.0.9",
+    "bunyan": "0.13.5",
+    "dtrace-provider": "0.2.0",
     "nopt": "1.0.10",
     "pooling": "0.2.2"
   },
