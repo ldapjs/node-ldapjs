@@ -37,6 +37,7 @@ var opts = {
   'control': Array,
   'password': String,
   'persistent': Boolean,
+  'paged': Number,
   'scope': String,
   'timeout': Number,
   'url': url
@@ -49,6 +50,7 @@ var shortOpts = {
   'D': ['--binddn'],
   'w': ['--password'],
   'p': ['--persistent'],
+  'g': ['--paged'],
   's': ['--scope'],
   't': ['--timeout'],
   'u': ['--url']
@@ -165,6 +167,10 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
       }
     });
     controls.push(pCtrl);
+  }
+  if (parsed.paged) {
+    var ctrl = new ldap.PagedResultsControl({ value: { size: parsed.paged } });
+    controls.push(ctrl);
   }
   var req = {
     scope: parsed.scope || 'sub',
