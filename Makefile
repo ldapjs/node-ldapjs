@@ -39,15 +39,24 @@ JSL_FILES_NODE   = $(JS_FILES)
 JSSTYLE_FILES	 = $(JS_FILES)
 JSSTYLE_FLAGS    = -f tools/jsstyle.conf
 
+CLEAN_FILES	+= node_modules $(SHRINKWRAP) cscope.files
+
+include ./tools/mk/Makefile.defs
+
 # Repo-specific targets
 #
 .PHONY: all
-all:
+all: $(TAP) $(REPO_DEPS)
+	$(NPM) rebuild
+
+$(TAP): | $(NPM_EXEC)
 	$(NPM) install
 
-.PHONY: test
-test:
-	$(NPM) test
+CLEAN_FILES += $(TAP) ./node_modules/tap
 
-include ./Makefile.deps
-include ./Makefile.targ
+.PHONY: test
+test: $(TAP)
+	$(TAP) test/*.test.js
+
+include ./tools/mk/Makefile.deps
+include ./tools/mk/Makefile.targ
