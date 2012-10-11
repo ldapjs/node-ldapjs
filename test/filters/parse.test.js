@@ -116,10 +116,17 @@ test('GH-53 NotFilter', function (t) {
 
 
 test('presence filter', function (t) {
-  var str = '(foo=*)';
-  var f = parse(str);
+  var f = parse('(foo=*)');
   t.ok(f);
   t.equal(f.type, 'present');
   t.equal(f.attribute, 'foo');
+  t.end();
+});
+
+
+test('bogus filter', function (t) {
+  t.throws(function () {
+    parse('foo>1');
+  });
   t.end();
 });

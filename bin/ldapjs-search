@@ -95,7 +95,6 @@ function perror(err) {
 
 ///--- Mainline
 
-log4js.setGlobalLogLevel('INFO');
 var parsed;
 
 try {
