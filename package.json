@@ -30,7 +30,7 @@
     "bunyan": "0.14.0",
     "dtrace-provider": "0.2.1",
     "nopt": "1.0.10",
-    "pooling": "0.3.2"
+    "pooling": "0.2.2"
   },
   "devDependencies": {
     "tap": "0.3.1",
