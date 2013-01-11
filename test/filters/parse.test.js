@@ -36,7 +36,8 @@ test('( in filter', function (t) {
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar\\28');
+  t.equal(f.value, 'bar(');
+  t.equal(f.toString(), '(foo=bar\\28)');
   t.end();
 });
 
@@ -45,7 +46,8 @@ test(') in filter', function (t) {
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar\\29');
+  t.equal(f.value, 'bar)');
+  t.equal(f.toString(), '(foo=bar\\29)');
   t.end();
 });
 
@@ -54,8 +56,9 @@ test('( in filter', function (t) {
   var str = 'foo(bar=baz\\()';
   var f = parse(str);
   t.ok(f);
-  t.equal(f.attribute, 'foo\\28bar');
-  t.equal(f.value, 'baz\\28\\29');
+  t.equal(f.attribute, 'foo(bar');
+  t.equal(f.value, 'baz()');
+  t.equal(f.toString(), '(foo\\28bar=baz\\28\\29)');
   t.end();
 });
 
@@ -64,8 +67,9 @@ test('( in filter', function (t) {
   var str = 'foo)(&(bar=baz)(';
   var f = parse(str);
   t.ok(f);
-  t.equal(f.attribute, 'foo\\29\\28&\\28bar');
-  t.equal(f.value, 'baz\\29\\28');
+  t.equal(f.attribute, 'foo)(&(bar');
+  t.equal(f.value, 'baz)(');
+  t.equal(f.toString(), '(foo\\29\\28&\\28bar=baz\\29\\28)');
   t.end();
 });
 
@@ -75,7 +79,8 @@ test('\\ in filter', function (t) {
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar\\5c');
+  t.equal(f.value, 'bar\\');
+  t.equal(f.toString(), '(foo=bar\\5c)');
   t.end();
 });
 
@@ -85,7 +90,8 @@ test('* in equality filter', function (t) {
   var f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar\\2a');
+  t.equal(f.value, 'bar*');
+  t.equal(f.toString(), '(foo=bar\\2a)');
   t.end();
 });
 
@@ -96,6 +102,7 @@ test('* substr filter (prefix)', function (t) {
   t.ok(f);
   t.equal(f.attribute, 'foo');
   t.equal(f.initial, 'bar');
+  t.equal(f.toString(), '(foo=bar*)');
   t.end();
 });
 
@@ -120,6 +127,7 @@ test('presence filter', function (t) {
   t.ok(f);
   t.equal(f.type, 'present');
   t.equal(f.attribute, 'foo');
+  t.equal(f.toString(), '(foo=*)');
   t.end();
 });
 
