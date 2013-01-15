@@ -5,7 +5,8 @@
     "Austin King <shout@ozten.com>",
     "Mathieu Lecarme <mathieu@garambrogne.net>>",
     "Trent Mick <trentm@gmail.com>",
-    "Yunong Xiao <yunong@joyent.com>"
+    "Yunong Xiao <yunong@joyent.com>",
+    "Denis Vuyka <denis.vuyka@gmail.com>"
   ],
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
