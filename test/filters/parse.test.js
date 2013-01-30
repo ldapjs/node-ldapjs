@@ -130,3 +130,10 @@ test('bogus filter', function (t) {
   });
   t.end();
 });
+
+test('bogus filter !=', function (t) {
+  t.throws(function () {
+    parse('foo!=1');
+  });
+  t.end();
+});
