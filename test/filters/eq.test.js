@@ -46,6 +46,19 @@ test('Construct args', function (t) {
 });
 
 
+test('GH-109 = escape value only in toString()', function (t) {
+  var f = new EqualityFilter({
+    attribute: 'foo',
+    value: 'ba(r)'
+  });
+  t.ok(f);
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'ba(r)');
+  t.equal(f.toString(), '(foo=ba\\28r\\29)');
+  t.end();
+});
+
+
 test('match true', function (t) {
   var f = new EqualityFilter({
     attribute: 'foo',
@@ -97,8 +110,9 @@ test('escape EqualityFilter inputs', function (t) {
     value: 'bar))('
   });
 
-  t.equal(f.attribute, '\\28|\\28foo');
-  t.equal(f.value, 'bar\\29\\29\\28');
+  t.equal(f.attribute, '(|(foo');
+  t.equal(f.value, 'bar))(');
+  t.equal(f.toString(), '(\\28|\\28foo=bar\\29\\29\\28)');
   t.end();
 });
 
@@ -116,5 +130,27 @@ test('parse bad', function (t) {
   } catch (e) {
     t.equal(e.name, 'InvalidAsn1Error');
   }
+  t.end();
+});
+
+
+test('GH-109 = to ber uses plain values', function (t) {
+  var f = new EqualityFilter({
+    attribute: 'foo',
+    value: 'ba(r)'
+  });
+  t.ok(f);
+  var writer = new BerWriter();
+  f.toBer(writer);
+
+  var f = new EqualityFilter();
+  t.ok(f);
+
+  var reader = new BerReader(writer.buffer);
+  reader.readSequence();
+  t.ok(f.parse(reader));
+
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'ba(r)');
   t.end();
 });

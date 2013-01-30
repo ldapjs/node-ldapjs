@@ -52,6 +52,25 @@ test('Construct args', function (t) {
 });
 
 
+test('GH-109 = escape value only in toString()', function (t) {
+  var f = new SubstringFilter({
+    attribute: 'fo(o',
+    initial: 'ba(r)',
+    any: ['zi)g', 'z(ag'],
+    'final': '(baz)'
+  });
+  t.ok(f);
+  t.equal(f.attribute, 'fo(o');
+  t.equal(f.initial, 'ba(r)');
+  t.equal(f.any.length, 2);
+  t.equal(f.any[0], 'zi)g');
+  t.equal(f.any[1], 'z(ag');
+  t.equal(f['final'], '(baz)');
+  t.equal(f.toString(), '(fo\\28o=ba\\28r\\29*zi\\29g*z\\28ag*\\28baz\\29)');
+  t.end();
+});
+
+
 test('match true', function (t) {
   var f = new SubstringFilter({
     attribute: 'foo',
@@ -88,6 +107,20 @@ test('match any', function (t) {
   t.end();
 });
 
+
+test('GH-109 = escape for regex in matches', function (t) {
+  var f = new SubstringFilter({
+    attribute: 'fo(o',
+    initial: 'ba(r)',
+    any: ['zi)g', 'z(ag'],
+    'final': '(baz)'
+  });
+  t.ok(f);
+  t.ok(f.matches({ 'fo(o': ['ba(r)_zi)g-z(ag~(baz)']}));
+  t.end();
+});
+
+
 test('parse ok', function (t) {
   var writer = new BerWriter();
   writer.writeString('foo');
@@ -116,5 +149,33 @@ test('parse bad', function (t) {
     t.fail('Should have thrown InvalidAsn1Error');
   } catch (e) {
   }
+  t.end();
+});
+
+
+test('GH-109 = to ber uses plain values', function (t) {
+  var f = new SubstringFilter({
+    attribute: 'fo(o',
+    initial: 'ba(r)',
+    any: ['zi)g', 'z(ag'],
+    'final': '(baz)'
+  });
+  t.ok(f);
+  var writer = new BerWriter();
+  f.toBer(writer);
+
+  var f = new SubstringFilter();
+  t.ok(f);
+
+  var reader = new BerReader(writer.buffer);
+  reader.readSequence();
+  t.ok(f.parse(reader));
+
+  t.equal(f.attribute, 'fo(o');
+  t.equal(f.initial, 'ba(r)');
+  t.equal(f.any.length, 2);
+  t.equal(f.any[0], 'zi)g');
+  t.equal(f.any[1], 'z(ag');
+  t.equal(f['final'], '(baz)');
   t.end();
 });

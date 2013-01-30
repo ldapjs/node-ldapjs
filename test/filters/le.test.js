@@ -46,6 +46,19 @@ test('Construct args', function (t) {
 });
 
 
+test('GH-109 = escape value only in toString()', function (t) {
+  var f = new LessThanEqualsFilter({
+    attribute: 'foo',
+    value: 'ba(r)'
+  });
+  t.ok(f);
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'ba(r)');
+  t.equal(f.toString(), '(foo<=ba\\28r\\29)');
+  t.end();
+});
+
+
 test('match true', function (t) {
   var f = new LessThanEqualsFilter({
     attribute: 'foo',
@@ -105,5 +118,27 @@ test('parse bad', function (t) {
   } catch (e) {
     t.equal(e.name, 'InvalidAsn1Error');
   }
+  t.end();
+});
+
+
+test('GH-109 = to ber uses plain values', function (t) {
+  var f = new LessThanEqualsFilter({
+    attribute: 'foo',
+    value: 'ba(r)'
+  });
+  t.ok(f);
+  var writer = new BerWriter();
+  f.toBer(writer);
+
+  var f = new LessThanEqualsFilter();
+  t.ok(f);
+
+  var reader = new BerReader(writer.buffer);
+  reader.readSequence();
+  t.ok(f.parse(reader));
+
+  t.equal(f.attribute, 'foo');
+  t.equal(f.value, 'ba(r)');
   t.end();
 });
