@@ -131,7 +131,7 @@ test('GH-109 = to ber uses plain values', function (t) {
   var writer = new BerWriter();
   f.toBer(writer);
 
-  var f = new LessThanEqualsFilter();
+  f = new LessThanEqualsFilter();
   t.ok(f);
 
   var reader = new BerReader(writer.buffer);
