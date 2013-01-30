@@ -42,6 +42,16 @@ test('Construct args', function (t) {
   t.end();
 });
 
+test('GH-109 = escape value only in toString()', function (t) {
+  var f = new PresenceFilter({
+    attribute: 'fo)o'
+  });
+  t.ok(f);
+  t.equal(f.attribute, 'fo)o');
+  t.equal(f.toString(), '(fo\\29o=*)');
+  t.end();
+});
+
 
 test('match true', function (t) {
   var f = new PresenceFilter({
@@ -74,5 +84,25 @@ test('parse ok', function (t) {
   reader.readSequence();
   t.ok(f.parse(reader));
   t.ok(f.matches({ foo: 'bar' }));
+  t.end();
+});
+
+
+test('GH-109 = to ber uses plain values', function (t) {
+  var f = new PresenceFilter({
+    attribute: 'f(o)o'
+  });
+  t.ok(f);
+  var writer = new BerWriter();
+  f.toBer(writer);
+
+  var f = new PresenceFilter();
+  t.ok(f);
+
+  var reader = new BerReader(writer.buffer);
+  reader.readSequence();
+  t.ok(f.parse(reader));
+
+  t.equal(f.attribute, 'f(o)o');
   t.end();
 });
