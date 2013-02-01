@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "asn1": "0.1.11",
-    "buffertools": "1.0.6",
+    "bufferjs": "2.0.0",
     "dtrace-provider": "0.0.3",
     "nopt": "1.0.10",
     "sprintf": "0.1.1"
