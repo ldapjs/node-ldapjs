@@ -139,9 +139,18 @@ test('bogus filter', function (t) {
   t.end();
 });
 
+
 test('bogus filter !=', function (t) {
   t.throws(function () {
     parse('foo!=1');
+  });
+  t.end();
+});
+
+
+test('mismatched parens', function (t) {
+  t.throws(function () {
+    parse('(&(foo=bar)(!(state=done))');
   });
   t.end();
 });
