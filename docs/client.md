@@ -31,6 +31,7 @@ client is:
 ||timeout||How long the client should let operations live for before timing out. Default is Infinity.||
 ||connectTimeout||How long the client should wait before timing out on TCP connections. Default is up to the OS.||
 ||maxConnections||Whether or not to enable connection pooling, and if so, how many to maintain.||
+||tlsOptions||Additional [options](http://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback) passed to the TLS connection layer when connecting via `ldaps://`||
 
 If using connection pooling, you can additionally pass in:
 
