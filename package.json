@@ -11,10 +11,10 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.6.2",
+  "version": "0.6.3-RC2",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mcavage/node-ldapjs.git"
+    "url": "git://github.com/mkononen/node-ldapjs.git"
   },
   "main": "lib/index.js",
   "directories": {
