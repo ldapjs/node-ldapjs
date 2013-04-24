@@ -9,12 +9,10 @@ var url = require('url');
 var nopt = require('nopt');
 
 var ldap = require('../lib/index');
-
+var Logger = require('bunyan');
 
 
 ///--- Globals
-
-var log4js = ldap.log4js;
 
 nopt.typeDefs.DN = {
   type: ldap.DN,
@@ -78,7 +76,7 @@ function perror(err) {
 
 ///--- Mainline
 
-log4js.setGlobalLogLevel('INFO');
+var logLevel = 'info';
 var parsed;
 
 try {
@@ -112,7 +110,7 @@ if (!parsed.file)
   usage(1, 'either -f or stdin must be used for adding objects');
 
 if (parsed.debug)
-  log4js.setGlobalLogLevel(parsed.debug > 1 ? 'TRACE' : 'DEBUG');
+  logLevel = (parsed.debug > 1 ? 'trace' : 'debug');
 if (!parsed.url)
   parsed.url = 'ldap://127.0.0.1:389';
 if (!parsed.binddn)
@@ -120,9 +118,16 @@ if (!parsed.binddn)
 if (!parsed.password)
   parsed.password = '';
 
+var log = new Logger({
+    name: 'ldapjs',
+    component: 'client',
+    stream: process.stderr,
+    level: logLevel
+});
+
 var client = ldap.createClient({
   url: parsed.url,
-  log4js: log4js
+  log: log
 });
 
 client.on('error', function(err) {
