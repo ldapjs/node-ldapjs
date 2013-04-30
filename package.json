@@ -6,12 +6,13 @@
     "Mathieu Lecarme <mathieu@garambrogne.net>>",
     "Trent Mick <trentm@gmail.com>",
     "Yunong Xiao <yunong@joyent.com>",
-    "Denis Vuyka <denis.vuyka@gmail.com>"
+    "Denis Vuyka <denis.vuyka@gmail.com>",
+    "Pedro Palazón <kusorbox@gmail.com>"
   ],
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
@@ -28,7 +29,7 @@
     "asn1": "0.1.11",
     "assert-plus": "0.1.2",
     "buffertools": "1.1.0",
-    "bunyan": "0.18.2",
+    "bunyan": "0.21.1",
     "dtrace-provider": "0.2.8",
     "nopt": "2.1.1",
     "pooling": "0.4.1"
