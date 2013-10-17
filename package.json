@@ -35,7 +35,7 @@
     "pooling": "0.4.4"
   },
   "devDependencies": {
-    "tap": "0.4.0",
+    "tap": "0.4.1",
     "node-uuid": "1.4.0"
   },
   "scripts": {
