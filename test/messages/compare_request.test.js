@@ -45,7 +45,7 @@ test('new with args', function (t) {
 
 test('parse', function (t) {
   var ber = new BerWriter();
-  ber.writeString('cn=foo,o=test');
+  ber.writeString('cn=foo, o=test');
 
   ber.startSequence();
   ber.writeString('sn');

@@ -131,3 +131,15 @@ test('case insensitive attribute names GH-20', function (t) {
   t.ok(dn1.equals(dn.parse('cn=foo, DC=bar')));
   t.end();
 });
+
+
+test('rdn spacing', function (t) {
+  var dn1 = dn.parse('cn=foo,dc=bar');
+  var dn2 = dn.parse('cn=foo, dc=bar');
+  t.ok(dn1.equals(dn2));
+  t.equals(dn1.toString(), 'cn=foo,dc=bar');
+  t.equals(dn2.toString(), 'cn=foo, dc=bar');
+  t.equals(dn1.spaced().toString(), 'cn=foo, dc=bar');
+  t.equals(dn2.spaced(false).toString(), 'cn=foo,dc=bar');
+  t.end();
+});

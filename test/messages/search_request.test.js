@@ -58,7 +58,7 @@ test('parse', function (t) {
   });
 
   var ber = new BerWriter();
-  ber.writeString('cn=foo,o=test');
+  ber.writeString('cn=foo, o=test');
   ber.writeEnumeration(0);
   ber.writeEnumeration(0);
   ber.writeInt(1);
