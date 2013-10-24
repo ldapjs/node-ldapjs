@@ -21,7 +21,7 @@ var server = ldap.createServer();
 
 
 
-server.bind('cn=root', function(req, res, next) {
+server.bind('cn=root', function (req, res, next) {
   if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret')
     return next(new ldap.InvalidCredentialsError());
 
@@ -29,7 +29,7 @@ server.bind('cn=root', function(req, res, next) {
   return next();
 });
 
-server.add(SUFFIX, authorize, function(req, res, next) {
+server.add(SUFFIX, authorize, function (req, res, next) {
   var dn = req.dn.toString();
 
   if (db[dn])
@@ -40,7 +40,7 @@ server.add(SUFFIX, authorize, function(req, res, next) {
   return next();
 });
 
-server.bind(SUFFIX, function(req, res, next) {
+server.bind(SUFFIX, function (req, res, next) {
   var dn = req.dn.toString();
   if (!db[dn])
     return next(new ldap.NoSuchObjectError(dn));
@@ -55,7 +55,7 @@ server.bind(SUFFIX, function(req, res, next) {
   return next();
 });
 
-server.compare(SUFFIX, authorize, function(req, res, next) {
+server.compare(SUFFIX, authorize, function (req, res, next) {
   var dn = req.dn.toString();
   if (!db[dn])
     return next(new ldap.NoSuchObjectError(dn));
@@ -76,7 +76,7 @@ server.compare(SUFFIX, authorize, function(req, res, next) {
   return next();
 });
 
-server.del(SUFFIX, authorize, function(req, res, next) {
+server.del(SUFFIX, authorize, function (req, res, next) {
   var dn = req.dn.toString();
   if (!db[dn])
     return next(new ldap.NoSuchObjectError(dn));
@@ -87,7 +87,7 @@ server.del(SUFFIX, authorize, function(req, res, next) {
   return next();
 });
 
-server.modify(SUFFIX, authorize, function(req, res, next) {
+server.modify(SUFFIX, authorize, function (req, res, next) {
   var dn = req.dn.toString();
   if (!req.changes.length)
     return next(new ldap.ProtocolError('changes required'));
@@ -115,7 +115,7 @@ server.modify(SUFFIX, authorize, function(req, res, next) {
       if (!entry[mod.type]) {
         entry[mod.type] = mod.vals;
       } else {
-        mod.vals.forEach(function(v) {
+        mod.vals.forEach(function (v) {
           if (entry[mod.type].indexOf(v) === -1)
             entry[mod.type].push(v);
         });
@@ -137,7 +137,7 @@ server.modify(SUFFIX, authorize, function(req, res, next) {
   return next();
 });
 
-server.search(SUFFIX, authorize, function(req, res, next) {
+server.search(SUFFIX, authorize, function (req, res, next) {
   var dn = req.dn.toString();
   if (!db[dn])
     return next(new ldap.NoSuchObjectError(dn));
@@ -157,7 +157,7 @@ server.search(SUFFIX, authorize, function(req, res, next) {
     return next();
 
   case 'one':
-    scopeCheck = function(k) {
+    scopeCheck = function (k) {
       if (req.dn.equals(k))
         return true;
 
@@ -167,14 +167,14 @@ server.search(SUFFIX, authorize, function(req, res, next) {
     break;
 
   case 'sub':
-    scopeCheck = function(k) {
+    scopeCheck = function (k) {
       return (req.dn.equals(k) || req.dn.parentOf(k));
     };
 
     break;
   }
 
-  Object.keys(db).forEach(function(key) {
+  Object.keys(db).forEach(function (key) {
     if (!scopeCheck(key))
       return;
 
@@ -194,6 +194,6 @@ server.search(SUFFIX, authorize, function(req, res, next) {
 
 ///--- Fire it up
 
-server.listen(1389, function() {
+server.listen(1389, function () {
   console.log('LDAP server up at: %s', server.url);
 });
