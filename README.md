@@ -1,4 +1,6 @@
-# Ldapjs [!['Build status'][travis_image_url]][travis_page_url]
+# Ldapjs
+
+[!['Build status'][travis_image_url]][travis_page_url]
 
 [travis_image_url]: https://api.travis-ci.org/mcavage/node-ldapjs.png
 [travis_page_url]: https://travis-ci.org/mcavage/node-ldapjs
