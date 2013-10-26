@@ -1,3 +1,10 @@
+# Ldapjs
+
+[!['Build status'][travis_image_url]][travis_page_url]
+
+[travis_image_url]: https://api.travis-ci.org/mcavage/node-ldapjs.png
+[travis_page_url]: https://travis-ci.org/mcavage/node-ldapjs
+
 ldapjs makes the LDAP protocol a first class citizen in Node.js.
 
 ## Usage
