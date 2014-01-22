@@ -38,7 +38,8 @@
   },
   "devDependencies": {
     "tap": "0.4.1",
-    "node-uuid": "1.4.0"
+    "node-uuid": "1.4.0",
+    "vasync": "1.4.3"
   },
   "scripts": {
     "test": "./node_modules/.bin/tap ./test"
