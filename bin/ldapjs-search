@@ -8,12 +8,10 @@ var url = require('url');
 var nopt = require('nopt');
 
 var ldap = require('../lib/index');
-
+var Logger = require('bunyan');
 
 
 ///--- Globals
-
-var log4js = ldap.log4js;
 
 nopt.typeDefs.DN = {
   type: ldap.DN,
@@ -37,6 +35,7 @@ var opts = {
   'control': Array,
   'password': String,
   'persistent': Boolean,
+  'paged': Number,
   'scope': String,
   'timeout': Number,
   'url': url
@@ -49,6 +48,7 @@ var shortOpts = {
   'D': ['--binddn'],
   'w': ['--password'],
   'p': ['--persistent'],
+  'g': ['--paged'],
   's': ['--scope'],
   't': ['--timeout'],
   'u': ['--url']
@@ -93,7 +93,6 @@ function perror(err) {
 
 ///--- Mainline
 
-log4js.setGlobalLogLevel('INFO');
 var parsed;
 
 try {
@@ -113,9 +112,10 @@ try {
   usage(1, e.message);
 }
 
+var logLevel = 'info';
 
 if (parsed.debug)
-  log4js.setGlobalLogLevel(parsed.debug > 1 ? 'TRACE' : 'DEBUG');
+  logLevel = (parsed.debug > 1 ? 'trace' : 'debug');
 if (!parsed.url)
   parsed.url = 'ldap://127.0.0.1:389';
 if (!parsed.binddn)
@@ -129,9 +129,16 @@ if (!parsed.control)
 if (!parsed.persistent)
   parsed.persistent = false;
 
+var log = new Logger({
+    name: 'ldapjs',
+    component: 'client',
+    stream: process.stderr,
+    level: logLevel
+});
+
 var client = ldap.createClient({
   url: parsed.url,
-  log4js: log4js,
+  log: log,
   timeout: parsed.timeout || false
 });
 
@@ -165,6 +172,10 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
       }
     });
     controls.push(pCtrl);
+  }
+  if (parsed.paged) {
+    var ctrl = new ldap.PagedResultsControl({ value: { size: parsed.paged } });
+    controls.push(ctrl);
   }
   var req = {
     scope: parsed.scope || 'sub',

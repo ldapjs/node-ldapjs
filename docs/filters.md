@@ -57,7 +57,7 @@ Would return an `AndFilter`, which would have a `filters` array of two
 `EqualityFilter` objects.
 
 `parseFilter` will throw if an invalid string is passed in (that is, a
-syntactically invalid string). All filter objects in th
+syntactically invalid string).
 
 # EqualityFilter
 

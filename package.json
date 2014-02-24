@@ -1,15 +1,19 @@
 {
   "author": "Mark Cavage <mcavage@gmail.com>",
   "contributors": [
+    "Craig Baker",
+    "Austin King <shout@ozten.com>",
     "Mathieu Lecarme <mathieu@garambrogne.net>>",
     "Trent Mick <trentm@gmail.com>",
     "Yunong Xiao <yunong@joyent.com>",
-    "Craig Baker"
+    "Denis Vuyka <denis.vuyka@gmail.com>",
+    "Pedro Palazón <kusorbox@gmail.com>",
+    "Patrick Mooney <patrick.f.mooney@gmail.com>"
   ],
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.4.8",
+  "version": "0.7.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/mcavage/node-ldapjs.git"
@@ -20,20 +24,22 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">=0.4"
+    "node": ">=0.8"
   },
   "dependencies": {
     "asn1": "0.1.11",
-    "bufferjs": "2.0.0",
-    "dtrace-provider": "0.0.3",
-    "nopt": "1.0.10",
-    "sprintf": "0.1.1"
+    "sprintf": "0.1.1",
+    "assert-plus": "0.1.2",
+    "bunyan": "0.21.1",
+    "dtrace-provider": "0.2.8",
+    "nopt": "2.1.1",
+    "pooling": "0.4.5"
   },
   "devDependencies": {
-    "tap": "0.1.4",
-    "node-uuid": "1.3.3"
+    "tap": "0.4.1",
+    "node-uuid": "1.4.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/tap ./tst"
+    "test": "./node_modules/.bin/tap ./test"
   }
 }

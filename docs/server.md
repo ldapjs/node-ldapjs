@@ -19,7 +19,7 @@ The code to create a new server looks like:
 
 The full list of options is:
 
-||log4js||You can optionally pass in a log4js instance the client will use to acquire a logger.  You'll need to set the level to `TRACE` to get any output from the client.||
+||log||You can optionally pass in a bunyan instance the client will use to acquire a logger.||
 ||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.||
 ||key||A PEM-encoded private key that corresponds to _certificate_ for SSL.||
 

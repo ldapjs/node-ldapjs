@@ -71,7 +71,7 @@ API documentation is:
 
 ||License||[MIT](http://opensource.org/licenses/mit-license.php)||
 ||Code||[mcavage/node-ldapjs](https://github.com/mcavage/node-ldapjs)||
-||node.js version||0.4.x and 0.5.x||
+||node.js version||>=0.6||
 ||Twitter||[@mcavage](http://twitter.com/mcavage)||
 
 # What's not in the box?

@@ -1,5 +1,8 @@
+build
 node_modules
 *.log
 *.ldif
-*.tar*
-docs/pkg
+*.tar.*
+*.tgz
+.DS_Store
+*.swp
