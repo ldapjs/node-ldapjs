@@ -26,6 +26,7 @@ var opts = {
   'debug': Number,
   'binddn': ldap.DN,
   'file': String,
+  'insecure': Boolean,
   'password': String,
   'url': url,
   'value': String,
@@ -36,6 +37,7 @@ var shortOpts = {
   'd': ['--debug'],
   'D': ['--binddn'],
   'f': ['--file'],
+  'i': ['--insecure'],
   'w': ['--password'],
   'u': ['--url'],
   'v': ['--value']
@@ -89,6 +91,15 @@ try {
   usage(1, e.toString());
 }
 
+if (parsed.insecure === undefined &&
+    process.env.LDAPJS_TLS_INSECURE !== undefined) {
+  if (process.env.LDAPJS_TLS_INSECURE === '0') {
+    parsed.insecure = false;
+  } else {
+    parsed.insecure = true;
+  }
+}
+
 if (parsed.help)
   usage(0);
 
@@ -123,7 +134,10 @@ var log = new Logger({
 
 var client = ldap.createClient({
   url: parsed.url,
-  log: log
+  log: log,
+  tlsOptions: {
+    rejectUnauthorized: !parsed.insecure
+  }
 });
 
 client.on('error', function(err) {
