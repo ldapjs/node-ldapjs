@@ -8,11 +8,6 @@ var BerWriter = asn1.BerWriter;
 var getControl;
 var ServerSideSortingControl;
 
-function bufferEqual(t, a, b) {
-  t.equal(a.toString('hex'), b.toString('hex'));
-}
-
-
 ///--- Tests
 
 
@@ -45,28 +40,18 @@ test('new with args', function (t) {
   t.ok(c.criticality);
   t.equal(c.value.attributeType, 'sn');
 
-  var writer = new BerWriter();
-  c.toBer(writer);
-  var reader = new BerReader(writer.buffer);
-  var sssc = getControl(reader);
-  t.ok(sssc);
-  console.log('sssc', sssc.value);
-  t.equal(sssc.type, '1.2.840.113556.1.4.473');
-  t.ok(sssc.criticality);
-  t.equal(sssc.value.attributeType, 'sn');
-  bufferEqual(t, sssc.value.cookie, new Buffer(['sn']));
-
   t.end();
 });
 
-test('tober', function (t) {
+test('tober - object', function (t) {
   var sssc = new ServerSideSortingControl({
     type: '1.2.840.113556.1.4.473',
     criticality: true,
     value: {
-      attributeType: 'sn'
-    }
-  });
+      attributeType: 'sn',
+      orderingRule: 'caseIgnoreOrderingMatch',
+      reverseOrder: true
+    }});
 
   var ber = new BerWriter();
   sssc.toBer(ber);
@@ -76,7 +61,39 @@ test('tober', function (t) {
   t.equal(c.type, '1.2.840.113556.1.4.473');
   t.ok(c.criticality);
   t.equal(c.value.attributeType, 'sn');
-  bufferEqual(t, c.value.cookie, new Buffer(0));
+  t.equal(c.value.orderingRule, 'caseIgnoreOrderingMatch');
+  t.equal(c.value.reverseOrder, true);
+
+  t.end();
+});
+
+test('tober - array', function (t) {
+  var sssc = new ServerSideSortingControl({
+    type: '1.2.840.113556.1.4.473',
+    criticality: true,
+    value: [{
+      attributeType: 'sn',
+      orderingRule: 'caseIgnoreOrderingMatch',
+      reverseOrder: true
+    },
+    {
+      attributeType: 'givenName',
+      orderingRule: 'caseIgnoreOrderingMatch'
+      }]
+  });
+
+  var ber = new BerWriter();
+  sssc.toBer(ber);
+
+  var c = getControl(new BerReader(ber.buffer));
+  t.ok(c);
+  t.equal(c.type, '1.2.840.113556.1.4.473');
+  t.ok(c.criticality);
+  t.equal(c.value[0].attributeType, 'sn');
+  t.equal(c.value[0].orderingRule, 'caseIgnoreOrderingMatch');
+  t.equal(c.value[0].reverseOrder, true);
+  t.equal(c.value[1].attributeType, 'givenName');
+  t.equal(c.value[1].orderingRule, 'caseIgnoreOrderingMatch');
 
   t.end();
 });
