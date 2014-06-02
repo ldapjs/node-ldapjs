@@ -58,6 +58,8 @@ CLEAN_FILES += $(TAP) ./node_modules/tap
 test: $(TAP)
 	$(TAP) test/*.test.js
 	$(TAP) test/filters/*.test.js
+	$(TAP) test/controls/*.test.js
+	$(TAP) test/messages/*.test.js
 
 include ./tools/mk/Makefile.deps
 include ./tools/mk/Makefile.targ
