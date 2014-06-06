@@ -12,24 +12,20 @@ var ServerSideSortingControl;
 
 
 test('load library', function (t) {
-  ServerSideSortingControl =
-    require('../../lib').ServerSideSortingControl;
+  ServerSideSortingControl = require('../../lib').ServerSideSortingControl;
   t.ok(ServerSideSortingControl);
   getControl = require('../../lib').getControl;
   t.ok(getControl);
   t.end();
 });
 
-
 test('new no args', function (t) {
   t.ok(new ServerSideSortingControl());
   t.end();
 });
 
-
 test('new with args', function (t) {
   var c = new ServerSideSortingControl({
-    type: '1.2.840.113556.1.4.473',
     criticality: true,
     value: {
       attributeType: 'sn'
@@ -38,14 +34,14 @@ test('new with args', function (t) {
   t.ok(c);
   t.equal(c.type, '1.2.840.113556.1.4.473');
   t.ok(c.criticality);
-  t.equal(c.value.attributeType, 'sn');
+  t.equal(c.value.length, 1);
+  t.equal(c.value[0].attributeType, 'sn');
 
   t.end();
 });
 
-test('tober - object', function (t) {
+test('toBer - object', function (t) {
   var sssc = new ServerSideSortingControl({
-    type: '1.2.840.113556.1.4.473',
     criticality: true,
     value: {
       attributeType: 'sn',
@@ -60,26 +56,27 @@ test('tober - object', function (t) {
   t.ok(c);
   t.equal(c.type, '1.2.840.113556.1.4.473');
   t.ok(c.criticality);
-  t.equal(c.value.attributeType, 'sn');
-  t.equal(c.value.orderingRule, 'caseIgnoreOrderingMatch');
-  t.equal(c.value.reverseOrder, true);
+  t.equal(c.value[0].attributeType, 'sn');
+  t.equal(c.value[0].orderingRule, 'caseIgnoreOrderingMatch');
+  t.equal(c.value[0].reverseOrder, true);
 
   t.end();
 });
 
-test('tober - array', function (t) {
+test('toBer - array', function (t) {
   var sssc = new ServerSideSortingControl({
-    type: '1.2.840.113556.1.4.473',
     criticality: true,
-    value: [{
-      attributeType: 'sn',
-      orderingRule: 'caseIgnoreOrderingMatch',
-      reverseOrder: true
-    },
-    {
-      attributeType: 'givenName',
-      orderingRule: 'caseIgnoreOrderingMatch'
-      }]
+    value: [
+      {
+        attributeType: 'sn',
+        orderingRule: 'caseIgnoreOrderingMatch',
+        reverseOrder: true
+      },
+      {
+        attributeType: 'givenName',
+        orderingRule: 'caseIgnoreOrderingMatch'
+      }
+    ]
   });
 
   var ber = new BerWriter();
@@ -89,11 +86,24 @@ test('tober - array', function (t) {
   t.ok(c);
   t.equal(c.type, '1.2.840.113556.1.4.473');
   t.ok(c.criticality);
+  t.equal(c.value.length, 2);
   t.equal(c.value[0].attributeType, 'sn');
   t.equal(c.value[0].orderingRule, 'caseIgnoreOrderingMatch');
   t.equal(c.value[0].reverseOrder, true);
   t.equal(c.value[1].attributeType, 'givenName');
   t.equal(c.value[1].orderingRule, 'caseIgnoreOrderingMatch');
 
+  t.end();
+});
+
+test('toBer - empty', function (t) {
+  var sssc = new ServerSideSortingControl();
+  var ber = new BerWriter();
+  sssc.toBer(ber);
+
+  var c = getControl(new BerReader(ber.buffer));
+  t.ok(c);
+  t.equal(c.type, '1.2.840.113556.1.4.473');
+  t.equal(c.value.length, 0);
   t.end();
 });
