@@ -169,3 +169,28 @@ test('route absent', function (t) {
     });
   });
 });
+
+test('route unbind', function (t) {
+  t.plan(4);
+  server = ldap.createServer();
+  sock = getSock();
+
+  server.unbind(function (req, res, next) {
+    t.ok(true, 'server unbind successful');
+    res.end();
+    return next();
+  });
+
+  server.listen(sock, function () {
+    t.ok(true, 'server startup');
+    client = ldap.createClient({ socketPath: sock });
+    client.bind('', '', function (err) {
+      t.ifError(err, 'client bind error');
+      client.unbind(function (err) {
+        t.ifError(err, 'client unbind error');
+        server.close();
+        t.end();
+      });
+    });
+  });
+});
