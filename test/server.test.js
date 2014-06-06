@@ -14,6 +14,8 @@ var BIND_PW = 'secret';
 
 var SUFFIX = 'dc=test';
 
+var SERVER_PORT = process.env.SERVER_PORT || 1389;
+
 var ldap;
 var Attribute;
 var Change;
@@ -44,23 +46,34 @@ test('basic create', function (t) {
 });
 
 test('listen on unix/named socket', { timeout: 1000 }, function (t) {
-  t.plan(1);
   server = ldap.createServer();
   sock = getSock();
   server.listen(sock, function () {
     t.ok(true);
     server.close();
+    t.end();
+  });
+});
+
+test('listen on static port', { timeout: 1000 }, function (t) {
+  server = ldap.createServer();
+  server.listen(SERVER_PORT, '127.0.0.1', function () {
+    var addr = server.address();
+    t.equal(addr.port, parseInt(SERVER_PORT, 10));
+    t.equals(server.url, 'ldap://127.0.0.1:' + SERVER_PORT);
+    server.close();
+    t.end();
   });
 });
 
 test('listen on ephemeral port', { timeout: 1000 }, function (t) {
-  t.plan(2);
   server = ldap.createServer();
   server.listen(0, 'localhost', function () {
     var addr = server.address();
     t.ok(addr.port > 0);
     t.ok(addr.port < 65535);
     server.close();
+    t.end();
   });
 });
 
