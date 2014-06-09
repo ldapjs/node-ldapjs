@@ -6,26 +6,26 @@ var asn1 = require('asn1');
 var BerReader = asn1.BerReader;
 var BerWriter = asn1.BerWriter;
 var getControl;
-var ServerSideSortingControl;
+var SSSRControl;
 
 ///--- Tests
 
 
 test('load library', function (t) {
-  ServerSideSortingControl = require('../../lib').ServerSideSortingControl;
-  t.ok(ServerSideSortingControl);
+  SSSRControl = require('../../lib').ServerSideSortingRequestControl;
+  t.ok(SSSRControl);
   getControl = require('../../lib').getControl;
   t.ok(getControl);
   t.end();
 });
 
 test('new no args', function (t) {
-  t.ok(new ServerSideSortingControl());
+  t.ok(new SSSRControl());
   t.end();
 });
 
 test('new with args', function (t) {
-  var c = new ServerSideSortingControl({
+  var c = new SSSRControl({
     criticality: true,
     value: {
       attributeType: 'sn'
@@ -41,7 +41,7 @@ test('new with args', function (t) {
 });
 
 test('toBer - object', function (t) {
-  var sssc = new ServerSideSortingControl({
+  var sssc = new SSSRControl({
     criticality: true,
     value: {
       attributeType: 'sn',
@@ -64,7 +64,7 @@ test('toBer - object', function (t) {
 });
 
 test('toBer - array', function (t) {
-  var sssc = new ServerSideSortingControl({
+  var sssc = new SSSRControl({
     criticality: true,
     value: [
       {
@@ -97,7 +97,7 @@ test('toBer - array', function (t) {
 });
 
 test('toBer - empty', function (t) {
-  var sssc = new ServerSideSortingControl();
+  var sssc = new SSSRControl();
   var ber = new BerWriter();
   sssc.toBer(ber);
 
