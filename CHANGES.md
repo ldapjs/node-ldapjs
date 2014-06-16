@@ -2,6 +2,7 @@
 
 ## CURRENT
 
+- #134 Allow configuration of derefAliases client option
 - #197 Properly dispatch unbind requests
 - #196 Handle string ports properly in server.listen
 - Request routing overhaul
