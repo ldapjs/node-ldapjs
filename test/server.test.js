@@ -45,7 +45,8 @@ test('basic create', function (t) {
   t.end();
 });
 
-test('listen on unix/named socket', { timeout: 1000 }, function (t) {
+test('listen on unix/named socket', function (t) {
+  t.plan(1);
   server = ldap.createServer();
   sock = getSock();
   server.listen(sock, function () {
@@ -55,7 +56,8 @@ test('listen on unix/named socket', { timeout: 1000 }, function (t) {
   });
 });
 
-test('listen on static port', { timeout: 1000 }, function (t) {
+test('listen on static port', function (t) {
+  t.plan(2);
   server = ldap.createServer();
   server.listen(SERVER_PORT, '127.0.0.1', function () {
     var addr = server.address();
@@ -66,7 +68,8 @@ test('listen on static port', { timeout: 1000 }, function (t) {
   });
 });
 
-test('listen on ephemeral port', { timeout: 1000 }, function (t) {
+test('listen on ephemeral port', function (t) {
+  t.plan(2);
   server = ldap.createServer();
   server.listen(0, 'localhost', function () {
     var addr = server.address();
@@ -76,7 +79,6 @@ test('listen on ephemeral port', { timeout: 1000 }, function (t) {
     t.end();
   });
 });
-
 
 test('route order', function (t) {
   function generateHandler(response) {
