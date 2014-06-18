@@ -30,7 +30,7 @@
     "asn1": "0.2.1",
     "assert-plus": "0.1.5",
     "bunyan": "0.22.1",
-    "nopt": "2.1.1",
+    "dashdash": "1.6.0",
     "pooling": "0.4.6"
   },
   "optionalDependencies": {

@@ -3,9 +3,8 @@
 // Copyright 2011 Mark Cavage.  All rights reserved.
 
 var path = require('path');
-var url = require('url');
 
-var nopt = require('nopt');
+var dashdash = require('dashdash');
 
 var ldap = require('../lib/index');
 var Logger = require('bunyan');
@@ -13,69 +12,126 @@ var Logger = require('bunyan');
 
 ///--- Globals
 
-nopt.typeDefs.DN = {
-  type: ldap.DN,
-  validate: function(data, k, val) {
-    data[k] = ldap.parseDN(val);
+dashdash.addOptionType({
+  name: 'ldap.DN',
+  takesArg: true,
+  helpArg: 'LDAP_DN',
+  parseArg: function (option, optstr, arg) {
+    return ldap.parseDN(arg);
   }
-};
+});
 
-nopt.typeDefs.Filter = {
-  type: ldap.Filter,
-  validate: function(data, k, val) {
-    data[k] = ldap.parseFilter(val);
+dashdash.addOptionType({
+  name: 'ldap.Filter',
+  takesArg: true,
+  helpArg: 'LDAP_FILTER',
+  parseArg: function (option, optstr, arg) {
+    return ldap.parseFilter(arg);
   }
-};
+});
+
+dashdash.addOptionType({
+  name: 'ldap.scope',
+  takesArg: true,
+  helpArg: 'SCOPE',
+  parseArg: function (option, optstr, arg) {
+    if (!/^base|one|sub$/.test(arg)) {
+      throw new TypeError('Scope must be <base|one|sub>');
+    }
+  }
+});
 
 
-var opts = {
-  'debug': Number,
-  'base': ldap.DN,
-  'binddn': ldap.DN,
-  'control': Array,
-  'insecure': Boolean,
-  'password': String,
-  'persistent': Boolean,
-  'paged': Number,
-  'scope': String,
-  'timeout': Number,
-  'url': url
-};
-
-var shortOpts = {
-  'c': ['--control'],
-  'd': ['--debug'],
-  'b': ['--base'],
-  'D': ['--binddn'],
-  'i': ['--insecure'],
-  'w': ['--password'],
-  'p': ['--persistent'],
-  'g': ['--paged'],
-  's': ['--scope'],
-  't': ['--timeout'],
-  'u': ['--url']
-};
+var opts = [
+  {
+    names: ['url', 'u'],
+    type: 'string',
+    help: 'LDAP server URL',
+    helpArg: 'URL',
+    default: 'ldap://127.0.0.1:389'
+  },
+  {
+    names: ['binddn', 'D'],
+    type: 'ldap.DN',
+    help: 'Bind DN',
+    default: ''
+  },
+  {
+    names: ['password', 'w'],
+    type: 'string',
+    help: 'Bind password',
+    helpArg: 'PASSWD',
+    default: ''
+  },
+  {
+    names: ['base', 'b'],
+    type: 'ldap.DN',
+    help: 'Base DN of search',
+    default: ''
+  },
+  {
+    names: ['scope', 's'],
+    type: 'ldap.scope',
+    help: 'Search scope <base|sub|one>',
+    helpArg: 'SCOPE',
+    default: 'sub'
+  },
+  {
+    names: ['timeout', 't'],
+    type: 'integer',
+    help: 'Search timeout',
+    helpArg: 'SECS'
+  },
+  {
+    names: ['persistent', 'p'],
+    type: 'bool',
+    help: 'Enable persistent search control',
+    default: false
+  },
+  {
+    names: ['paged', 'g'],
+    type: 'number',
+    help: 'Enable paged search result control',
+    helpArg: 'PAGE_SIZE'
+  },
+  {
+    names: ['control', 'c'],
+    type: 'arrayOfString',
+    help: 'Send addition control OID',
+    helpArg: 'OID',
+    default: []
+  },
+  {
+    names: ['insecure', 'i'],
+    type: 'bool',
+    env: 'LDAPJS_TLS_INSECURE',
+    help: 'Disable SSL certificate verification',
+    default: false
+  },
+  {
+    names: ['debug', 'd'],
+    type: 'integer',
+    help: 'Set debug level <0-2>',
+    helpArg: 'LEVEL'
+  },
+  {
+    names: ['help', 'h'],
+    type: 'bool',
+    help: 'Print this help and exit.'
+  }
+];
+var parser = dashdash.createParser({options: opts});
 
 
 
 ///--- Helpers
 
 function usage(code, message) {
-  var _opts = '';
-  Object.keys(shortOpts).forEach(function(k) {
-    if (!Array.isArray(shortOpts[k]))
-      return;
-    var longOpt = shortOpts[k][0].replace('--', '');
-    var type = opts[longOpt].name || 'string';
-    if (type && type === 'boolean') type = '';
-    type = type.toLowerCase();
-
-    _opts += ' [--' + longOpt + ' ' + type + ']';
-  });
-  _opts += ' filter [attributes...]';
+  var _opts = parser.help();
 
   var msg = (message ? message + '\n' : '') +
-    'usage: ' + path.basename(process.argv[1]) + _opts;
+    'usage: ' + path.basename(process.argv[1]) +
+    ' <arguments> <filter> [attributes]\n' + _opts;
 
   process.stderr.write(msg + '\n');
   process.exit(code);
@@ -98,27 +154,18 @@ function perror(err) {
 var parsed;
 
 try {
-  parsed = nopt(opts, shortOpts, process.argv, 2);
+  parsed = parser.parse(process.argv);
 } catch (e) {
   usage(1, e.toString());
 }
 
-if (parsed.insecure === undefined &&
-    process.env.LDAPJS_TLS_INSECURE !== undefined) {
-  if (process.env.LDAPJS_TLS_INSECURE === '0') {
-    parsed.insecure = false;
-  } else {
-    parsed.insecure = true;
-  }
-}
-
 if (parsed.help)
   usage(0);
-if (parsed.argv.remain.length < 1)
+if (parsed._args.length < 1)
   usage(1, 'filter required');
 
 try {
-  ldap.parseFilter(parsed.argv.remain[0]);
+  ldap.parseFilter(parsed._args[0]);
 } catch (e) {
   usage(1, e.message);
 }
@@ -127,18 +174,6 @@ var logLevel = 'info';
 
 if (parsed.debug)
   logLevel = (parsed.debug > 1 ? 'trace' : 'debug');
-if (!parsed.url)
-  parsed.url = 'ldap://127.0.0.1:389';
-if (!parsed.binddn)
-  parsed.binddn = '';
-if (!parsed.password)
-  parsed.password = '';
-if (!parsed.base)
-  parsed.base = '';
-if (!parsed.control)
-  parsed.control = [];
-if (!parsed.persistent)
-  parsed.persistent = false;
 
 var log = new Logger({
     name: 'ldapjs',
@@ -156,21 +191,21 @@ var client = ldap.createClient({
   }
 });
 
-client.on('error', function(err) {
+client.on('error', function (err) {
   perror(err);
 });
 
-client.on('timeout', function(req) {
+client.on('timeout', function (req) {
   process.stderr.write('Timeout reached\n');
   process.exit(1);
 });
 
-client.bind(parsed.binddn, parsed.password, function(err, res) {
+client.bind(parsed.binddn, parsed.password, function (err, res) {
   if (err)
     perror(err);
 
   var controls = [];
-  parsed.control.forEach(function(c) {
+  parsed.control.forEach(function (c) {
     controls.push(new ldap.Control({
       type: c,
       criticality: true
@@ -193,23 +228,23 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
   }
   var req = {
     scope: parsed.scope || 'sub',
-    filter: parsed.argv.remain[0],
-    attributes: parsed.argv.remain.length > 1 ? parsed.argv.remain.slice(1) : []
+    filter: parsed._args[0],
+    attributes: parsed._args.length > 1 ? parsed._args.slice(1) : []
   };
-  client.search(parsed.base, req, controls, function(err, res) {
+  client.search(parsed.base, req, controls, function (err, res) {
     if (err)
       perror(err);
 
-    res.on('searchEntry', function(entry) {
+    res.on('searchEntry', function (entry) {
       process.stdout.write(JSON.stringify(entry.object, null, 2) + '\n');
     });
-    res.on('error', function(err) {
+    res.on('error', function (err) {
       perror(err);
     });
-    res.on('end', function(res) {
+    res.on('end', function (res) {
       if (res.status !== 0)
         process.stderr.write(ldap.getMessage(res.status) + '\n');
-      client.unbind(function() {
+      client.unbind(function () {
         return;
       });
     });

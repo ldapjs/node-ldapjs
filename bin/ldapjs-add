@@ -4,9 +4,8 @@
 
 var fs = require('fs');
 var path = require('path');
-var url = require('url');
 
-var nopt = require('nopt');
+var dashdash = require('dashdash');
 
 var ldap = require('../lib/index');
 var Logger = require('bunyan');
@@ -14,51 +13,74 @@ var Logger = require('bunyan');
 
 ///--- Globals
 
-nopt.typeDefs.DN = {
-  type: ldap.DN,
-  validate: function(data, k, val) {
-    data[k] = ldap.parseDN(val);
+dashdash.addOptionType({
+  name: 'ldap.DN',
+  takesArg: true,
+  helpArg: 'LDAP_DN',
+  parseArg: function (option, optstr, arg) {
+    return ldap.parseDN(arg);
   }
-};
+});
 
-var opts = {
-  'debug': Number,
-  'binddn': ldap.DN,
-  'file': String,
-  'insecure': Boolean,
-  'password': String,
-  'url': url
-};
 
-var shortOpts = {
-  'd': ['--debug'],
-  'D': ['--binddn'],
-  'f': ['--file'],
-  'i': ['--insecure'],
-  'w': ['--password'],
-  'u': ['--url']
-};
+var opts = [
+  {
+    names: ['url', 'u'],
+    type: 'string',
+    help: 'LDAP server URL',
+    helpArg: 'URL',
+    default: 'ldap://127.0.0.1:389'
+  },
+  {
+    names: ['binddn', 'D'],
+    type: 'ldap.DN',
+    help: 'Bind DN',
+    default: ''
+  },
+  {
+    names: ['password', 'w'],
+    type: 'string',
+    help: 'Bind password',
+    helpArg: 'PASSWD',
+    default: ''
+  },
+  {
+    names: ['file', 'f'],
+    type: 'string',
+    help: 'Input file',
+    helpArg: 'FILE'
+  },
+  {
+    names: ['insecure', 'i'],
+    type: 'bool',
+    env: 'LDAPJS_TLS_INSECURE',
+    help: 'Disable SSL certificate verification',
+    default: false
+  },
+  {
+    names: ['debug', 'd'],
+    type: 'integer',
+    help: 'Set debug level <0-2>',
+    helpArg: 'LEVEL'
+  },
+  {
+    names: ['help', 'h'],
+    type: 'bool',
+    help: 'Print this help and exit.'
+  }
+];
+var parser = dashdash.createParser({options: opts});
 
 
 
 ///--- Helpers
 
 function usage(code, message) {
-  var _opts = '';
-  Object.keys(shortOpts).forEach(function(k) {
-    if (!Array.isArray(shortOpts[k]))
-      return;
-    var longOpt = shortOpts[k][0].replace('--', '');
-    var type = opts[longOpt].name || 'string';
-    if (type && type === 'boolean') type = '';
-    type = type.toLowerCase();
-
-    _opts += ' [--' + longOpt + ' ' + type + ']';
-  });
-  _opts += ' [JSON]';
+  var _opts = parser.help();
 
   var msg = (message ? message + '\n' : '') +
-    'usage: ' + path.basename(process.argv[1]) + _opts;
+    'usage: ' + path.basename(process.argv[1]) +
+    ' <arguments> [JSON]\n' + _opts;
 
   process.stderr.write(msg + '\n');
   process.exit(code);
@@ -82,7 +104,7 @@ var logLevel = 'info';
 var parsed;
 
 try {
-  parsed = nopt(opts, shortOpts, process.argv, 2);
+  parsed = parser.parse(process.argv);
   if (parsed.file) {
     parsed.file = JSON.parse(fs.readFileSync(parsed.file, 'utf8'));
     if (!Array.isArray(parsed.file))
@@ -92,29 +114,22 @@ try {
   usage(1, e.toString());
 }
 
-if (parsed.insecure === undefined &&
-    process.env.LDAPJS_TLS_INSECURE !== undefined) {
-  if (process.env.LDAPJS_TLS_INSECURE === '0') {
-    parsed.insecure = false;
-  } else {
-    parsed.insecure = true;
-  }
-}
-
 if (parsed.help)
   usage(0);
 if (!parsed.file) {
   parsed.file = [];
-  parsed.argv.remain.forEach(function(a) {
-    var o =JSON.parse(a);
+  parsed._args.forEach(function (a) {
+    var o = JSON.parse(a);
     if (Array.isArray(o)) {
-      o.forEach(function(i) {
+      o.forEach(function (i) {
         parsed.file.push(o);
       });
       return;
     }
     parsed.file.push(o);
   });
+  if (parsed.file.length === 0)
+    parsed.file = null;
 }
 
 if (!parsed.file)
@@ -122,12 +137,6 @@ if (!parsed.file)
 
 if (parsed.debug)
   logLevel = (parsed.debug > 1 ? 'trace' : 'debug');
-if (!parsed.url)
-  parsed.url = 'ldap://127.0.0.1:389';
-if (!parsed.binddn)
-  parsed.binddn = '';
-if (!parsed.password)
-  parsed.password = '';
 
 var log = new Logger({
     name: 'ldapjs',
@@ -144,11 +153,11 @@ var client = ldap.createClient({
   }
 });
 
-client.on('error', function(err) {
+client.on('error', function (err) {
   perror(err);
 });
 
-client.bind(parsed.binddn, parsed.password, function(err, res) {
+client.bind(parsed.binddn, parsed.password, function (err, res) {
   if (err)
     perror(err);
 
@@ -161,7 +170,7 @@ client.bind(parsed.binddn, parsed.password, function(err, res) {
       client.unbind(function () { return; });
   }
 
-  parsed.file.forEach(function(entry) {
+  parsed.file.forEach(function (entry) {
     var dn = entry.dn;
     delete entry.dn;
     client.add(dn, entry, callback);
