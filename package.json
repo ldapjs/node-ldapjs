@@ -31,15 +31,16 @@
     "assert-plus": "0.1.5",
     "bunyan": "0.22.1",
     "dashdash": "1.6.0",
-    "pooling": "0.4.6"
+    "backoff": "2.4.0",
+    "once": "1.3.0",
+    "vasync": "1.5.0"
   },
   "optionalDependencies": {
     "dtrace-provider": "0.2.8"
   },
   "devDependencies": {
     "tap": "0.4.1",
-    "node-uuid": "1.4.0",
-    "vasync": "1.4.3"
+    "node-uuid": "1.4.0"
   },
   "scripts": {
     "test": "./node_modules/.bin/tap ./test"

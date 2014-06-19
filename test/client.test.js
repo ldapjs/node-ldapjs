@@ -77,6 +77,21 @@ test('setup', function (t) {
     return next();
   });
 
+  server.search('dc=slow', function (req, res, next) {
+    res.send({
+      dn: 'dc=slow',
+      attributes: {
+        'you': 'wish',
+        'this': 'was',
+        'faster': '.'
+      }
+    });
+    setTimeout(function () {
+      res.end();
+      next();
+    }, 250);
+  });
+
   server.search('dc=timeout', function (req, res, next) {
     // Haha client!
   });
@@ -132,7 +147,6 @@ test('setup', function (t) {
     client = ldap.createClient({
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
-      maxConnections: parseInt(process.env.LDAP_MAX_CONNS || 5, 10),
       idleTimeoutMillis: 10,
       log: new Logger({
         name: 'ldapjs_unit_test',
@@ -567,6 +581,38 @@ test('GH-24 attribute selection of *', function (t) {
       t.equal(res.status, 0);
       t.equal(gotEntry, 2);
       t.end();
+    });
+  });
+});
+
+
+test('idle timeout', function (t) {
+  // FIXME: this must be run before abandon
+  client.idleTimeout = 250;
+  function premature() {
+    t.ifError(true);
+  }
+  client.on('idle', premature);
+  client.search('dc=slow', 'objectclass=*', function (err, res) {
+    t.ifError(err);
+    res.on('searchEntry', function (res) {
+      t.ok(res);
+    });
+    res.on('error', function (err) {
+      t.ifError(err);
+    });
+    res.on('end', function () {
+      var late = setTimeout(function () {
+        t.ifError(false, 'too late');
+      }, 500);
+      // It's ok to go idle now
+      client.removeListener('idle', premature);
+      client.on('idle', function () {
+        clearTimeout(late);
+        client.removeAllListeners('idle');
+        client.idleTimeout = 0;
+        t.end();
+      });
     });
   });
 });
