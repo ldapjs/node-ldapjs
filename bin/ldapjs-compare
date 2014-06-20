@@ -25,6 +25,31 @@ dashdash.addOptionType({
 
 var opts = [
   {
+    names: ['attribute', 'a'],
+    type: 'string',
+    help: 'Comparison attribute',
+    helpArg: 'ATTR'
+  },
+  {
+    names: ['value', 'v'],
+    type: 'string',
+    help: 'Comparison value',
+    helpArg: 'VAL'
+  },
+  { group: 'General Options' },
+  {
+    names: ['help', 'h'],
+    type: 'bool',
+    help: 'Print this help and exit.'
+  },
+  {
+    names: ['debug', 'd'],
+    type: 'integer',
+    help: 'Set debug level <0-2>',
+    helpArg: 'LEVEL'
+  },
+  { group: 'Connection Options' },
+  {
     names: ['url', 'u'],
     type: 'string',
     help: 'LDAP server URL',
@@ -45,34 +70,11 @@ var opts = [
     default: ''
   },
   {
-    names: ['attribute', 'a'],
-    type: 'string',
-    help: 'Comparison attribute',
-    helpArg: 'ATTR'
-  },
-  {
-    names: ['value', 'v'],
-    type: 'string',
-    help: 'Comparison value',
-    helpArg: 'VAL'
-  },
-  {
     names: ['insecure', 'i'],
     type: 'bool',
     env: 'LDAPJS_TLS_INSECURE',
     help: 'Disable SSL certificate verification',
     default: false
-  },
-  {
-    names: ['debug', 'd'],
-    type: 'integer',
-    help: 'Set debug level <0-2>',
-    helpArg: 'LEVEL'
-  },
-  {
-    names: ['help', 'h'],
-    type: 'bool',
-    help: 'Print this help and exit.'
   }
 ];
 var parser = dashdash.createParser({options: opts});
@@ -82,10 +84,9 @@ var parser = dashdash.createParser({options: opts});
 ///--- Helpers
 
 function usage(code, message) {
-  var _opts = parser.help();
-
   var msg = (message ? message + '\n' : '') +
-    'usage: ' + path.basename(process.argv[1]) + ' <arguments> <DN>\n' + _opts;
+    'Usage: ' + path.basename(process.argv[1]) + ' [OPTIONS] DN\n\n' +
+    parser.help({includeEnv: true});
 
   process.stderr.write(msg + '\n');
   process.exit(code);

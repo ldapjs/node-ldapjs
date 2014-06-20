@@ -25,6 +25,25 @@ dashdash.addOptionType({
 
 var opts = [
   {
+    names: ['file', 'f'],
+    type: 'string',
+    help: 'Input file',
+    helpArg: 'FILE'
+  },
+  { group: 'General Options' },
+  {
+    names: ['help', 'h'],
+    type: 'bool',
+    help: 'Print this help and exit.'
+  },
+  {
+    names: ['debug', 'd'],
+    type: 'integer',
+    help: 'Set debug level <0-2>',
+    helpArg: 'LEVEL'
+  },
+  { group: 'Connection Options' },
+  {
     names: ['url', 'u'],
     type: 'string',
     help: 'LDAP server URL',
@@ -45,28 +64,11 @@ var opts = [
     default: ''
   },
   {
-    names: ['file', 'f'],
-    type: 'string',
-    help: 'Input file',
-    helpArg: 'FILE'
-  },
-  {
     names: ['insecure', 'i'],
     type: 'bool',
     env: 'LDAPJS_TLS_INSECURE',
     help: 'Disable SSL certificate verification',
     default: false
-  },
-  {
-    names: ['debug', 'd'],
-    type: 'integer',
-    help: 'Set debug level <0-2>',
-    helpArg: 'LEVEL'
-  },
-  {
-    names: ['help', 'h'],
-    type: 'bool',
-    help: 'Print this help and exit.'
   }
 ];
 var parser = dashdash.createParser({options: opts});
@@ -76,11 +78,9 @@ var parser = dashdash.createParser({options: opts});
 ///--- Helpers
 
 function usage(code, message) {
-  var _opts = parser.help();
-
   var msg = (message ? message + '\n' : '') +
-    'usage: ' + path.basename(process.argv[1]) +
-    ' <arguments> [JSON]\n' + _opts;
+    'Usage: ' + path.basename(process.argv[1]) + ' [OPTIONS] [JSON]\n\n' +
+    parser.help({includeEnv: true});
 
   process.stderr.write(msg + '\n');
   process.exit(code);
@@ -133,7 +133,7 @@ if (!parsed.file) {
 }
 
 if (!parsed.file)
-  usage(1, 'either -f or stdin must be used for adding objects');
+  usage(1, 'either -f or arguments must be used for adding objects');
 
 if (parsed.debug)
   logLevel = (parsed.debug > 1 ? 'trace' : 'debug');

@@ -44,26 +44,6 @@ dashdash.addOptionType({
 
 var opts = [
   {
-    names: ['url', 'u'],
-    type: 'string',
-    help: 'LDAP server URL',
-    helpArg: 'URL',
-    default: 'ldap://127.0.0.1:389'
-  },
-  {
-    names: ['binddn', 'D'],
-    type: 'ldap.DN',
-    help: 'Bind DN',
-    default: ''
-  },
-  {
-    names: ['password', 'w'],
-    type: 'string',
-    help: 'Bind password',
-    helpArg: 'PASSWD',
-    default: ''
-  },
-  {
     names: ['base', 'b'],
     type: 'ldap.DN',
     help: 'Base DN of search',
@@ -101,12 +81,11 @@ var opts = [
     helpArg: 'OID',
     default: []
   },
+  { group: 'General Options' },
   {
-    names: ['insecure', 'i'],
+    names: ['help', 'h'],
     type: 'bool',
-    env: 'LDAPJS_TLS_INSECURE',
-    help: 'Disable SSL certificate verification',
-    default: false
+    help: 'Print this help and exit.'
   },
   {
     names: ['debug', 'd'],
@@ -114,10 +93,33 @@ var opts = [
     help: 'Set debug level <0-2>',
     helpArg: 'LEVEL'
   },
+  { group: 'Connection Options' },
   {
-    names: ['help', 'h'],
+    names: ['url', 'u'],
+    type: 'string',
+    help: 'LDAP server URL',
+    helpArg: 'URL',
+    default: 'ldap://127.0.0.1:389'
+  },
+  {
+    names: ['binddn', 'D'],
+    type: 'ldap.DN',
+    help: 'Bind DN',
+    default: ''
+  },
+  {
+    names: ['password', 'w'],
+    type: 'string',
+    help: 'Bind password',
+    helpArg: 'PASSWD',
+    default: ''
+  },
+  {
+    names: ['insecure', 'i'],
     type: 'bool',
-    help: 'Print this help and exit.'
+    env: 'LDAPJS_TLS_INSECURE',
+    help: 'Disable SSL certificate verification',
+    default: false
   }
 ];
 var parser = dashdash.createParser({options: opts});
@@ -127,11 +129,10 @@ var parser = dashdash.createParser({options: opts});
 ///--- Helpers
 
 function usage(code, message) {
-  var _opts = parser.help();
-
   var msg = (message ? message + '\n' : '') +
-    'usage: ' + path.basename(process.argv[1]) +
-    ' <arguments> <filter> [attributes]\n' + _opts;
+    'Usage: ' + path.basename(process.argv[1]) +
+      ' [OPTIONS] FILTER [ATTRIBUTES...]\n\n' +
+    parser.help({includeEnv: true});
 
   process.stderr.write(msg + '\n');
   process.exit(code);
