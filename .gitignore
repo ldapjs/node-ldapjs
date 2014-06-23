@@ -5,3 +5,4 @@ node_modules
 *.tar.*
 *.tgz
 .DS_Store
+*.swp

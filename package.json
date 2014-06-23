@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "asn1": "0.1.11",
+    "sprintf": "0.1.1",
     "assert-plus": "0.1.2",
     "bunyan": "0.21.1",
     "dtrace-provider": "0.2.8",
