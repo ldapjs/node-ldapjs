@@ -618,6 +618,34 @@ test('idle timeout', function (t) {
 });
 
 
+test('abort reconnect', function (t) {
+  var abortClient = ldap.createClient({
+    connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
+    socketPath: '/dev/null',
+    reconnect: {},
+    log: new Logger({
+      name: 'ldapjs_unit_test',
+      stream: process.stderr,
+      level: (process.env.LOG_LEVEL || 'info'),
+      serializers: Logger.stdSerializers,
+      src: true
+    })
+  });
+  var retryCount = 0;
+  abortClient.on('connectError', function () {
+    ++retryCount;
+  });
+  abortClient.once('connectError', function () {
+    t.ok(true);
+    abortClient.once('destroy', function () {
+      t.ok(retryCount < 3);
+      t.end();
+    });
+    abortClient.destroy();
+  });
+});
+
+
 test('abandon (GH-27)', function (t) {
   client.abandon(401876543, function (err) {
     t.ifError(err);
