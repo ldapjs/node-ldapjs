@@ -30,32 +30,14 @@ client is:
 ||log|| You can optionally pass in a bunyan instance the client will use to acquire a logger.  The client logs all messages at the `trace` level.||
 ||timeout||How long the client should let operations live for before timing out. Default is Infinity.||
 ||connectTimeout||How long the client should wait before timing out on TCP connections. Default is up to the OS.||
-||maxConnections||Whether or not to enable connection pooling, and if so, how many to maintain.||
 ||tlsOptions||Additional [options](http://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback) passed to the TLS connection layer when connecting via `ldaps://`||
 
-If using connection pooling, you can additionally pass in:
-
-||bindDN||The DN all connections should be bound as.||
-||bindCredentials||The credentials to use with bindDN.||
-||checkInterval||How often to schedule health checks.||
-||maxIdleTime||How long a client can sit idle before initiating a health check (subject to the frequency set by checkInterval).||
 
 ## Connection management
 
 As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
-down from underneath you is difficult to deal with.  That said, the "raw"
-client, which is what you get when maxConnections is either unset or <= 1, does
-not do anything for you here; you can handle that however you want.
+down from underneath you is difficult to deal with.
 
-More commonly, you probably want to use connection pooling, which performs
-health checks, and while you will see occasional errors from a client, those
-will be highly transient, as the pooling logic will purge them and create new
-ones for you.
-
-It is highly recommended you just provide bindCredentials initially, as all
-clients used will be authenticated, but you can call `bind` at any given time.
-This is expensive though, as the pool must first drain, be destroyed, and then
-recreated.  So try not to do that.
 
 ## Common patterns
 
@@ -75,9 +57,6 @@ Performs a bind operation against the LDAP server.
 The bind API only allows LDAP 'simple' binds (equivalent to HTTP Basic
 Authentication) for now. Note that all client APIs can optionally take an array
 of `Control` objects. You probably don't need them though...
-
-If you have more than 1 connection in the connection pool, you will be called
-back after *all* of the connections are bound, not just the first one.
 
 Example:
 
@@ -287,9 +266,6 @@ find almost anything you're looking for.
 `unbind(callback)`
 
 Performs an unbind operation against the LDAP server.
-
-The unbind operation takes no parameters other than a callback, and will unbind
-(and disconnect) *all* of the connections in the pool.
 
 Example:
 
