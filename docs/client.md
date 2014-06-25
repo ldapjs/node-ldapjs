@@ -187,12 +187,14 @@ defaults for you so that if you pass nothing in, it's pretty much equivalent
 to an HTTP GET operation (i.e., base search against the DN, filter set to
 always match).
 
-Like every other operation, `base` is a DN string.  Options has the following
+Like every other operation, `base` is a DN string.  
+
+Options can be a string representing a valid LDAP filter or an object containing the following
 fields:
 
 ||scope||One of `base`, `one`, or `sub`. Defaults to `base`.||
 ||filter||A string version of an LDAP filter (see below), or a programatically constructed `Filter` object. Defaults to `(objectclass=*)`.||
-||attributes||attributes to select and return (if these are set, the server will return *only* these attributes). Defaults to the empty set, which means all attributes.||
+||attributes||attributes to select and return (if these are set, the server will return *only* these attributes). Defaults to the empty set, which means all attributes. You can provide a string if you want a single attribute or an array of string for one or many.||
 ||attrsOnly||boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.||
 ||sizeLimit||the maximum number of entries to return. Defaults to 0 (unlimited).||
 ||timeLimit||the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.||
@@ -211,7 +213,8 @@ Example:
 
     var opts = {
       filter: '(&(l=Seattle)(email=*@foo.com))',
-      scope: 'sub'
+      scope: 'sub',
+      attributes: ['dn', 'sn', 'cn']
     };
 
     client.search('o=example', opts, function(err, res) {
@@ -247,18 +250,23 @@ for an attribute `email` with a value of `foo@bar.com`.  The syntax would be:
     (email=foo@bar.com)
 
 ldapjs requires all filters to be surrounded by '()' blocks. Ok, that was easy.
-Let's now assume you want to find all records where the email is actually just
-anything in the "@bar.com" domain, and the location attribute is set to Seattle:
+Let's now assume that you want to find all records where the email is actually just
+anything in the "@bar.com" domain and the location attribute is set to Seattle:
 
     (&(email=*@bar.com)(l=Seattle))
 
-Now our filter is actually three LDAP filters.  We have an `and` filter,
-an `equality` filter (the l=Seattle), and a `substring` filter.  Substrings are
-wildcard filters.  Now, let's say we want to also set our filter to include a
-specification that either the employeeType *not* be a manager or a secretary:
+Now our filter is actually three LDAP filters.  We have an `and` filter (single
+amp `&`), an `equality` filter `(the l=Seattle)`, and a `substring` filter.  
+Substrings are wildcard filters. They use `*` as the wildcard. You can put more
+than one wildcard for a given string. For example you could do `(email=*@*bar.com)`
+to match any email of @bar.com or its subdomains like "example@foo.bar.com".
+
+Now, let's say we also want to set our filter to include a
+specification that either the employeeType *not* be a manager nor a secretary:
 
     (&(email=*@bar.com)(l=Seattle)(!(|(employeeType=manager)(employeeType=secretary))))
 
+The `not` character is represented as a `!`, the `or` as a single pipe `|`.
 It gets a little bit complicated, but it's actually quite powerful, and lets you
 find almost anything you're looking for.
 
