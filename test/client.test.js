@@ -4,6 +4,7 @@ var Logger = require('bunyan');
 
 var test = require('tap').test;
 var uuid = require('node-uuid');
+var vasync = require('vasync');
 
 
 ///--- Globals
@@ -147,7 +148,6 @@ test('setup', function (t) {
     client = ldap.createClient({
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
-      idleTimeoutMillis: 10,
       log: new Logger({
         name: 'ldapjs_unit_test',
         stream: process.stderr,
@@ -618,11 +618,131 @@ test('idle timeout', function (t) {
 });
 
 
+test('setup action', function (t) {
+  var setupClient = ldap.createClient({
+      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
+      socketPath: SOCKET,
+      log: new Logger({
+        name: 'ldapjs_unit_test',
+        stream: process.stderr,
+        level: (process.env.LOG_LEVEL || 'info'),
+        serializers: Logger.stdSerializers,
+        src: true
+      })
+    });
+  setupClient.on('setup', function (clt, cb) {
+    clt.bind(BIND_DN, BIND_PW, function (err, res) {
+      t.ifError(err);
+      cb(err);
+    });
+  });
+  setupClient.search(SUFFIX, {scope: 'base'}, function (err, res) {
+    t.ifError(err);
+    t.ok(res);
+    res.on('end', function () {
+      setupClient.destroy();
+      t.end();
+    });
+  });
+});
+
+
+test('setup reconnect', function (t) {
+  var rClient = ldap.createClient({
+      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
+      socketPath: SOCKET,
+      reconnect: true,
+      log: new Logger({
+        name: 'ldapjs_unit_test',
+        stream: process.stderr,
+        level: (process.env.LOG_LEVEL || 'info'),
+        serializers: Logger.stdSerializers,
+        src: true
+      })
+    });
+  rClient.on('setup', function (clt, cb) {
+    clt.bind(BIND_DN, BIND_PW, function (err, res) {
+      t.ifError(err);
+      cb(err);
+    });
+  });
+
+  function doSearch(_, cb) {
+    rClient.search(SUFFIX, {scope: 'base'}, function (err, res) {
+      t.ifError(err);
+      res.on('end', function () {
+        cb();
+      });
+    });
+  }
+  vasync.pipeline({
+    funcs: [
+      doSearch,
+      function cleanDisconnect(_, cb) {
+        t.ok(rClient.connected);
+        rClient.once('close', function (had_err) {
+          t.ifError(had_err);
+          t.equal(rClient.connected, false);
+          cb();
+        });
+        rClient.unbind();
+      },
+      doSearch,
+      function simulateError(_, cb) {
+        var msg = 'fake socket error';
+        rClient.once('error', function (err) {
+          t.equal(err.message, msg);
+          t.ok(err);
+        });
+        rClient.once('close', function (had_err) {
+          // can't test had_err because the socket error is being faked
+          cb();
+        });
+        rClient.socket.emit('error', new Error(msg));
+      },
+      doSearch
+    ]
+  }, function (err, res) {
+    t.ifError(err);
+    rClient.destroy();
+    t.end();
+  });
+});
+
+
+test('setup abort', function (t) {
+  var setupClient = ldap.createClient({
+      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
+      socketPath: SOCKET,
+      reconnect: true,
+      log: new Logger({
+        name: 'ldapjs_unit_test',
+        stream: process.stderr,
+        level: (process.env.LOG_LEVEL || 'info'),
+        serializers: Logger.stdSerializers,
+        src: true
+      })
+    });
+  var message = 'It\'s a trap!';
+  setupClient.on('setup', function (clt, cb) {
+    // simulate failure
+    t.ok(clt);
+    cb(new Error(message));
+  });
+  setupClient.on('setupError', function (err) {
+    t.ok(true);
+    t.equal(err.message, message);
+    setupClient.destroy();
+    t.end();
+  });
+});
+
+
 test('abort reconnect', function (t) {
   var abortClient = ldap.createClient({
     connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
     socketPath: '/dev/null',
-    reconnect: {},
+    reconnect: true,
     log: new Logger({
       name: 'ldapjs_unit_test',
       stream: process.stderr,
@@ -642,6 +762,37 @@ test('abort reconnect', function (t) {
       t.end();
     });
     abortClient.destroy();
+  });
+});
+
+
+test('reconnect max retries', function (t) {
+  var RETRIES = 5;
+  var rClient = ldap.createClient({
+    connectTimeout: 100,
+    socketPath: '/dev/null',
+    reconnect: {
+      failAfter: RETRIES,
+      // Keep the test duration low
+      initialDelay: 10,
+      maxDelay: 100
+    },
+    log: new Logger({
+      name: 'ldapjs_unit_test',
+      stream: process.stderr,
+      level: (process.env.LOG_LEVEL || 'info'),
+      serializers: Logger.stdSerializers,
+      src: true
+    })
+  });
+  var count = 0;
+  rClient.on('connectError', function () {
+    count++;
+  });
+  rClient.on('error', function (err) {
+    t.equal(count, RETRIES);
+    rClient.destroy();
+    t.end();
   });
 });
 
