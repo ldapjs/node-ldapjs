@@ -15,6 +15,14 @@ var SOCKET = '/tmp/.' + uuid();
 
 var SUFFIX = 'dc=test';
 
+var LOG = new Logger({
+  name: 'ldapjs_unit_test',
+  stream: process.stderr,
+  level: (process.env.LOG_LEVEL || 'info'),
+  serializers: Logger.stdSerializers,
+  src: true
+});
+
 var ldap;
 var Attribute;
 var Change;
@@ -148,13 +156,7 @@ test('setup', function (t) {
     client = ldap.createClient({
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
-      log: new Logger({
-        name: 'ldapjs_unit_test',
-        stream: process.stderr,
-        level: (process.env.LOG_LEVEL || 'info'),
-        serializers: Logger.stdSerializers,
-        src: true
-      })
+      log: LOG
     });
     t.ok(client);
     t.end();
@@ -622,13 +624,7 @@ test('setup action', function (t) {
   var setupClient = ldap.createClient({
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
-      log: new Logger({
-        name: 'ldapjs_unit_test',
-        stream: process.stderr,
-        level: (process.env.LOG_LEVEL || 'info'),
-        serializers: Logger.stdSerializers,
-        src: true
-      })
+      log: LOG
     });
   setupClient.on('setup', function (clt, cb) {
     clt.bind(BIND_DN, BIND_PW, function (err, res) {
@@ -652,13 +648,7 @@ test('setup reconnect', function (t) {
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
       reconnect: true,
-      log: new Logger({
-        name: 'ldapjs_unit_test',
-        stream: process.stderr,
-        level: (process.env.LOG_LEVEL || 'info'),
-        serializers: Logger.stdSerializers,
-        src: true
-      })
+      log: LOG
     });
   rClient.on('setup', function (clt, cb) {
     clt.bind(BIND_DN, BIND_PW, function (err, res) {
@@ -715,13 +705,7 @@ test('setup abort', function (t) {
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
       reconnect: true,
-      log: new Logger({
-        name: 'ldapjs_unit_test',
-        stream: process.stderr,
-        level: (process.env.LOG_LEVEL || 'info'),
-        serializers: Logger.stdSerializers,
-        src: true
-      })
+      log: LOG
     });
   var message = 'It\'s a trap!';
   setupClient.on('setup', function (clt, cb) {
@@ -743,13 +727,7 @@ test('abort reconnect', function (t) {
     connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
     socketPath: '/dev/null',
     reconnect: true,
-    log: new Logger({
-      name: 'ldapjs_unit_test',
-      stream: process.stderr,
-      level: (process.env.LOG_LEVEL || 'info'),
-      serializers: Logger.stdSerializers,
-      src: true
-    })
+    log: LOG
   });
   var retryCount = 0;
   abortClient.on('connectError', function () {
@@ -777,13 +755,7 @@ test('reconnect max retries', function (t) {
       initialDelay: 10,
       maxDelay: 100
     },
-    log: new Logger({
-      name: 'ldapjs_unit_test',
-      stream: process.stderr,
-      level: (process.env.LOG_LEVEL || 'info'),
-      serializers: Logger.stdSerializers,
-      src: true
-    })
+    log: LOG
   });
   var count = 0;
   rClient.on('connectError', function () {
@@ -793,6 +765,63 @@ test('reconnect max retries', function (t) {
     t.equal(count, RETRIES);
     rClient.destroy();
     t.end();
+  });
+});
+
+
+test('reconnect on server close', function (t) {
+  var clt = ldap.createClient({
+    socketPath: SOCKET,
+    reconnect: true,
+    log: LOG
+  });
+  clt.on('setup', function (sclt, cb) {
+    sclt.bind(BIND_DN, BIND_PW, function (err, res) {
+      t.ifError(err);
+      cb(err);
+    });
+  });
+  clt.once('connect', function () {
+    t.ok(clt.socket);
+    clt.once('connect', function () {
+      t.ok(true, 'successful reconnect');
+      clt.destroy();
+      t.end();
+    });
+
+    // Simulate server-side close
+    clt.socket.destroy();
+  });
+});
+
+
+test('no auto-reconnect on unbind', function (t) {
+  var clt = ldap.createClient({
+    socketPath: SOCKET,
+    reconnect: true,
+    log: LOG
+  });
+  clt.on('setup', function (sclt, cb) {
+    sclt.bind(BIND_DN, BIND_PW, function (err, res) {
+      t.ifError(err);
+      cb(err);
+    });
+  });
+  clt.once('connect', function () {
+    clt.once('connect', function () {
+      t.ifError(new Error('client should not reconnect'));
+    });
+    clt.once('close', function () {
+      t.ok(true, 'initial close');
+      setImmediate(function () {
+        t.ok(!clt.connected, 'should not be connected');
+        t.ok(!clt.connecting, 'should not be connecting');
+        clt.destroy();
+        t.end();
+      });
+    });
+
+    clt.unbind();
   });
 });
 
