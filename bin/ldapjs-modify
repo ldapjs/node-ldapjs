@@ -32,7 +32,7 @@ var opts = [
   },
   {
     names: ['value', 'v'],
-    type: 'string',
+    type: 'arrayOfString',
     help: 'Desired value',
     helpArg: 'VAL'
   },
