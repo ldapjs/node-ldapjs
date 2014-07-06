@@ -1,38 +1,40 @@
-# Ldapjs
+# LDAPjs
 
 [!['Build status'][travis_image_url]][travis_page_url]
 
-[travis_image_url]: https://api.travis-ci.org/mcavage/node-ldapjs.png
+[travis_image_url]: https://api.travis-ci.org/mcavage/node-ldapjs.svg
 [travis_page_url]: https://travis-ci.org/mcavage/node-ldapjs
 
-ldapjs makes the LDAP protocol a first class citizen in Node.js.
+LDAPjs makes the LDAP protocol a first class citizen in Node.js.
 
 ## Usage
 
 For full docs, head on over to <http://ldapjs.org>.
 
-    var ldap = require('ldapjs');
+```javascript
+var ldap = require('ldapjs');
 
-    var server = ldap.createServer();
+var server = ldap.createServer();
 
-    server.search('dc=example', function(req, res, next) {
-      var obj = {
-        dn: req.dn.toString(),
-        attributes: {
-          objectclass: ['organization', 'top'],
-              o: 'example'
-        }
-      };
+server.search('dc=example', function(req, res, next) {
+  var obj = {
+    dn: req.dn.toString(),
+    attributes: {
+      objectclass: ['organization', 'top'],
+      o: 'example'
+    }
+  };
 
-      if (req.filter.matches(obj.attributes))
-        res.send(obj);
+  if (req.filter.matches(obj.attributes))
+  res.send(obj);
 
-      res.end();
-    });
+  res.end();
+});
 
-    server.listen(1389, function() {
-      console.log('ldapjs listening at ' + server.url);
-    });
+server.listen(1389, function() {
+  console.log('ldapjs listening at ' + server.url);
+});
+```
 
 To run that, assuming you've got the [OpenLDAP](http://www.openldap.org/) client
 on your system:
@@ -42,31 +44,33 @@ on your system:
 ## Installation
 
     npm install ldapjs
-    
+
 ## Formatting objectGUID attribute value
 
-    var ldap = require('ldapjs');
-    
-    ldap.Attribute.settings.guid_format = ldap.GUID_FORMAT_B;
-    
-    var client = ldap.createClient({
-      url: 'ldap://127.0.0.1/CN=test,OU=Development,DC=Home'
+```javascript
+var ldap = require('ldapjs');
+
+ldap.Attribute.settings.guid_format = ldap.GUID_FORMAT_B;
+
+var client = ldap.createClient({
+  url: 'ldap://127.0.0.1/CN=test,OU=Development,DC=Home'
+});
+
+var opts = {
+  filter: '(objectclass=user)',
+  scope: 'sub',
+  attributes: ['objectGUID']
+};
+
+client.bind('username', 'password', function (err) {
+  client.search('CN=test,OU=Development,DC=Home', opts, function (err, search) {
+    search.on('searchEntry', function (entry) {
+      var user = entry.object;
+      console.log(user.objectGUID);
     });
-    
-    var opts = {
-      filter: '(objectclass=user)',
-      scope: 'sub',
-      attributes: ['objectGUID']
-    };
-    
-    client.bind('username', 'password', function (err) {
-      client.search('CN=test,OU=Development,DC=Home', opts, function (err, search) {
-        search.on('searchEntry', function (entry) {
-          var user = entry.object;
-          console.log(user.objectGUID);
-        });
-      });
-    });
+  });
+});
+```
 
 _Note: for the sake of simplicity all checks and error handling was removed from the sample above._
 
@@ -74,7 +78,7 @@ The console output may be similar to the following (depending on the amount of u
 
     {a7667bb1-4aee-48ce-9d9d-a1193550deba}
     {8d642ac8-14c6-4f27-ac5-94d39833da88}
-    
+
 Available formatting modes:
 
     GUID_FORMAT_N
@@ -94,7 +98,7 @@ Available formatting modes:
         where the fourth value is a subset of eight hexadecimal values that is also enclosed in braces:
         {0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}
 
-Guid formatting is unobtrusive by default. You should explicitly define formatting mode in order to enable it. 
+GUID formatting is unobtrusive by default. You should explicitly define formatting mode in order to enable it.
 
 ## License
 
