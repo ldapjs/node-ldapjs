@@ -2,6 +2,9 @@
 
 ## CURRENT
 
+- Test code coverage with node-istanbul
+- Convert tests to node-tape
+- Add controls for server-side sorting
 - #201 Replace nopt with dashdash
 - #134 Allow configuration of derefAliases client option
 - #197 Properly dispatch unbind requests
