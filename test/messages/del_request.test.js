@@ -3,7 +3,7 @@
 
 var asn1 = require('asn1');
 var Logger = require('bunyan');
-var test = require('tap').test;
+var test = require('tape').test;
 
 
 ///--- Globals

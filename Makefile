@@ -39,7 +39,7 @@ JSL_FILES_NODE   = $(JS_FILES)
 JSSTYLE_FILES	 = $(JS_FILES)
 JSSTYLE_FLAGS    = -f tools/jsstyle.conf
 
-CLEAN_FILES	+= node_modules $(SHRINKWRAP) cscope.files
+CLEAN_FILES	+= node_modules coverage $(SHRINKWRAP) cscope.files
 
 include ./tools/mk/Makefile.defs
 
@@ -56,10 +56,11 @@ CLEAN_FILES += $(TAP) ./node_modules/tap
 
 .PHONY: test
 test: $(TAP)
-	$(TAP) test/*.test.js
-	$(TAP) test/filters/*.test.js
-	$(TAP) test/controls/*.test.js
-	$(TAP) test/messages/*.test.js
+	$(NPM) test
+
+.PHONY: cover
+cover: test
+	$(NPM) run report
 
 include ./tools/mk/Makefile.deps
 include ./tools/mk/Makefile.targ

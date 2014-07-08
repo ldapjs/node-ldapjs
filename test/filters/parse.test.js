@@ -1,6 +1,6 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
-var test = require('tap').test;
+var test = require('tape').test;
 
 var parse = require('../../lib/index').parseFilter;
 
