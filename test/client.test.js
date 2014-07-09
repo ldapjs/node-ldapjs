@@ -191,6 +191,36 @@ test('simple bind success', function (t) {
 });
 
 
+test('auto-bind bad credentials', function (t) {
+  var clt = ldap.createClient({
+    socketPath: SOCKET,
+    bindDN: BIND_DN,
+    bindCredentials: 'totallybogus',
+    log: LOG
+  });
+  clt.once('error', function (err) {
+    t.equal(err.code, ldap.LDAP_INVALID_CREDENTIALS);
+    clt.destroy();
+    t.end();
+  });
+});
+
+
+test('auto-bind success', function (t) {
+  var clt = ldap.createClient({
+    socketPath: SOCKET,
+    bindDN: BIND_DN,
+    bindCredentials: BIND_PW,
+    log: LOG
+  });
+  clt.once('connect', function () {
+    t.ok(clt);
+    clt.destroy();
+    t.end();
+  });
+});
+
+
 test('add success', function (t) {
   var attrs = [
     new Attribute({
