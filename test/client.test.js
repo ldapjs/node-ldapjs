@@ -619,7 +619,6 @@ test('GH-24 attribute selection of *', function (t) {
 
 
 test('idle timeout', function (t) {
-  // FIXME: this must be run before abandon
   client.idleTimeout = 250;
   function premature() {
     t.ifError(true);
@@ -856,14 +855,13 @@ test('no auto-reconnect on unbind', function (t) {
 });
 
 
-// Abandon handling is improper on the server and not robust in the client
-// FIXME: Disable test until one/both are fixed.
-//test('abandon (GH-27)', function (t) {
-//  client.abandon(401876543, function (err) {
-//    t.ifError(err);
-//    t.end();
-//  });
-//});
+test('abandon (GH-27)', function (t) {
+  // FIXME: test abandoning a real request
+  client.abandon(401876543, function (err) {
+    t.ifError(err);
+    t.end();
+  });
+});
 
 
 test('search timeout (GH-51)', function (t) {
