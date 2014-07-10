@@ -38,6 +38,7 @@ dashdash.addOptionType({
     if (!/^base|one|sub$/.test(arg)) {
       throw new TypeError('Scope must be <base|one|sub>');
     }
+    return arg;
   }
 });
 
