@@ -2,6 +2,7 @@
 
 ## CURRENT
 
+- #143 Preserve raw Buffer value in Control objects
 - Test code coverage with node-istanbul
 - Convert tests to node-tape
 - Add controls for server-side sorting

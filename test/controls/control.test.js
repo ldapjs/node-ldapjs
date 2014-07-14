@@ -55,7 +55,7 @@ test('parse', function (t) {
   t.ok(c);
   t.equal(c.type, '2.16.840.1.113730.3.4.2');
   t.ok(c.criticality);
-  t.equal(c.value, 'foo');
+  t.equal(c.value.toString('utf8'), 'foo');
   t.end();
 });
 
