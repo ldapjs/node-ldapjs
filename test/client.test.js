@@ -297,6 +297,19 @@ test('delete success', function (t) {
 });
 
 
+test('delete with control (GH-212)', function (t) {
+  var control = new ldap.Control({
+    type: '1.2.3.4',
+    criticality: false
+  });
+  client.del('cn=delete, ' + SUFFIX, control, function (err, res) {
+    t.ifError(err);
+    t.ok(res);
+    t.end();
+  });
+});
+
+
 test('exop success', function (t) {
   client.exop('1.3.6.1.4.1.4203.1.11.3', function (err, value, res) {
     t.ifError(err);
