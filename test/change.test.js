@@ -114,3 +114,129 @@ test('parse', function (t) {
 
   t.end();
 });
+
+
+test('apply - replace', function (t) {
+  var res;
+  var single = new Change({
+    operation: 'replace',
+    modification: {
+      type: 'cn',
+      vals: ['new']
+    }
+  });
+  var twin = new Change({
+    operation: 'replace',
+      modification: {
+        type: 'cn',
+        vals: ['new', 'two']
+      }
+  });
+
+  // plain
+  res = Change.apply(single, { cn: ['old'] });
+  t.ok(res.cn);
+  t.equal(res.cn.length, 1);
+  t.equal(res.cn[0], 'new');
+
+  // multiple
+  res = Change.apply(single, { cn: ['old', 'also'] });
+  t.ok(res.cn);
+  t.equal(res.cn.length, 1);
+  t.equal(res.cn[0], 'new');
+
+  //absent
+  res = Change.apply(single, { dn: ['otherjunk'] });
+  t.ok(res.cn);
+  t.equal(res.cn.length, 1);
+  t.equal(res.cn[0], 'new');
+
+  // scalar formatting "success"
+  res = Change.apply(single, { cn: 'old' }, true);
+  t.ok(res.cn);
+  t.equal(res.cn, 'new');
+
+  // scalar formatting "failure"
+  res = Change.apply(twin, { cn: 'old' }, true);
+  t.ok(res.cn);
+  t.equal(res.cn.length, 2);
+  t.equal(res.cn[0], 'new');
+  t.equal(res.cn[1], 'two');
+
+  t.end();
+});
+
+
+test('apply - add', function (t) {
+  var res;
+  var single = new Change({
+    operation: 'add',
+    modification: {
+      type: 'cn',
+      vals: ['new']
+    }
+  });
+
+  // plain
+  res = Change.apply(single, { cn: ['old'] });
+  t.deepEqual(res.cn, ['old', 'new']);
+
+  // multiple
+  res = Change.apply(single, { cn: ['old', 'also'] });
+  t.deepEqual(res.cn, ['old', 'also', 'new']);
+
+  //absent
+  res = Change.apply(single, { dn: ['otherjunk'] });
+  t.deepEqual(res.cn, ['new']);
+
+  // scalar formatting "success"
+  res = Change.apply(single, { }, true);
+  t.equal(res.cn, 'new');
+
+  // scalar formatting "failure"
+  res = Change.apply(single, { cn: 'old' }, true);
+  t.deepEqual(res.cn, ['old', 'new']);
+
+  // duplicate add
+  res = Change.apply(single, { cn: 'new' });
+  t.deepEqual(res.cn, ['new']);
+
+  t.end();
+});
+
+
+test('apply - delete', function (t) {
+  var res;
+  var single = new Change({
+    operation: 'delete',
+    modification: {
+      type: 'cn',
+      vals: ['old']
+    }
+  });
+
+  // plain
+  res = Change.apply(single, { cn: ['old', 'new'] });
+  t.deepEqual(res.cn, ['new']);
+
+  // empty
+  res = Change.apply(single, { cn: ['old'] });
+  t.equal(res.cn, undefined);
+  t.ok(Object.keys(res).indexOf('cn') === -1);
+
+  // scalar formatting "success"
+  res = Change.apply(single, { cn: ['old', 'one'] }, true);
+  t.equal(res.cn, 'one');
+
+  // scalar formatting "failure"
+  res = Change.apply(single, { cn: ['old', 'several', 'items'] }, true);
+  t.deepEqual(res.cn, ['several', 'items']);
+
+
+  //absent
+  res = Change.apply(single, { dn: ['otherjunk'] });
+  t.ok(res);
+  t.equal(res.cn, undefined);
+
+  t.end();
+});
