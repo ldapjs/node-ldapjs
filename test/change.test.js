@@ -132,36 +132,38 @@ test('apply - replace', function (t) {
         vals: ['new', 'two']
       }
   });
+  var empty = new Change({
+    operation: 'replace',
+    modification: {
+      type: 'cn',
+      vals: []
+    }
+  });
 
   // plain
   res = Change.apply(single, { cn: ['old'] });
-  t.ok(res.cn);
-  t.equal(res.cn.length, 1);
-  t.equal(res.cn[0], 'new');
+  t.deepEqual(res.cn, ['new']);
 
   // multiple
   res = Change.apply(single, { cn: ['old', 'also'] });
-  t.ok(res.cn);
-  t.equal(res.cn.length, 1);
-  t.equal(res.cn[0], 'new');
+  t.deepEqual(res.cn, ['new']);
+
+  // empty
+  res = Change.apply(empty, { cn: ['existing'] });
+  t.equal(res.cn, undefined);
+  t.ok(Object.keys(res).indexOf('cn') === -1);
 
   //absent
   res = Change.apply(single, { dn: ['otherjunk'] });
-  t.ok(res.cn);
-  t.equal(res.cn.length, 1);
-  t.equal(res.cn[0], 'new');
+  t.deepEqual(res.cn, ['new']);
 
   // scalar formatting "success"
   res = Change.apply(single, { cn: 'old' }, true);
-  t.ok(res.cn);
   t.equal(res.cn, 'new');
 
   // scalar formatting "failure"
   res = Change.apply(twin, { cn: 'old' }, true);
-  t.ok(res.cn);
-  t.equal(res.cn.length, 2);
-  t.equal(res.cn[0], 'new');
-  t.equal(res.cn[1], 'two');
+  t.deepEqual(res.cn, ['new', 'two']);
 
   t.end();
 });
