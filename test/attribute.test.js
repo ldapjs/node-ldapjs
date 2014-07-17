@@ -80,3 +80,61 @@ test('parse', function (t) {
   t.equal(attr.vals[1], 'bar');
   t.end();
 });
+
+
+test('isAttribute', function (t) {
+  var isA = Attribute.isAttribute;
+  t.notOk(isA(null));
+  t.notOk(isA('asdf'));
+  t.ok(isA(new Attribute({
+    type: 'foobar',
+    vals: ['asdf']
+  })));
+
+  t.ok(isA({
+    type: 'foo',
+    vals: ['item', new Buffer(5)],
+    toBer: function () { /* placeholder */ }
+  }));
+
+  // bad type in vals
+  t.notOk(isA({
+    type: 'foo',
+    vals: ['item', null],
+    toBer: function () { /* placeholder */ }
+  }));
+
+  t.end();
+});
+
+
+test('compare', function (t) {
+  var comp = Attribute.compare;
+  var a = new Attribute({
+    type: 'foo',
+    vals: ['bar']
+  });
+  var b = new Attribute({
+    type: 'foo',
+    vals: ['bar']
+  });
+  t.equal(comp(a, b), 0);
+
+  // Different types
+  a.type = 'boo';
+  t.equal(comp(a, b), -1);
+  t.equal(comp(b, a), 1);
+  a.type = 'foo';
+
+  // Different value counts
+  a.vals = ['bar', 'baz'];
+  t.equal(comp(a, b), 1);
+  t.equal(comp(b, a), -1);
+
+  // Different value contents (same count)
+  a.vals = ['baz'];
+  t.equal(comp(a, b), 1);
+  t.equal(comp(b, a), -1);
+
+  t.end();
+});
