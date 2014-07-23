@@ -227,6 +227,10 @@ test('setup', function (t) {
     return next();
   });
 
+  server.search('cn=busy', function (req, res, next) {
+    next(new ldap.BusyError('too much to do'));
+  });
+
   server.unbind(function (req, res, next) {
     res.end();
     return next();
@@ -1047,6 +1051,37 @@ test('search timeout (GH-51)', function (t) {
     res.on('error', function () {
       t.end();
     });
+  });
+});
+
+
+test('resultError handling', function (t) {
+  t.plan(3);
+  vasync.pipeline({
+    funcs: [
+      function errSearch(_, cb) {
+        client.once('resultError', function (error) {
+          t.equal(error.name, 'BusyError');
+        });
+        client.search('cn=busy', {}, function (err, res) {
+          res.once('error', function (error) {
+            t.equal(error.name, 'BusyError');
+            cb();
+          });
+        });
+      },
+      function cleanSearch(_, cb) {
+        client.on('resultError', t.ifError.bind(null));
+        client.search(SUFFIX, {}, function (err, res) {
+          res.once('end', function () {
+            t.ok(true);
+            cb();
+          });
+        });
+      }
+    ]
+  }, function (err, res) {
+    client.removeAllListeners('resultError');
   });
 });
 

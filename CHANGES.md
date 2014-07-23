@@ -2,6 +2,7 @@
 
 ## CURRENT
 
+- Add 'resultError' event to client
 - Update paged search automation in client
 - Add Change.apply method for modifying objects
 - Update bunyan to 0.23.1
