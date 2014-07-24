@@ -5,6 +5,7 @@ var Logger = require('bunyan');
 var test = require('tape').test;
 var uuid = require('node-uuid');
 var vasync = require('vasync');
+var util = require('util');
 
 
 ///--- Globals
@@ -133,6 +134,85 @@ test('setup', function (t) {
 
     res.end();
     return next();
+  });
+
+  server.search('cn=sizelimit', function (req, res, next) {
+    var sizeLimit = 200;
+    var i;
+    for (i = 0; i < 1000; i++) {
+      if (req.sizeLimit > 0 && i >= req.sizeLimit) {
+        break;
+      } else if (i > sizeLimit) {
+        res.end(ldap.LDAP_SIZE_LIMIT_EXCEEDED);
+        return next();
+      }
+      res.send({
+        dn: util.format('o=%d, cn=sizelimit', i),
+        attributes: {
+          o: [i],
+          objectclass: ['pagedResult']
+        }
+      });
+    }
+    res.end();
+    return next();
+  });
+
+  server.search('cn=paged', function (req, res, next) {
+    var min = 0;
+    var max = 1000;
+
+    function sendResults(start, end) {
+      start = (start < min) ? min : start;
+      end = (end > max || end < min) ? max : end;
+      var i;
+      for (i = start; i < end; i++) {
+        res.send({
+          dn: util.format('o=%d, cn=paged', i),
+          attributes: {
+            o: [i],
+            objectclass: ['pagedResult']
+          }
+        });
+      }
+      return i;
+    }
+
+    var cookie = null;
+    var pageSize = 0;
+    req.controls.forEach(function (control) {
+      if (control.type === ldap.PagedResultsControl.OID) {
+        pageSize = control.value.size;
+        cookie = control.value.cookie;
+      }
+    });
+
+    if (cookie && Buffer.isBuffer(cookie)) {
+      // Do simple paging
+      var first = min;
+      if (cookie.length !== 0) {
+        first = parseInt(cookie.toString(), 10);
+      }
+      var last = sendResults(first, first + pageSize);
+
+      var resultCookie;
+      if (last < max) {
+        resultCookie = new Buffer(last.toString());
+      } else {
+        resultCookie = new Buffer('');
+      }
+      res.controls.push(new ldap.PagedResultsControl({
+        value: {
+          size: pageSize, // correctness not required here
+          cookie: resultCookie
+        }
+      }));
+      res.end();
+      next();
+    } else {
+      // don't allow non-paged searches for this test endpoint
+      next(new ldap.UnwillingToPerformError());
+    }
   });
 
   server.search('dc=empty', function (req, res, next) {
@@ -461,6 +541,89 @@ test('search basic', function (t) {
       t.end();
     });
   });
+});
+
+
+test('search sizeLimit', function (t) {
+  t.test('over limit', function (t2) {
+    client.search('cn=sizelimit', {}, function (err, res) {
+      t2.ifError(err);
+      res.on('error', function (error) {
+        t2.equal(error.name, 'SizeLimitExceededError');
+        t2.end();
+      });
+    });
+  });
+
+  t.test('under limit', function (t2) {
+    var limit = 100;
+    client.search('cn=sizelimit', {sizeLimit: limit}, function (err, res) {
+      t2.ifError(err);
+      var count = 0;
+      res.on('searchEntry', function (entry) {
+        count++;
+      });
+      res.on('end', function () {
+        t2.pass();
+        t2.equal(count, limit);
+        t2.end();
+      });
+      res.on('error', t2.ifError.bind(t));
+    });
+  });
+});
+
+
+test('search paged', function (t) {
+  t.test('paged - no pauses', function (t2) {
+    var countEntries = 0;
+    var countPages = 0;
+    client.search('cn=paged', {paged: {pageSize: 100}}, function (err, res) {
+      t2.ifError(err);
+      res.on('searchEntry', function () {
+        countEntries++;
+      });
+      res.on('page', function () {
+        countPages++;
+      });
+      res.on('error', t2.ifError.bind(t2));
+      res.on('end', function () {
+        t2.equal(countEntries, 1000);
+        t2.equal(countPages, 10);
+        t2.end();
+      });
+    });
+  });
+
+  t.test('paged - pauses', function (t2) {
+    var countPages = 0;
+    client.search('cn=paged', {
+      paged: {
+        pageSize: 100,
+        pagePause: true
+      }
+    }, function (err, res) {
+      t2.ifError(err);
+      res.on('page', function (result, cb) {
+        countPages++;
+        // cancel after 9 to verify callback usage
+        if (countPages === 9) {
+          // another page should never be encountered
+          res.removeAllListeners('page')
+            .on('page', t2.fail.bind(null, 'unexpected page'));
+          return cb(new Error());
+        }
+        return cb();
+      });
+      res.on('error', t2.ifError.bind(t2));
+      res.on('end', function () {
+        t2.equal(countPages, 9);
+        t2.end();
+      });
+    });
+  });
+
+  t.end();
 });
 
 

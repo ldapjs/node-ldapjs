@@ -224,15 +224,16 @@ client.bind(parsed.binddn, parsed.password, function (err, res) {
     });
     controls.push(pCtrl);
   }
-  if (parsed.paged) {
-    var ctrl = new ldap.PagedResultsControl({ value: { size: parsed.paged } });
-    controls.push(ctrl);
-  }
   var req = {
     scope: parsed.scope || 'sub',
     filter: parsed._args[0],
     attributes: parsed._args.length > 1 ? parsed._args.slice(1) : []
   };
+  if (parsed.paged) {
+    req.paged = {
+      pageSize: parsed.paged
+    };
+  }
   client.search(parsed.base, req, controls, function (err, res) {
     if (err)
       perror(err);
