@@ -2,6 +2,7 @@
 
 ## CURRENT
 
+- Update paged search automation in client
 - Add Change.apply method for modifying objects
 - Update bunyan to 0.23.1
 - #143 Preserve raw Buffer value in Control objects
