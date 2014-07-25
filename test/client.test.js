@@ -627,6 +627,46 @@ test('search paged', function (t) {
     });
   });
 
+  t.test('paged - no support (err handled)', function (t2) {
+    client.search(SUFFIX, {
+      paged: { pageSize: 100 }
+    }, function (err, res) {
+      t2.ifError(err);
+      res.on('pageError', t2.ok.bind(t2));
+      res.on('end', function () {
+        t2.pass();
+        t2.end();
+      });
+    });
+  });
+
+  t.test('paged - no support (err not handled)', function (t2) {
+    client.search(SUFFIX, {
+      paged: { pageSize: 100 }
+    }, function (err, res) {
+      t2.ifError(err);
+      res.on('end', t2.fail.bind(t2));
+      res.on('error', function (error) {
+        t2.ok(error);
+        t2.end();
+      });
+    });
+  });
+
+  t.test('paged - redundant control', function (t2) {
+    try {
+      client.search(SUFFIX, {
+        paged: { pageSize: 100 },
+      }, new ldap.PagedResultsControl(),
+      function (err, res) {
+        t2.fail();
+      });
+    } catch (e) {
+      t2.ok(e);
+      t2.end();
+    }
+  });
+
   t.end();
 });
 
