@@ -6,6 +6,7 @@ var fs = require('fs');
 var path = require('path');
 
 var dashdash = require('dashdash');
+var vasync = require('vasync');
 
 var ldap = require('../lib/index');
 var Logger = require('bunyan');
@@ -170,9 +171,17 @@ client.bind(parsed.binddn, parsed.password, function (err, res) {
       client.unbind(function () { return; });
   }
 
-  parsed.file.forEach(function (entry) {
-    var dn = entry.dn;
-    delete entry.dn;
-    client.add(dn, entry, callback);
+  vasync.forEachPipeline({
+    inputs: parsed.file,
+    func: function (entry, cb) {
+      var dn = entry.dn;
+      delete entry.dn;
+      client.add(dn, entry, cb);
+    }
+  }, function (err2, res2) {
+    if (err2) {
+      perror(err2);
+    }
+    client.unbind(function () { return; });
   });
 });
