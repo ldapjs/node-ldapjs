@@ -159,16 +159,8 @@ client.on('error', function (err) {
 });
 
 client.bind(parsed.binddn, parsed.password, function (err, res) {
-  if (err)
+  if (err) {
     perror(err);
-
-  var finished = 0;
-  function callback(err) {
-    if (err)
-      perror(err);
-
-    if (++finished === parsed.file.length)
-      client.unbind(function () { return; });
   }
 
   vasync.forEachPipeline({

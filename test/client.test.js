@@ -656,7 +656,7 @@ test('search paged', function (t) {
   t.test('paged - redundant control', function (t2) {
     try {
       client.search(SUFFIX, {
-        paged: { pageSize: 100 },
+        paged: { pageSize: 100 }
       }, new ldap.PagedResultsControl(),
       function (err, res) {
         t2.fail();
