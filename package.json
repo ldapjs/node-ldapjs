@@ -33,7 +33,8 @@
     "dashdash": "1.6.0",
     "backoff": "2.4.0",
     "once": "1.3.0",
-    "vasync": "1.5.0"
+    "vasync": "1.5.0",
+    "verror": "~1.4.0"
   },
   "optionalDependencies": {
     "dtrace-provider": "0.2.8"
