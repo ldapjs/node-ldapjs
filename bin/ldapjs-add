@@ -23,6 +23,14 @@ dashdash.addOptionType({
   }
 });
 
+dashdash.addOptionType({
+  name: 'ldap.BIND_DN',
+  takesArg: true,
+  helpArg: 'LDAP_BIND_DN',
+  parseArg: function (option, optstr, arg) {
+    return ldap.parseDN(arg, true);
+  }
+});
 
 var opts = [
   {
@@ -53,7 +61,7 @@ var opts = [
   },
   {
     names: ['binddn', 'D'],
-    type: 'ldap.DN',
+    type: 'ldap.BIND_DN',
     help: 'Bind DN',
     default: ''
   },
