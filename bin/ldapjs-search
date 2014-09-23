@@ -212,6 +212,14 @@ EntryFormatter.prototype.end = function end() {
 
 var parsed;
 
+process.stdout.on('error', function(err) {
+  if (err.code === 'EPIPE') {
+    process.exit(0);
+  } else {
+    throw err;
+  }
+});
+
 try {
   parsed = parser.parse(process.argv);
 } catch (e) {
