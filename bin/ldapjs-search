@@ -12,6 +12,20 @@ var Logger = require('bunyan');
 
 ///--- Globals
 
+
+var formatters = {
+  json: function (entry) {
+    return JSON.stringify(entry.object, null, 2) + '\r\n';
+  },
+  jsonl: function (entry) {
+    return JSON.stringify(entry.object, null, 0) + '\r\n';
+  },
+  ldjson: function (entry) {
+    return formatters.jsonl(entry);
+  }
+};
+
+
 dashdash.addOptionType({
   name: 'ldap.DN',
   takesArg: true,
@@ -37,6 +51,19 @@ dashdash.addOptionType({
   parseArg: function (option, optstr, arg) {
     if (!/^base|one|sub$/.test(arg)) {
       throw new TypeError('Scope must be <base|one|sub>');
+    }
+    return arg;
+  }
+});
+
+dashdash.addOptionType({
+  name: 'ldap.Formatter',
+  takesArg: true,
+  helpArg: 'FORMAT',
+  parseArg: function(options, optstr, arg) {
+    arg = arg.trim().toLowerCase();
+    if (!(arg in formatters)) {
+      throw new TypeError('Format must be one of: ' + Object.keys(formatters).join(', '));
     }
     return arg;
   }
@@ -93,6 +120,12 @@ var opts = [
     type: 'integer',
     help: 'Set debug level <0-2>',
     helpArg: 'LEVEL'
+  },
+  {
+    names: ['format', 'f'],
+    type: 'ldap.Formatter',
+    help: 'Output format: ' + Object.keys(formatters).join(', '),
+    default: 'json'
   },
   { group: 'Connection Options' },
   {
@@ -238,8 +271,9 @@ client.bind(parsed.binddn, parsed.password, function (err, res) {
     if (err)
       perror(err);
 
+    var formatter = formatters[parsed.format];
     res.on('searchEntry', function (entry) {
-      process.stdout.write(JSON.stringify(entry.object, null, 2) + '\n');
+      process.stdout.write(formatter(entry));
     });
     res.on('error', function (err) {
       perror(err);
