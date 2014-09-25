@@ -79,6 +79,36 @@ test('parse quoted', function (t) {
 });
 
 
+test('parse AD UPN (user@domain)', function (t){
+  var DN_STR = 'mcavage@joyent';
+  var name = dn.parse(DN_STR, true);
+  t.ok(name);
+  t.ok(name.rdns);
+  t.ok(Array.isArray(name.rdns));
+  t.equal(1, name.rdns.length);
+  name.rdns.forEach(function (rdn) {
+    t.equal('object', typeof (rdn));
+  });
+  t.equal(name.toString(), DN_STR);
+  t.end();
+});
+
+
+test('parse AD UPN (netbios/user)', function (t){
+  var DN_STR = 'joyent/mcavage';
+  var name = dn.parse(DN_STR, true);
+  t.ok(name);
+  t.ok(name.rdns);
+  t.ok(Array.isArray(name.rdns));
+  t.equal(1, name.rdns.length);
+  name.rdns.forEach(function (rdn) {
+    t.equal('object', typeof (rdn));
+  });
+  t.equal(name.toString(), DN_STR);
+  t.end();
+});
+
+
 test('equals', function (t) {
   var dn1 = dn.parse('cn=foo, dc=bar');
   t.ok(dn1.equals('cn=foo, dc=bar'));
