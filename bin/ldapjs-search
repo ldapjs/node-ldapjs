@@ -42,6 +42,19 @@ dashdash.addOptionType({
   }
 });
 
+dashdash.addOptionType({
+  name: 'ldap.outputFormat',
+  takesArg: true,
+  helpArg: 'FORMAT',
+  parseArg: function (option, optstr, arg) {
+    var formats = ['json', 'jsonl', 'jsona'];
+    if (formats.indexOf(arg) === -1) {
+      throw new TypeError('Must be valid format type');
+    }
+    return arg;
+  }
+});
+
 
 var opts = [
   {
@@ -93,6 +106,17 @@ var opts = [
     type: 'integer',
     help: 'Set debug level <0-2>',
     helpArg: 'LEVEL'
+  },
+  { group: 'Output Options' },
+  {
+    names: ['format', 'o'],
+    type: 'ldap.outputFormat',
+    helpWrap: false,
+    help: ('Specify and output format. One of:\n' +
+            '  json:  JSON objects (default)\n' +
+            '  jsonl: Line-delimited JSON\n' +
+            '  jsona: Array of JSON objects\n'),
+    default: 'json'
   },
   { group: 'Connection Options' },
   {
@@ -150,6 +174,46 @@ function perror(err) {
 }
 
 
+function EntryFormatter(fp, format) {
+  this.format = format;
+  this.started = false;
+  this.ended = false;
+  this.fp = fp;
+}
+
+EntryFormatter.prototype.write = function write(entry) {
+  switch (this.format) {
+  case 'json':
+    this.fp.write(JSON.stringify(entry.object, null, 2) + '\n');
+    break;
+  case 'jsonl':
+    this.fp.write(JSON.stringify(entry.object) + '\n');
+    break;
+  case 'jsona':
+    this.fp.write((this.started) ? ',\n' : '[\n');
+    this.started = true;
+    // pretty-print with indent
+    this.fp.write(
+        JSON.stringify(entry.object, null, 2)
+          .split('\n')
+          .map(function (line) { return '  ' + line; })
+          .join('\n'));
+    break;
+  default:
+    throw new Error('invalid output format');
+  }
+};
+
+EntryFormatter.prototype.end = function end() {
+  if (this.ended) {
+    return;
+  }
+  this.ended = true;
+  if (this.format === 'jsona') {
+    this.fp.write('\n]\n');
+  }
+};
+
 
 ///--- Mainline
 
@@ -177,11 +241,13 @@ var logLevel = 'info';
 if (parsed.debug)
   logLevel = (parsed.debug > 1 ? 'trace' : 'debug');
 
+var formatter = new EntryFormatter(process.stdout, parsed.format);
+
 var log = new Logger({
-    name: 'ldapjs',
-    component: 'client',
-    stream: process.stderr,
-    level: logLevel
+  name: 'ldapjs',
+  component: 'client',
+  stream: process.stderr,
+  level: logLevel
 });
 
 var client = ldap.createClient({
@@ -239,14 +305,17 @@ client.bind(parsed.binddn, parsed.password, function (err, res) {
       perror(err);
 
     res.on('searchEntry', function (entry) {
-      process.stdout.write(JSON.stringify(entry.object, null, 2) + '\n');
+      formatter.write(entry);
     });
     res.on('error', function (err) {
+      formatter.end();
       perror(err);
     });
     res.on('end', function (res) {
-      if (res.status !== 0)
+      formatter.end();
+      if (res.status !== 0) {
         process.stderr.write(ldap.getMessage(res.status) + '\n');
+      }
       client.unbind(function () {
         return;
       });
