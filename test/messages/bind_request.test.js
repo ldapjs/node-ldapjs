@@ -53,8 +53,6 @@ test('parse', function (t) {
   t.ok(req._parse(new BerReader(ber.buffer)));
   t.equal(req.version, 3);
   t.equal(req.dn.toString(), 'cn=root');
-  t.ok(req.name.constructor);
-  t.equal(req.name.constructor.name, 'DN');
   t.equal(req.credentials, 'secret');
   t.end();
 });

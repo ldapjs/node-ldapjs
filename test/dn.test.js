@@ -143,3 +143,18 @@ test('rdn spacing', function (t) {
   t.equals(dn2.spaced(false).toString(), 'cn=foo,dc=bar');
   t.end();
 });
+
+
+test('isDN duck-testing', function (t) {
+  var valid = dn.parse('cn=foo');
+  var isDN = dn.DN.isDN;
+  t.notOk(isDN(null));
+  t.notOk(isDN('cn=foo'));
+  t.ok(isDN(valid));
+  var duck = {
+    rdns: [ {look: 'ma'}, {a: 'dn'} ],
+    toString: function () { return 'look=ma, a=dn'; }
+  };
+  t.ok(isDN(duck));
+  t.end();
+});

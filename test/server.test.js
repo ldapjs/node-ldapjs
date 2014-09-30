@@ -196,3 +196,36 @@ test('route unbind', function (t) {
     });
   });
 });
+
+test('non-strict route', function (t) {
+  server = ldap.createServer({
+    strictDN: false
+  });
+  sock = getSock();
+  var testDN = 'this ain\'t a DN';
+
+  // invalid DNs go to default handler
+  server.search('', function (req, res, next) {
+    t.ok(req.dn);
+    t.equal(typeof (req.dn), 'string');
+    t.equal(req.dn, testDN);
+    res.end();
+    next();
+  });
+
+  server.listen(sock, function () {
+    t.ok(true, 'server startup');
+    var clt = ldap.createClient({
+      socketPath: sock,
+      strictDN: false
+    });
+    clt.search(testDN, {scope: 'base'}, function (err, res) {
+      t.ifError(err);
+      res.on('end', function () {
+        clt.destroy();
+        server.close();
+        t.end();
+      });
+    });
+  });
+});

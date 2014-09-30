@@ -1,0 +1,19 @@
+// Copyright 2014 Joyent, Inc.  All rights reserved.
+
+
+function NoOpResponse(options) {
+  if (!options)
+    options = {};
+  if (typeof (options) !== 'object')
+    throw new TypeError('options must be an object');
+
+  options.protocolOp = 0;
+  LDAPMessage.call(this, options);
+  this.__defineGetter__('type', function () { return 'NoOpResponse'; });
+}
+util.inherits(NoOpResponse, LDAPMessage);
+module.exports = NoOpResponse;
+
+NoOpResponse.prototype.end = function () {};
+
+NoOpResponse.prototype._json = function (j) { return j; };
