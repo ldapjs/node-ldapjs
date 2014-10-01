@@ -13,16 +13,6 @@ var Logger = require('bunyan');
 
 ///--- Globals
 
-dashdash.addOptionType({
-  name: 'ldap.DN',
-  takesArg: true,
-  helpArg: 'LDAP_DN',
-  parseArg: function (option, optstr, arg) {
-    return ldap.parseDN(arg);
-  }
-});
-
-
 var opts = [
   {
     names: ['attribute', 'a'],
@@ -58,8 +48,9 @@ var opts = [
   },
   {
     names: ['binddn', 'D'],
-    type: 'ldap.DN',
+    type: 'string',
     help: 'Bind DN',
+    helpArg: 'BIND_DN',
     default: ''
   },
   {
@@ -144,6 +135,7 @@ var log = new Logger({
 var client = ldap.createClient({
   url: parsed.url,
   log: log,
+  strictDN: false,
   tlsOptions: {
     rejectUnauthorized: !parsed.insecure
   }
