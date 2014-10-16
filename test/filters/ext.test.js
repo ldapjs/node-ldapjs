@@ -108,26 +108,3 @@ test('parse RFC example 5', function (t) {
   t.ok(f.dnAttributes);
   t.end();
 });
-
-
-test('parse caseIgnore', function (t) {
-  var f = filters.parseString('(cn:caseIgnoreMatch:=Dino)');
-  t.ok(f);
-  t.ok(f.matchType);
-  t.equal(f.matchingRule, 'caseIgnoreMatch');
-  t.equal(f.matchValue, 'Dino');
-  t.ok(f.matches({cn: 'dino'}));
-  t.end();
-});
-
-
-test('parse case substrings', function (t) {
-  var f = filters.parseString('(cn:caseIgnoreSubstringsMatch:=*i*o)');
-  t.ok(f);
-  t.ok(f.matchType);
-  t.equal(f.matchingRule, 'caseIgnoreSubstringsMatch');
-  t.ok(f.any);
-  t.ok(f['final']);
-  t.ok(f.matches({cn: 'dino'}));
-  t.end();
-});

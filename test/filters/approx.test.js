@@ -59,39 +59,6 @@ test('GH-109 = escape value only in toString()', function (t) {
 });
 
 
-test('match true', function (t) {
-  var f = new ApproximateFilter({
-    attribute: 'foo',
-    value: 'bar'
-  });
-  t.ok(f);
-  t.ok(f.matches({ foo: 'bar' }));
-  t.end();
-});
-
-
-test('match multiple', function (t) {
-  var f = new ApproximateFilter({
-    attribute: 'foo',
-    value: 'bar'
-  });
-  t.ok(f);
-  t.ok(f.matches({ foo: ['steak', 'bar']}));
-  t.ok(!f.matches({ foo: ['nihhh', 'rabbit']}));
-  t.end();
-});
-
-test('match false', function (t) {
-  var f = new ApproximateFilter({
-    attribute: 'foo',
-    value: 'bar'
-  });
-  t.ok(f);
-  t.ok(!f.matches({ foo: 'baz' }));
-  t.end();
-});
-
-
 test('parse ok', function (t) {
   var writer = new BerWriter();
   writer.writeString('foo');
@@ -100,7 +67,6 @@ test('parse ok', function (t) {
   var f = new ApproximateFilter();
   t.ok(f);
   t.ok(f.parse(new BerReader(writer.buffer)));
-  t.ok(f.matches({ foo: 'bar' }));
   t.end();
 });
 
