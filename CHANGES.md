@@ -24,6 +24,10 @@
 - #178 Perform strict presence testing on attribute vals
 - #183 Accept buffers or strings for cert/key in createServer
 - #180 Add '-i, --insecure' option and to all ldapjs-\* CLIs
+- Completely overhaul DN parsing/formatting
+  - Add options for format preservation
+  - Removed `spaced()` and `rndSpaced` from DN API
+  - Fix parent/child rules regarding empty DNs
 
 ## 0.7.1
 
