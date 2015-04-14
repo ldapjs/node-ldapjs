@@ -28,6 +28,7 @@
   - Add options for format preservation
   - Removed `spaced()` and `rndSpaced` from DN API
   - Fix parent/child rules regarding empty DNs
+- #254 Allow simple client bind with empty credentials
 
 ## 0.7.1
 

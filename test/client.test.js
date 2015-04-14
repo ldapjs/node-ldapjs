@@ -274,6 +274,14 @@ test('simple bind success', function (t) {
   });
 });
 
+test('simple anonymous bind (empty credentials)', function (t) {
+  client.bind('', '', function (err, res) {
+    t.ifError(err);
+    t.ok(res);
+    t.equal(res.status, 0);
+    t.end();
+  });
+});
 
 test('auto-bind bad credentials', function (t) {
   var clt = ldap.createClient({
