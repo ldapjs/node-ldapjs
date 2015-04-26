@@ -231,6 +231,23 @@ test('setup', function (t) {
     next(new ldap.BusyError('too much to do'));
   });
 
+  server.search('', function (req, res, next) {
+    if (req.dn.toString() === '') {
+      res.send({
+        dn: '',
+        attributes: {
+          objectclass: ['RootDSE', 'top']
+        }
+      });
+      res.end();
+    } else {
+      // Turn away any other requests (since '' is the fallthrough route)
+      res.errorMessage = 'No tree found for: ' + req.dn.toString();
+      res.end(ldap.LDAP_NO_SUCH_OBJECT);
+    }
+    return next();
+  });
+
   server.unbind(function (req, res, next) {
     res.end();
     return next();
@@ -274,6 +291,7 @@ test('simple bind success', function (t) {
   });
 });
 
+
 test('simple anonymous bind (empty credentials)', function (t) {
   client.bind('', '', function (err, res) {
     t.ifError(err);
@@ -282,6 +300,7 @@ test('simple anonymous bind (empty credentials)', function (t) {
     t.end();
   });
 });
+
 
 test('auto-bind bad credentials', function (t) {
   var clt = ldap.createClient({
@@ -704,6 +723,29 @@ test('search referral', function (t) {
       t.equal(res.status, 0);
       t.equal(gotEntry, 0);
       t.ok(gotReferral);
+      t.end();
+    });
+  });
+});
+
+
+test('search rootDSE', function (t) {
+  client.search('', '(objectclass=*)', function (err, res) {
+    t.ifError(err);
+    t.ok(res);
+    res.on('searchEntry', function (entry) {
+      t.ok(entry);
+      t.equal(entry.dn.toString(), '');
+      t.ok(entry.attributes);
+      t.ok(entry.object);
+    });
+    res.on('error', function (err) {
+      t.fail(err);
+    });
+    res.on('end', function (res) {
+      t.ok(res);
+      t.ok(res instanceof ldap.SearchResponse);
+      t.equal(res.status, 0);
       t.end();
     });
   });
