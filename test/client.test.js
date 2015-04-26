@@ -987,7 +987,7 @@ test('setup reconnect', function (t) {
           // can't test had_err because the socket error is being faked
           cb();
         });
-        rClient.socket.emit('error', new Error(msg));
+        rClient._socket.emit('error', new Error(msg));
       },
       doSearch
     ]
@@ -1081,7 +1081,7 @@ test('reconnect on server close', function (t) {
     });
   });
   clt.once('connect', function () {
-    t.ok(clt.socket);
+    t.ok(clt._socket);
     clt.once('connect', function () {
       t.ok(true, 'successful reconnect');
       clt.destroy();
@@ -1089,7 +1089,7 @@ test('reconnect on server close', function (t) {
     });
 
     // Simulate server-side close
-    clt.socket.destroy();
+    clt._socket.destroy();
   });
 });
 
