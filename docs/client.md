@@ -28,8 +28,8 @@ client is:
 ||url|| a valid LDAP url.||
 ||socketPath|| If you're running an LDAP server over a Unix Domain Socket, use this.||
 ||log|| You can optionally pass in a bunyan instance the client will use to acquire a logger.  The client logs all messages at the `trace` level.||
-||timeout||How long the client should let operations live for before timing out. Default is Infinity.||
-||connectTimeout||How long the client should wait before timing out on TCP connections. Default is up to the OS.||
+||timeout||How many milliseconds the client should let operations live for before timing out. Default is Infinity.||
+||connectTimeout||How many milliseconds the client should wait before timing out on TCP connections. Default is up to the OS.||
 ||tlsOptions||Additional [options](http://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback) passed to the TLS connection layer when connecting via `ldaps://`||
 
 
