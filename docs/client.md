@@ -32,12 +32,53 @@ client is:
 ||connectTimeout||How long the client should wait before timing out on TCP connections. Default is up to the OS.||
 ||tlsOptions||Additional [options](http://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback) passed to the TLS connection layer when connecting via `ldaps://`||
 
-
 ## Connection management
 
 As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
-down from underneath you is difficult to deal with.
+down from underneath you is difficult to deal with. Here is a more complete
+example that gracefully handles connection errors while attempting to bind to
+a remote server.
 
+    function getClient (info, done) {
+
+        var isDone = false;
+        var callDone = function (err, client) {
+            if (isDone) return;
+            isDone = true;
+            done(err, client);
+        }
+
+        var ldapjs = require('ldapjs');
+        var client = ldapjs.createClient({
+            url: info.url || 'ldap://127.0.0.1:1389',
+        });
+        client.on('connectError', function (err) {
+            if (err) {
+                console.error(err);
+                return callDone(err);
+            };
+            callDone('unspecified connection error');
+        });
+        client.on('error', function (err) {
+            console.error(err);
+            callDone(err);
+        });
+
+        if (isDone) return;
+
+        client.bind(info.username, info.password, function (err) {
+            if (err) {
+                console.error('getClient failed to bind as ' + info.username);
+                return callDone(err);
+            }
+
+            console.log('getClient bound as ' + info.username);
+
+            // do other fun stuff with bound client
+
+            callDone(null, client);
+        });
+    }
 
 ## Common patterns
 
@@ -50,7 +91,7 @@ will be an instance of an `LDAPError` (you can use `instanceof` to switch).
 You probably won't need to check the `res` parameter, but it's there if you do.
 
 # bind
-`bind(dn, password, controls,callback)`
+`bind(dn, password, controls, callback)`
 
 Performs a bind operation against the LDAP server.
 
