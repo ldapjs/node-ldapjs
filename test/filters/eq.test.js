@@ -182,3 +182,17 @@ test('handle values passed via buffer', function (t) {
   }
   t.end();
 });
+
+
+test('GH-277 objectClass should be case-insensitive', function (t) {
+  var f = new EqualityFilter({
+    attribute: 'objectClass',
+    value: 'CaseInsensitiveObj'
+  });
+  t.ok(f);
+  t.ok(f.matches({ objectClass: 'CaseInsensitiveObj' }));
+  t.ok(f.matches({ OBJECTCLASS: 'CASEINSENSITIVEOBJ' }));
+  t.ok(f.matches({ objectclass: 'caseinsensitiveobj' }));
+  t.ok(!f.matches({ objectclass: 'matchless' }));
+  t.end();
+});
