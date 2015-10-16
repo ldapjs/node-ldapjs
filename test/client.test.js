@@ -215,6 +215,37 @@ test('setup', function (t) {
     }
   });
 
+  server.search('cn=pagederr', function (req, res, next) {
+    var cookie = null;
+    req.controls.forEach(function (control) {
+      if (control.type === ldap.PagedResultsControl.OID) {
+        cookie = control.value.cookie;
+      }
+    });
+    if (cookie && Buffer.isBuffer(cookie) && cookie.length === 0) {
+      // send first "page"
+        res.send({
+          dn: util.format('o=result, cn=pagederr'),
+          attributes: {
+            o: 'result',
+            objectclass: ['pagedResult']
+          }
+        });
+        res.controls.push(new ldap.PagedResultsControl({
+          value: {
+            size: 2,
+            cookie: new Buffer('a')
+          }
+        }));
+        res.end();
+        return next();
+    } else {
+      // send error instead of second page
+        res.end(ldap.LDAP_SIZE_LIMIT_EXCEEDED);
+        return next();
+    }
+  });
+
   server.search('dc=empty', function (req, res, next) {
     res.send({
       dn: 'dc=empty',
@@ -692,6 +723,30 @@ test('search paged', function (t) {
       t2.ok(e);
       t2.end();
     }
+  });
+
+  t.test('paged - handle later error', function (t2) {
+    var countEntries = 0;
+    var countPages = 0;
+    client.search('cn=pagederr', {
+      paged: { pageSize: 1 }
+    }, function (err, res) {
+      t2.ifError(err);
+      res.on('searchEntry', function () {
+        t2.ok(++countEntries);
+      });
+      res.on('page', function () {
+        t2.ok(++countPages);
+      });
+      res.on('error', function (error) {
+        t2.equal(countEntries, 1);
+        t2.equal(countPages, 1);
+        t2.end();
+      });
+      res.on('end', function () {
+        t2.fail('should not be reached');
+      });
+    });
   });
 
   t.end();
