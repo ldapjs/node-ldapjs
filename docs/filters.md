@@ -1,15 +1,11 @@
 ---
 title: Filters API | ldapjs
-markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
 # ldapjs Filters API
 
 This document covers the ldapjs filters API and assumes that you are familiar
-with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
+with LDAP. If you're not, read the [guide](guide.html) first.
 
 LDAP search filters are really the backbone of LDAP search operations, and
 ldapjs tries to get you in "easy" with them if your dataset is small, and also
@@ -27,17 +23,6 @@ these don't provide that property.
 All Filters in the ldapjs framework extend from `Filter`, which wil have the
 property `type` available; this will return a string name for the filter, and
 will be one of:
-
-||equal||an `EqualityFilter`||
-||present||a `PresenceFilter`||
-||substring||a `SubstringFilter`||
-||ge||a `GreaterThanEqualsFilter`||
-||le||a `LessThanEqualsFilter`||
-||and||an `AndFilter`||
-||or||an `OrFilter`||
-||not||a `NotFilter`||
-||approx||an `ApproximateMatchFilter` (quasi-supported in ldapjs)||
-||ext||an `ExtensibleMatchFilter` (not supported in ldapjs)||
 
 # parseFilter(filterString)
 

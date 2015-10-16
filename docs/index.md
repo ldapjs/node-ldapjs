@@ -1,9 +1,6 @@
 ---
 title: ldapjs
-markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
+markdown2extras: tables
 ---
 
 <div id="indextagline">
@@ -15,7 +12,7 @@ Reimagining <a href="http://tools.ietf.org/html/rfc4510" id="indextaglink">LDAP<
 ldapjs is a pure JavaScript, from-scratch framework for implementing
 [LDAP](http://tools.ietf.org/html/rfc4510) clients and servers in
 [Node.js](http://nodejs.org).  It is intended for developers used to interacting
-with HTTP services in node and [express](http://expressjs.com).
+with HTTP services in node and [restify](http://restify.com).
 
     var ldap = require('ldapjs');
 
@@ -57,22 +54,25 @@ that you can build LDAP over anything you want, not just traditional databases.
 
     $ npm install ldapjs
 
-If you're new to LDAP, check out the [guide](/guide.html).  Otherwise, the
+If you're new to LDAP, check out the [guide](guide.html).  Otherwise, the
 API documentation is:
 
-||[server](/server.html)||Reference for implementing LDAP servers.||
-||[client](/client.html)||Reference for implementing LDAP clients.||
-||[dn](/dn.html)||API reference for the DN class.||
-||[filters](/filters.html)||API reference for LDAP search filters.||
-||[errors](/errors.html)||Listing of all ldapjs Error objects.||
-||[examples](/examples.html)||Collection of sample/getting started code.||
+
+|Section                    |Content                                    |
+|---------------------------|-------------------------------------------|
+|[Server API](server.html)  |Reference for implementing LDAP servers.   |
+|[Client API](client.html)  |Reference for implementing LDAP clients.   |
+|[DN API](dn.html)          |API reference for the DN class.            |
+|[Filter API](filters.html) |API reference for LDAP search filters.     |
+|[Error API](errors.html)   |Listing of all ldapjs Error objects.       |
+|[Examples](examples.html)  |Collection of sample/getting started code. |
 
 # More information
 
-||License||[MIT](http://opensource.org/licenses/mit-license.php)||
-||Code||[mcavage/node-ldapjs](https://github.com/mcavage/node-ldapjs)||
-||node.js version||>=0.6||
-||Twitter||[@mcavage](http://twitter.com/mcavage)||
+- License:[MIT](http://opensource.org/licenses/mit-license.php)
+- Code: [mcavage/node-ldapjs](https://github.com/mcavage/node-ldapjs)
+- node.js version: >=0.8
+- Twitter: [@pfmooney](http://twitter.com/pfmooney)
 
 # What's not in the box?
 

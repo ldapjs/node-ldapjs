@@ -239,8 +239,8 @@ DOC_MEDIA_FILES_BUILD := $(DOC_MEDIA_FILES:%=$(DOC_BUILD)/media/%)
 #
 .PHONY: docs
 docs:							\
-    $(DOC_FILES:%.restdown=$(DOC_BUILD)/%.html)		\
-    $(DOC_FILES:%.restdown=$(DOC_BUILD)/%.json)		\
+    $(DOC_FILES:%.md=$(DOC_BUILD)/%.html)		\
+    $(DOC_FILES:%.md=$(DOC_BUILD)/%.json)		\
     $(DOC_MEDIA_FILES_BUILD)
 
 #
@@ -248,16 +248,16 @@ docs:							\
 # files in DOC_BUILD are up to date.
 #
 .PRECIOUS:					\
-    $(DOC_FILES:%.restdown=docs/%.html)		\
-    $(DOC_FILES:%.restdown=docs/%json)
+    $(DOC_FILES:%.md=docs/%.html)		\
+    $(DOC_FILES:%.md=docs/%json)
 
 #
 # We do clean those intermediate files, as well as all of DOC_BUILD.
 #
 CLEAN_FILES +=					\
     $(DOC_BUILD)				\
-    $(DOC_FILES:%.restdown=docs/%.html)		\
-    $(DOC_FILES:%.restdown=docs/%.json)
+    $(DOC_FILES:%.md=docs/%.html)		\
+    $(DOC_FILES:%.md=docs/%.json)
 
 #
 # Before installing the files, we must make sure the directories exist. The |
@@ -270,7 +270,7 @@ $(DOC_MEDIA_FILES_BUILD): | $(DOC_MEDIA_DIRS_BUILD)
 $(DOC_BUILD)/%: docs/% | $(DOC_BUILD)
 	$(CP) $< $@
 
-docs/%.json docs/%.html: docs/%.restdown | $(DOC_BUILD) $(RESTDOWN_EXEC)
+docs/%.json docs/%.html: docs/%.md | $(DOC_BUILD) $(RESTDOWN_EXEC)
 	$(RESTDOWN) $(RESTDOWN_FLAGS) -m $(DOC_BUILD) $<
 
 $(DOC_BUILD):

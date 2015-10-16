@@ -1,15 +1,12 @@
 ---
 title: Server API | ldapjs
 markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
 # ldapjs Server API
 
 This document covers the ldapjs server API and assumes that you are familiar
-with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
+with LDAP. If you're not, read the [guide](guide.html) first.
 
 # Create a server
 
@@ -47,8 +44,7 @@ Emitted when the server closes.
 
 ## Listening for requests
 
-The LDAP server API wraps up and mirrors the node
-[listen](http://nodejs.org/docs/v0.4.11/api/net.html#server.listen) family of
+The LDAP server API wraps up and mirrors the node.js `server.listen` family of
 APIs.
 
 After calling `listen`, the property `url` on the server object itself will be
@@ -66,7 +62,7 @@ Example:
 
 Begin accepting connections on the specified port and host. If the host is
 omitted, the server will accept connections directed to any IPv4 address
-(INADDR_ANY).
+(INADDR\_ANY).
 
 This function is asynchronous. The last parameter callback will be called when
 the server has been bound.
@@ -90,7 +86,7 @@ calls invoked on it. Additionally, it must be set non-blocking; try
 
 # Routes
 
-The LDAP server API is meant to be the LDAP-equivalent of the express/sinatra
+The LDAP server API is meant to be the LDAP-equivalent of the express/restify
 paradigm of programming.  Essentially every method is of the form
 `OP(req, res, next)` where OP is one of bind, add, del, etc.  You can chain
 handlers together by calling `next()` and ordering your functions in the
@@ -112,8 +108,8 @@ caching, etc. that need to be placed in an object.
 
 For example [ldapjs-riak](https://github.com/mcavage/node-ldapjs-riak) is a
 complete implementation of the LDAP protocol over
-[Riak](http://www.basho.com/products_riak_overview.php).  Getting an LDAP
-server up with riak looks like:
+[Riak](https://github.com/basho/riak).  Getting an LDAP server up with riak
+looks like:
 
     var ldap = require('ldapjs');
     var ldapRiak = require('ldapjs-riak');
@@ -155,7 +151,7 @@ All request objects have the `dn` getter on it, which is "context-sensitive"
 and returns the point in the tree that the operation wants to operate on.  The
 LDAP protocol itself sadly doesn't define operations this way, and has a unique
 name for just about every op.  So, ldapjs calls it `dn`.  The DN object itself
-is documented at [DN](/dn.html).
+is documented at [DN](dn.html).
 
 All requests have an optional array of `Control` objects.  `Control` will have
 the properties `type` (string), `criticality` (boolean), and optionally, a
@@ -175,7 +171,7 @@ identify the request/connection pair in logs (includes the LDAP messageID).
 
 All response objects will have an `end` method on them.  By default, calling
 `res.end()` with no arguments will return SUCCESS (0x00) to the client
-(with the exception of `compare` which will return COMPARE_TRUE (0x06)).  You
+(with the exception of `compare` which will return COMPARE\_TRUE (0x06)).  You
 can pass in a status code to the `end()` method to return an alternate status
 code.
 
@@ -186,8 +182,8 @@ and error message for you.
 ## Errors
 
 ldapjs includes an exception hierarchy that directly corresponds to the RFC list
-of error codes.  The complete list is documented in [errors](/errors.html). But
-the paradigm is something defined like CONSTRAINT_VIOLATION in the RFC would be
+of error codes.  The complete list is documented in [errors](errors.html). But
+the paradigm is something defined like CONSTRAINT\_VIOLATION in the RFC would be
 `ConstraintViolationError` in ldapjs.  Upon calling `next(new LDAPError())`,
 ldapjs will _stop_ calling your handler chain.  For example:
 
@@ -330,7 +326,7 @@ Whether to return only the names of attributes, and not the values.  Defaults to
 
 ### filter
 
-The [filter](/filters.html) object that the client requested.  Notably this has
+The [filter](filters.html) object that the client requested.  Notably this has
 a `matches()` method on it that you can leverage.  For an example of
 introspecting a filter, take a look at the ldapjs-riak source.
 

@@ -23,16 +23,8 @@ TAP		:= ./node_modules/.bin/tap
 #
 # Files
 #
-DOC_FILES	 =	client.md	\
-			dn.md		\
-			errors.md	\
-			examples.md	\
-			filters.md      \
-                        guide.md        \
-                        index.md        \
-                        persistent_search.md    \
-                        server.md
-
+DOC_FILES	:= $(shell find docs -name '*.md' -printf '%f\n')
+RESTDOWN_FLAGS	:= -b docs/branding/
 JS_FILES	:= $(shell find lib test -name '*.js') $(shell find bin -name 'ldapjs-*')
 JSL_CONF_NODE	 = tools/jsl.node.conf
 JSL_FILES_NODE   = $(JS_FILES)

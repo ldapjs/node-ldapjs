@@ -1,15 +1,12 @@
 ---
 title: Client API | ldapjs
-markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
+markdown2extras: tables
 ---
 
 # ldapjs Client API
 
 This document covers the ldapjs client API and assumes that you are familiar
-with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
+with LDAP. If you're not, read the [guide](guide.html) first.
 
 # Create a client
 
@@ -25,18 +22,22 @@ that this will not use the LDAP TLS extended operation, but literally an SSL
 connection to port 636, as in LDAP v2). The full set of options to create a
 client is:
 
-||url|| a valid LDAP url.||
-||socketPath|| If you're running an LDAP server over a Unix Domain Socket, use this.||
-||log|| You can optionally pass in a bunyan instance the client will use to acquire a logger.  The client logs all messages at the `trace` level.||
-||timeout||How long the client should let operations live for before timing out. Default is Infinity.||
-||connectTimeout||How long the client should wait before timing out on TCP connections. Default is up to the OS.||
-||tlsOptions||Additional [options](http://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback) passed to the TLS connection layer when connecting via `ldaps://`||
-
+|Attribute      |Description                                                |
+|---------------|-----------------------------------------------------------|
+|url            |A valid LDAP URL (proto/host/port only)                    |
+|socketPath     |Socket path if using AF\_UNIX sockets                      |
+|log            |Bunyan logger instance (Default: built-in instance)        |
+|timeout        |How long the client should let operations live for before timing out (Default: Infinity)|
+|connectTimeout |How long the client should wait before timing out on TCP connections (Default: OS default)|
+|tlsOptions     |Additional options passed to the TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
+|idleTimeout    |Seconds after last activity before client emits idle event|
+|strictDN       |Force strict DN parsing for client methods (Default is true)|
 
 ## Connection management
 
 As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
-down from underneath you is difficult to deal with.
+down from underneath you is can be difficult to deal with.  Several mechanisms
+have been provided to mitigate this trouble.
 
 
 ## Common patterns
@@ -49,8 +50,11 @@ Almost every operation has the callback form of `function(err, res)` where err
 will be an instance of an `LDAPError` (you can use `instanceof` to switch).
 You probably won't need to check the `res` parameter, but it's there if you do.
 
+
+
+
 # bind
-`bind(dn, password, controls,callback)`
+`bind(dn, password, controls, callback)`
 
 Performs a bind operation against the LDAP server.
 
@@ -166,7 +170,7 @@ server.  A couple points with this client API:
 
 * There is no ability to set "keep old dn."  It's always going to flag the old
 dn to be purged.
-* The client code will automagically figure out if the request is a "new
+* The client code will automatically figure out if the request is a "new
 superior" request ("new superior" means move to a different part of the tree,
 as opposed to just renaming the leaf).
 
@@ -192,12 +196,14 @@ Like every other operation, `base` is a DN string.
 Options can be a string representing a valid LDAP filter or an object
 containing the following fields:
 
-||scope||One of `base`, `one`, or `sub`. Defaults to `base`.||
-||filter||A string version of an LDAP filter (see below), or a programatically constructed `Filter` object. Defaults to `(objectclass=*)`.||
-||attributes||attributes to select and return (if these are set, the server will return *only* these attributes). Defaults to the empty set, which means all attributes. You can provide a string if you want a single attribute or an array of string for one or many.||
-||attrsOnly||boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.||
-||sizeLimit||the maximum number of entries to return. Defaults to 0 (unlimited).||
-||timeLimit||the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.||
+|Attribute  |Description                                        |
+|-----------|---------------------------------------------------|
+|scope      |One of `base`, `one`, or `sub`. Defaults to `base`.|
+|filter     |A string version of an LDAP filter (see below), or a programatically constructed `Filter` object. Defaults to `(objectclass=*)`.|
+|attributes |attributes to select and return (if these are set, the server will return *only* these attributes). Defaults to the empty set, which means all attributes. You can provide a string if you want a single attribute or an array of string for one or many.|
+|attrsOnly  |boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.|
+|sizeLimit  |the maximum number of entries to return. Defaults to 0 (unlimited).|
+|timeLimit  |the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.|
 
 Responses from the `search` method are an `EventEmitter` where you will get a
 notification for each `searchEntry` that comes back from the server.  You will
@@ -270,6 +276,24 @@ specification that either the employeeType *not* be a manager nor a secretary:
 The `not` character is represented as a `!`, the `or` as a single pipe `|`.
 It gets a little bit complicated, but it's actually quite powerful, and lets you
 find almost anything you're looking for.
+
+# starttls
+`starttls(options, controls, callback)`
+
+Attempt to secure existing LDAP connection via STARTTLS.
+
+Example:
+
+    var opts = {
+      ca: [fs.readFileSync('mycacert.pem')]
+    };
+
+    client.starttls(opts, function(err, res) {
+      assert.ifError(err);
+
+      // Client communication now TLS protected
+    });
+
 
 # unbind
 `unbind(callback)`

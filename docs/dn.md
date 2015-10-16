@@ -1,15 +1,11 @@
 ---
 title: DN API | ldapjs
-markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
 # ldapjs DN API
 
 This document covers the ldapjs DN API and assumes that you are familiar
-with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
+with LDAP. If you're not, read the [guide](guide.html) first.
 
 DNs are LDAP distinguished names, and are composed of a set of RDNs (relative
 distinguished names).  [RFC2253](http://www.ietf.org/rfc/rfc2253.txt) has the
@@ -80,6 +76,33 @@ argument. `dn` can be a string or a DN.
 
 Returns a DN object that is the direct parent of `this`.  If there is no parent
 this can return `null` (e.g. `parseDN('o=example').parent()` will return null).
+
+
+## format(options)
+
+Convert a DN object to string according to specified formatting options.  These
+options are divided into two types.  Preservation Options use data recorded
+during parsing to preserve details of the original DN. Modification options
+alter string formatting defaults.  Preservation options _always_ take
+precedence over Modification Options.
+
+Preservation Options:
+
+ - `keepOrder`: Order of multi-value RDNs.
+ - `keepQuote`: RDN values which were quoted will remain so.
+ - `keepSpace`: Leading/trailing spaces will be output.
+ - `keepCase`: Parsed attribute name will be output instead of lowercased version.
+
+Modification Options:
+
+- `upperName`: RDN names will be uppercased instead of lowercased.
+- `skipSpace`: Disable trailing space after RDN separators
+
+## setFormat(options)
+
+Sets the default `options` for string formatting when `toString` is called.
+It accepts the same parameters as `format`.
+
 
 ## toString()
 

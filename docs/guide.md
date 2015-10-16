@@ -1,9 +1,6 @@
 ---
 title: LDAP Guide | ldapjs
-markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
+markdown2extras: tables
 ---
 
 # LDAP Guide
@@ -135,7 +132,7 @@ since we haven't added any support in yet, but go ahead and try it anyway:
     $ ldapsearch -H ldap://localhost:1389 -x -b "o=myhost" objectclass=*
 
 Before we go any further, note that the complete code for the server we are
-about to build up is on the [examples](http://ldapjs.org/examples.html) page.
+about to build up is on the [examples](examples.html) page.
 
 ## Bind
 
@@ -237,13 +234,15 @@ for a moment to explain an /etc/passwd record.
 
 The sample record above maps to:
 
-||jsmith||user name.||
-||x||historically this contained the password hash, but that's usually in /etc/shadow now, so you get an 'x'.||
-||1001||the unix numeric user id.||
-||1000||the unix numeric group id. (primary).||
-||'Joe Smith,...'||the "gecos," which is a description, and is usually a comma separated list of contact details.||
-||/home/jsmith||the user's home directory.||
-||/bin/sh||the user's shell.||
+|Field              |Description                        |
+|-------------------|-----------------------------------|
+|jsmith             |Username                           |
+|x                  |Placeholder for password hash      |
+|1001               |Numeric UID                        |
+|1000               |Numeric Primary GID                |
+|'Joe Smith,...'    |DisplayName                        |
+|/home/jsmith       |Home directory                     |
+|/bin/sh            |Shell                              |
 
 Let's write some handlers to parse that and transform it into an LDAP search
 record (note, you'll need to add `var fs = require('fs');` at the top of the
@@ -629,8 +628,8 @@ And then run the following command:
 # Where to go from here
 
 The complete source code for this example server is available in
-[examples](/examples.html).  Make sure to read up on the [server](/server.html)
-and [client](/client.html) APIs.  If you're looking for a "drop in" solution,
+[examples](examples.html).  Make sure to read up on the [server](server.html)
+and [client](client.html) APIs.  If you're looking for a "drop in" solution,
 take a look at [ldapjs-riak](https://github.com/mcavage/node-ldapjs-riak).
 
 [Mozilla](https://wiki.mozilla.org/Mozilla_LDAP_SDK_Programmer%27s_Guide/Understanding_LDAP)

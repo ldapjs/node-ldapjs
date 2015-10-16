@@ -1,15 +1,11 @@
 ---
 title: Errors API | ldapjs
-markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
 # ldapjs Errors API
 
 This document covers the ldapjs errors API and assumes that you are familiar
-with LDAP. If you're not, read the [guide](http://ldapjs.org/guide.html) first.
+with LDAP. If you're not, read the [guide](guide.html) first.
 
 All errors in the ldapjs framework extend from an abstract error type called
 `LDAPError`. In addition to the properties listed below, all errors will have

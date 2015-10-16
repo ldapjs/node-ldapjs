@@ -1,9 +1,5 @@
 ---
 title: Examples | ldapjs
-markdown2extras: wiki-tables
-logo-color: green
-logo-font-family: google:Aldrich, Verdana, sans-serif
-header-font-family: google:Aldrich, Verdana, sans-serif
 ---
 
 # ldapjs Examples
