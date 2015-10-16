@@ -1,69 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Filters API | ldapjs</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" type="text/css" href="media/css/style.css">
-  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<style>
-
-#logo {
-  color: green;
-}
-
-#logo {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-h1,h2,h3,h4,h5,h6 {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-</style>
-
-  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-25326304-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
+    <title>Filters API | ldapjs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="media/css/restdown.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
-<div id="wrapper">
-<div id="main">
-<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">
-    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
-  </span>
+    <h1>Filters API | ldapjs Documentation</h1>
+</div>
+<div id="sidebar">
 
-  <a class="navbutton" href="guide.html">Guide</a>
+<div>Sections</div>
+<span>
+<ul>
+<li><div><a href="index.html">Home</a></div></li>
+<li><div><a href="guide.html">Guide</a></div></li>
+<li><div><a href="examples.html">Examples</a></div></li>
+<li><div><a href="client.html">Client API</a></div></li>
+<li><div><a href="server.html">Server API</a></div></li>
+<li><div><a href="dn.html">DN API</a></div></li>
+<li><div><a href="filters.html">Filters API</a></div></li>
+<li><div><a href="errors.html">Error API</a></div></li>
+</ul>
+</span>
 
-  <span id="apibox">
-    <span id="apibutton" class="navbutton">API</span>
-    <div id="api" class="popup" style="display: none">
-      <ul>
-        <li><div><a href="server.html">server</a></div></li>
-        <li><div><a href="client.html">client</a></div></li>
-        <li><div><a href="dn.html">dn</a></div></li>
-        <li><div><a href="filters.html">filters</a></div></li>
-        <li><div><a href="errors.html">errors</a></div></li>
-        <li><div><a href="examples.html">examples</a></div></li>
-      </ul>
-    </div>
-  </span>
-
-  <span id="tocbox">
-    <span id="tocbutton" class="navbutton">Page Contents</span>
-    <div id="toc" class="popup" style="display: none">
-      <ul>
+<div>Contents</div>
+</span>
+<ul>
   <li><div><a href="#parsefilterfilterstring">parseFilter(filterString)</a></div></li>
   <li><div><a href="#equalityfilter">EqualityFilter</a></div></li>
   <li><div><a href="#presencefilter">PresenceFilter</a></div></li>
@@ -76,13 +41,6 @@ h1,h2,h3,h4,h5,h6 {
   <li><div><a href="#approximatefilter">ApproximateFilter</a></div></li>
 </ul>
 
-    </div>
-  </span>
-
-  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
-    <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
-         alt="Fork me on GitHub">
-  </a>
 </div>
     <div id="content">
 
@@ -91,7 +49,7 @@ h1,h2,h3,h4,h5,h6 {
 
 
 <p>This document covers the ldapjs filters API and assumes that you are familiar
-with LDAP. If you're not, read the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
+with LDAP. If you're not, read the <a href="guide.html">guide</a> first.</p>
 
 <p>LDAP search filters are really the backbone of LDAP search operations, and
 ldapjs tries to get you in "easy" with them if your dataset is small, and also
@@ -109,21 +67,6 @@ these don't provide that property.</p>
 <p>All Filters in the ldapjs framework extend from <code>Filter</code>, which wil have the
 property <code>type</code> available; this will return a string name for the filter, and
 will be one of:</p>
-
-<table>
-<tbody>
-<tr><td>equal</td><td>an <code>EqualityFilter</code></td></tr>
-<tr><td>present</td><td>a <code>PresenceFilter</code></td></tr>
-<tr><td>substring</td><td>a <code>SubstringFilter</code></td></tr>
-<tr><td>ge</td><td>a <code>GreaterThanEqualsFilter</code></td></tr>
-<tr><td>le</td><td>a <code>LessThanEqualsFilter</code></td></tr>
-<tr><td>and</td><td>an <code>AndFilter</code></td></tr>
-<tr><td>or</td><td>an <code>OrFilter</code></td></tr>
-<tr><td>not</td><td>a <code>NotFilter</code></td></tr>
-<tr><td>approx</td><td>an <code>ApproximateMatchFilter</code> (quasi-supported in ldapjs)</td></tr>
-<tr><td>ext</td><td>an <code>ExtensibleMatchFilter</code> (not supported in ldapjs)</td></tr>
-</tbody>
-</table>
 
 
 </div>
@@ -398,56 +341,50 @@ f.matches({cn: 'foo'});  =&gt; true
 f.matches({cn: 'bar'});  =&gt; false
 </code></pre>
 
-    </div>
-<div id="footer">
-  <p class='copy'>Copyright &copy; 2011 <a href="https://github.com/mcavage">Mark Cavage</a></p>
-</div>
-</div> <!-- end of #main -->
-</div> <!-- end of #wrapper -->
+    </div> <!-- #content -->
 <script type="text/javascript" charset="utf-8">
-$(function () {
-    $("#toc").click(function(event) {
-        // This to ensure clicks in the #toc don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#toc a").click(function(event) {
-        $("#tocbutton").click();
-    })
-    $("#tocbutton").click(function(event) {
-        var target = $("#toc");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.tocCloser", function(event) {
-                $("#tocbutton").click();
-                event.stopPropagation();
-            });
+$(function() {
+    var headerHeight = $("#header").height();
+    var offsets = [];
+    var current = -1;
+
+    function endpoint(scrollDistance) {
+        if (scrollDistance < offsets[0]) {
+            return -1;
         } else {
-            $("body").unbind("click.tocCloser");
+            for (var id = offsets.length; id > 0; id--) {
+                if (scrollDistance > offsets[id - 1]) {
+                    return id - 1;
+                    break;
+                }
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
+    }
+
+    $("h2").each(function(i) {
+        offsets.push($(this).offset().top - headerHeight)
     });
 
-    $("#api").click(function(event) {
-        // This to ensure clicks in the #api don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#api a").click(function(event) {
-        $("#apibutton").click();
-    })
-    $("#apibutton").click(function(event) {
-        var target = $("#api");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.apiCloser", function(event) {
-                $("#apibutton").click();
-                event.stopPropagation();
-            });
-        } else {
-            $("body").unbind("click.apiCloser");
+    $("#content").append('<h2 class="fixed" style="display: none"><span>&nbsp;</span></h2>');
+    var fixed_h2 = $("h2.fixed");
+    var fixed_span = $("h2.fixed span");
+
+    $("#content").scroll(function() {
+        var scrollDistance = $("#content").attr('scrollTop');
+        var now = endpoint(scrollDistance);
+
+        if (now !== current) {
+            $("#sidebar li").removeClass("current");
+            current = now;
+            if (current < 0) {
+                fixed_h2.hide();
+            } else if (current >= 0) {
+                var heading = $($("h2 span")[current]).text();
+                $("#sidebar a[href|=#" + heading.replace(' ', '-') + "]").parent().addClass("current");
+                fixed_span.text(heading);
+                fixed_h2.show();
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
     });
 });
 </script>

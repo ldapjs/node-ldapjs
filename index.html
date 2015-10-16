@@ -1,82 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ldapjs</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" type="text/css" href="media/css/style.css">
-  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<style>
-
-#logo {
-  color: green;
-}
-
-#logo {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-h1,h2,h3,h4,h5,h6 {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-</style>
-
-  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-25326304-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
+    <title>ldapjs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="media/css/restdown.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
-<div id="wrapper">
-<div id="main">
-<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">
-    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
-  </span>
+    <h1>ldapjs Documentation</h1>
+</div>
+<div id="sidebar">
 
-  <a class="navbutton" href="guide.html">Guide</a>
+<div>Sections</div>
+<span>
+<ul>
+<li><div><a href="index.html">Home</a></div></li>
+<li><div><a href="guide.html">Guide</a></div></li>
+<li><div><a href="examples.html">Examples</a></div></li>
+<li><div><a href="client.html">Client API</a></div></li>
+<li><div><a href="server.html">Server API</a></div></li>
+<li><div><a href="dn.html">DN API</a></div></li>
+<li><div><a href="filters.html">Filters API</a></div></li>
+<li><div><a href="errors.html">Error API</a></div></li>
+</ul>
+</span>
 
-  <span id="apibox">
-    <span id="apibutton" class="navbutton">API</span>
-    <div id="api" class="popup" style="display: none">
-      <ul>
-        <li><div><a href="server.html">server</a></div></li>
-        <li><div><a href="client.html">client</a></div></li>
-        <li><div><a href="dn.html">dn</a></div></li>
-        <li><div><a href="filters.html">filters</a></div></li>
-        <li><div><a href="errors.html">errors</a></div></li>
-        <li><div><a href="examples.html">examples</a></div></li>
-      </ul>
-    </div>
-  </span>
-
-  <span id="tocbox">
-    <span id="tocbutton" class="navbutton">Page Contents</span>
-    <div id="toc" class="popup" style="display: none">
-      <ul>
+<div>Contents</div>
+</span>
+<ul>
   <li><div><a href="#features">Features</a></div></li>
   <li><div><a href="#getting-started">Getting started</a></div></li>
   <li><div><a href="#more-information">More information</a></div></li>
   <li><div><a href="#whats-not-in-the-box">What's not in the box?</a></div></li>
 </ul>
 
-    </div>
-  </span>
-
-  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
-    <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
-         alt="Fork me on GitHub">
-  </a>
 </div>
     <div id="content">
 <div id="indextagline">
@@ -91,7 +49,7 @@ Reimagining <a href="http://tools.ietf.org/html/rfc4510" id="indextaglink">LDAP<
 <p>ldapjs is a pure JavaScript, from-scratch framework for implementing
 <a href="http://tools.ietf.org/html/rfc4510">LDAP</a> clients and servers in
 <a href="http://nodejs.org">Node.js</a>.  It is intended for developers used to interacting
-with HTTP services in node and <a href="http://expressjs.com">express</a>.</p>
+with HTTP services in node and <a href="http://restify.com">restify</a>.</p>
 
 <pre><code>var ldap = require('ldapjs');
 
@@ -138,30 +96,52 @@ that you can build LDAP over anything you want, not just traditional databases.<
 <pre class="shell"><code>npm install ldapjs
 </code></pre>
 
-<p>If you're new to LDAP, check out the <a href="/guide.html">guide</a>.  Otherwise, the
+<p>If you're new to LDAP, check out the <a href="guide.html">guide</a>.  Otherwise, the
 API documentation is:</p>
 
 <table>
+<thead>
+<tr>
+  <th>Section</th>
+  <th>Content</th>
+</tr>
+</thead>
 <tbody>
-<tr><td><a href="/server.html">server</a></td><td>Reference for implementing LDAP servers.</td></tr>
-<tr><td><a href="/client.html">client</a></td><td>Reference for implementing LDAP clients.</td></tr>
-<tr><td><a href="/dn.html">dn</a></td><td>API reference for the DN class.</td></tr>
-<tr><td><a href="/filters.html">filters</a></td><td>API reference for LDAP search filters.</td></tr>
-<tr><td><a href="/errors.html">errors</a></td><td>Listing of all ldapjs Error objects.</td></tr>
-<tr><td><a href="/examples.html">examples</a></td><td>Collection of sample/getting started code.</td></tr>
+<tr>
+  <td><a href="server.html">Server API</a></td>
+  <td>Reference for implementing LDAP servers.</td>
+</tr>
+<tr>
+  <td><a href="client.html">Client API</a></td>
+  <td>Reference for implementing LDAP clients.</td>
+</tr>
+<tr>
+  <td><a href="dn.html">DN API</a></td>
+  <td>API reference for the DN class.</td>
+</tr>
+<tr>
+  <td><a href="filters.html">Filter API</a></td>
+  <td>API reference for LDAP search filters.</td>
+</tr>
+<tr>
+  <td><a href="errors.html">Error API</a></td>
+  <td>Listing of all ldapjs Error objects.</td>
+</tr>
+<tr>
+  <td><a href="examples.html">Examples</a></td>
+  <td>Collection of sample/getting started code.</td>
+</tr>
 </tbody>
 </table>
 
 <h1 id="more-information">More information</h1>
 
-<table>
-<tbody>
-<tr><td>License</td><td><a href="http://opensource.org/licenses/mit-license.php">MIT</a></td></tr>
-<tr><td>Code</td><td><a href="https://github.com/mcavage/node-ldapjs">mcavage/node-ldapjs</a></td></tr>
-<tr><td>node.js version</td><td>&gt;=0.6</td></tr>
-<tr><td>Twitter</td><td><a href="http://twitter.com/mcavage">@mcavage</a></td></tr>
-</tbody>
-</table>
+<ul>
+<li>License:<a href="http://opensource.org/licenses/mit-license.php">MIT</a></li>
+<li>Code: <a href="https://github.com/mcavage/node-ldapjs">mcavage/node-ldapjs</a></li>
+<li>node.js version: &gt;=0.8</li>
+<li>Twitter: <a href="http://twitter.com/pfmooney">@pfmooney</a></li>
+</ul>
 
 <h1 id="whats-not-in-the-box">What's not in the box?</h1>
 
@@ -179,56 +159,50 @@ Specifically:</p>
 
 <p>There are a few others, but those are the "big" ones.</p>
 
-    </div>
-<div id="footer">
-  <p class='copy'>Copyright &copy; 2011 <a href="https://github.com/mcavage">Mark Cavage</a></p>
-</div>
-</div> <!-- end of #main -->
-</div> <!-- end of #wrapper -->
+    </div> <!-- #content -->
 <script type="text/javascript" charset="utf-8">
-$(function () {
-    $("#toc").click(function(event) {
-        // This to ensure clicks in the #toc don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#toc a").click(function(event) {
-        $("#tocbutton").click();
-    })
-    $("#tocbutton").click(function(event) {
-        var target = $("#toc");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.tocCloser", function(event) {
-                $("#tocbutton").click();
-                event.stopPropagation();
-            });
+$(function() {
+    var headerHeight = $("#header").height();
+    var offsets = [];
+    var current = -1;
+
+    function endpoint(scrollDistance) {
+        if (scrollDistance < offsets[0]) {
+            return -1;
         } else {
-            $("body").unbind("click.tocCloser");
+            for (var id = offsets.length; id > 0; id--) {
+                if (scrollDistance > offsets[id - 1]) {
+                    return id - 1;
+                    break;
+                }
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
+    }
+
+    $("h2").each(function(i) {
+        offsets.push($(this).offset().top - headerHeight)
     });
 
-    $("#api").click(function(event) {
-        // This to ensure clicks in the #api don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#api a").click(function(event) {
-        $("#apibutton").click();
-    })
-    $("#apibutton").click(function(event) {
-        var target = $("#api");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.apiCloser", function(event) {
-                $("#apibutton").click();
-                event.stopPropagation();
-            });
-        } else {
-            $("body").unbind("click.apiCloser");
+    $("#content").append('<h2 class="fixed" style="display: none"><span>&nbsp;</span></h2>');
+    var fixed_h2 = $("h2.fixed");
+    var fixed_span = $("h2.fixed span");
+
+    $("#content").scroll(function() {
+        var scrollDistance = $("#content").attr('scrollTop');
+        var now = endpoint(scrollDistance);
+
+        if (now !== current) {
+            $("#sidebar li").removeClass("current");
+            current = now;
+            if (current < 0) {
+                fixed_h2.hide();
+            } else if (current >= 0) {
+                var heading = $($("h2 span")[current]).text();
+                $("#sidebar a[href|=#" + heading.replace(' ', '-') + "]").parent().addClass("current");
+                fixed_span.text(heading);
+                fixed_h2.show();
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
     });
 });
 </script>

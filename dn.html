@@ -1,87 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>DN API | ldapjs</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" type="text/css" href="media/css/style.css">
-  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<style>
-
-#logo {
-  color: green;
-}
-
-#logo {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-h1,h2,h3,h4,h5,h6 {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-</style>
-
-  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-25326304-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
+    <title>DN API | ldapjs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="media/css/restdown.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
-<div id="wrapper">
-<div id="main">
-<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">
-    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
-  </span>
+    <h1>DN API | ldapjs Documentation</h1>
+</div>
+<div id="sidebar">
 
-  <a class="navbutton" href="guide.html">Guide</a>
+<div>Sections</div>
+<span>
+<ul>
+<li><div><a href="index.html">Home</a></div></li>
+<li><div><a href="guide.html">Guide</a></div></li>
+<li><div><a href="examples.html">Examples</a></div></li>
+<li><div><a href="client.html">Client API</a></div></li>
+<li><div><a href="server.html">Server API</a></div></li>
+<li><div><a href="dn.html">DN API</a></div></li>
+<li><div><a href="filters.html">Filters API</a></div></li>
+<li><div><a href="errors.html">Error API</a></div></li>
+</ul>
+</span>
 
-  <span id="apibox">
-    <span id="apibutton" class="navbutton">API</span>
-    <div id="api" class="popup" style="display: none">
-      <ul>
-        <li><div><a href="server.html">server</a></div></li>
-        <li><div><a href="client.html">client</a></div></li>
-        <li><div><a href="dn.html">dn</a></div></li>
-        <li><div><a href="filters.html">filters</a></div></li>
-        <li><div><a href="errors.html">errors</a></div></li>
-        <li><div><a href="examples.html">examples</a></div></li>
-      </ul>
-    </div>
-  </span>
-
-  <span id="tocbox">
-    <span id="tocbutton" class="navbutton">Page Contents</span>
-    <div id="toc" class="popup" style="display: none">
-      <ul>
+<div>Contents</div>
+</span>
+<ul>
   <li><div><a href="#parsedndnstring">parseDN(dnString)</a></div></li>
   <li><div><a href="#dn">DN</a></div>
   <ul>
-    <li><div><a href="#childOf(dn)"><span class="method name"><span class="name">childOf(dn)</span></span></a></div></li>
-    <li><div><a href="#parentOf(dn)"><span class="method name"><span class="name">parentOf(dn)</span></span></a></div></li>
-    <li><div><a href="#equals(dn)"><span class="method name"><span class="name">equals(dn)</span></span></a></div></li>
-    <li><div><a href="#parent()"><span class="method name"><span class="name">parent()</span></span></a></div></li>
-    <li><div><a href="#toString()"><span class="method name"><span class="name">toString()</span></span></a></div></li>
+    <li><div><a href="#childofdn">childOf(dn)</a></div></li>
+    <li><div><a href="#parentofdn">parentOf(dn)</a></div></li>
+    <li><div><a href="#equalsdn">equals(dn)</a></div></li>
+    <li><div><a href="#parent">parent()</a></div></li>
+    <li><div><a href="#formatoptions">format(options)</a></div></li>
+    <li><div><a href="#setformatoptions">setFormat(options)</a></div></li>
+    <li><div><a href="#tostring">toString()</a></div></li>
   </ul></li>
 </ul>
 
-    </div>
-  </span>
-
-  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
-    <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
-         alt="Fork me on GitHub">
-  </a>
 </div>
     <div id="content">
 
@@ -90,7 +50,7 @@ h1,h2,h3,h4,h5,h6 {
 
 
 <p>This document covers the ldapjs DN API and assumes that you are familiar
-with LDAP. If you're not, read the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
+with LDAP. If you're not, read the <a href="guide.html">guide</a> first.</p>
 
 <p>DNs are LDAP distinguished names, and are composed of a set of RDNs (relative
 distinguished names).  <a href="http://www.ietf.org/rfc/rfc2253.txt">RFC2253</a> has the
@@ -120,7 +80,7 @@ console.log(dn.toString());
 <p>The DN object is largely what you'll be interacting with, since all the server
 APIs are setup to give you a DN object.</p>
 
-<h2 id="childOf(dn)"><span class="method name"><span class="name">childOf(dn)</span></span></h2>
+<h2 id="childofdn">childOf(dn)</h2>
 
 <p>Returns a boolean indicating whether 'this' is a child of the passed in dn. The
 <code>dn</code> argument can be either a string or a DN.</p>
@@ -134,7 +94,7 @@ APIs are setup to give you a DN object.</p>
 });
 </code></pre>
 
-<h2 id="parentOf(dn)"><span class="method name"><span class="name">parentOf(dn)</span></span></h2>
+<h2 id="parentofdn">parentOf(dn)</h2>
 
 <p>The inverse of <code>childOf</code>; returns a boolean on whether or not <code>this</code> is a parent
 of the passed in dn.  Like <code>childOf</code>, can take either a string or a DN.</p>
@@ -149,7 +109,7 @@ of the passed in dn.  Like <code>childOf</code>, can take either a string or a D
 });
 </code></pre>
 
-<h2 id="equals(dn)"><span class="method name"><span class="name">equals(dn)</span></span></h2>
+<h2 id="equalsdn">equals(dn)</h2>
 
 <p>Returns a boolean indicating whether <code>this</code> is equivalent to the passed in <code>dn</code>
 argument. <code>dn</code> can be a string or a DN.</p>
@@ -163,12 +123,41 @@ argument. <code>dn</code> can be a string or a DN.</p>
 });
 </code></pre>
 
-<h2 id="parent()"><span class="method name"><span class="name">parent()</span></span></h2>
+<h2 id="parent">parent()</h2>
 
 <p>Returns a DN object that is the direct parent of <code>this</code>.  If there is no parent
 this can return <code>null</code> (e.g. <code>parseDN('o=example').parent()</code> will return null).</p>
 
-<h2 id="toString()"><span class="method name"><span class="name">toString()</span></span></h2>
+<h2 id="formatoptions">format(options)</h2>
+
+<p>Convert a DN object to string according to specified formatting options.  These
+options are divided into two types.  Preservation Options use data recorded
+during parsing to preserve details of the original DN. Modification options
+alter string formatting defaults.  Preservation options <em>always</em> take
+precedence over Modification Options.</p>
+
+<p>Preservation Options:</p>
+
+<ul>
+<li><code>keepOrder</code>: Order of multi-value RDNs.</li>
+<li><code>keepQuote</code>: RDN values which were quoted will remain so.</li>
+<li><code>keepSpace</code>: Leading/trailing spaces will be output.</li>
+<li><code>keepCase</code>: Parsed attribute name will be output instead of lowercased version.</li>
+</ul>
+
+<p>Modification Options:</p>
+
+<ul>
+<li><code>upperName</code>: RDN names will be uppercased instead of lowercased.</li>
+<li><code>skipSpace</code>: Disable trailing space after RDN separators</li>
+</ul>
+
+<h2 id="setformatoptions">setFormat(options)</h2>
+
+<p>Sets the default <code>options</code> for string formatting when <code>toString</code> is called.
+It accepts the same parameters as <code>format</code>.</p>
+
+<h2 id="tostring">toString()</h2>
 
 <p>Returns the string representation of <code>this</code>.</p>
 
@@ -177,56 +166,50 @@ this can return <code>null</code> (e.g. <code>parseDN('o=example').parent()</cod
 });
 </code></pre>
 
-    </div>
-<div id="footer">
-  <p class='copy'>Copyright &copy; 2011 <a href="https://github.com/mcavage">Mark Cavage</a></p>
-</div>
-</div> <!-- end of #main -->
-</div> <!-- end of #wrapper -->
+    </div> <!-- #content -->
 <script type="text/javascript" charset="utf-8">
-$(function () {
-    $("#toc").click(function(event) {
-        // This to ensure clicks in the #toc don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#toc a").click(function(event) {
-        $("#tocbutton").click();
-    })
-    $("#tocbutton").click(function(event) {
-        var target = $("#toc");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.tocCloser", function(event) {
-                $("#tocbutton").click();
-                event.stopPropagation();
-            });
+$(function() {
+    var headerHeight = $("#header").height();
+    var offsets = [];
+    var current = -1;
+
+    function endpoint(scrollDistance) {
+        if (scrollDistance < offsets[0]) {
+            return -1;
         } else {
-            $("body").unbind("click.tocCloser");
+            for (var id = offsets.length; id > 0; id--) {
+                if (scrollDistance > offsets[id - 1]) {
+                    return id - 1;
+                    break;
+                }
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
+    }
+
+    $("h2").each(function(i) {
+        offsets.push($(this).offset().top - headerHeight)
     });
 
-    $("#api").click(function(event) {
-        // This to ensure clicks in the #api don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#api a").click(function(event) {
-        $("#apibutton").click();
-    })
-    $("#apibutton").click(function(event) {
-        var target = $("#api");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.apiCloser", function(event) {
-                $("#apibutton").click();
-                event.stopPropagation();
-            });
-        } else {
-            $("body").unbind("click.apiCloser");
+    $("#content").append('<h2 class="fixed" style="display: none"><span>&nbsp;</span></h2>');
+    var fixed_h2 = $("h2.fixed");
+    var fixed_span = $("h2.fixed span");
+
+    $("#content").scroll(function() {
+        var scrollDistance = $("#content").attr('scrollTop');
+        var now = endpoint(scrollDistance);
+
+        if (now !== current) {
+            $("#sidebar li").removeClass("current");
+            current = now;
+            if (current < 0) {
+                fixed_h2.hide();
+            } else if (current >= 0) {
+                var heading = $($("h2 span")[current]).text();
+                $("#sidebar a[href|=#" + heading.replace(' ', '-') + "]").parent().addClass("current");
+                fixed_span.text(heading);
+                fixed_h2.show();
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
     });
 });
 </script>

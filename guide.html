@@ -1,92 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>LDAP Guide | ldapjs</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" type="text/css" href="media/css/style.css">
-  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<style>
-
-#logo {
-  color: green;
-}
-
-#logo {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-h1,h2,h3,h4,h5,h6 {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-</style>
-
-  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-25326304-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
+    <title>LDAP Guide | ldapjs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="media/css/restdown.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
-<div id="wrapper">
-<div id="main">
-<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">
-    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
-  </span>
+    <h1>LDAP Guide | ldapjs Documentation</h1>
+</div>
+<div id="sidebar">
 
-  <a class="navbutton" href="guide.html">Guide</a>
+<div>Sections</div>
+<span>
+<ul>
+<li><div><a href="index.html">Home</a></div></li>
+<li><div><a href="guide.html">Guide</a></div></li>
+<li><div><a href="examples.html">Examples</a></div></li>
+<li><div><a href="client.html">Client API</a></div></li>
+<li><div><a href="server.html">Server API</a></div></li>
+<li><div><a href="dn.html">DN API</a></div></li>
+<li><div><a href="filters.html">Filters API</a></div></li>
+<li><div><a href="errors.html">Error API</a></div></li>
+</ul>
+</span>
 
-  <span id="apibox">
-    <span id="apibutton" class="navbutton">API</span>
-    <div id="api" class="popup" style="display: none">
-      <ul>
-        <li><div><a href="server.html">server</a></div></li>
-        <li><div><a href="client.html">client</a></div></li>
-        <li><div><a href="dn.html">dn</a></div></li>
-        <li><div><a href="filters.html">filters</a></div></li>
-        <li><div><a href="errors.html">errors</a></div></li>
-        <li><div><a href="examples.html">examples</a></div></li>
-      </ul>
-    </div>
-  </span>
-
-  <span id="tocbox">
-    <span id="tocbutton" class="navbutton">Page Contents</span>
-    <div id="toc" class="popup" style="display: none">
-      <ul>
+<div>Contents</div>
+</span>
+<ul>
   <li><div><a href="#what-exactly-is-ldap">What exactly is LDAP?</a></div>
   <ul>
-    <li><div><a href="#How-is-ldapjs-any-different?"><span class="method name"><span class="name">How is ldapjs any different?</span></span></a></div></li>
+    <li><div><a href="#how-is-ldapjs-any-different">How is ldapjs any different?</a></div></li>
   </ul></li>
   <li><div><a href="#ok-cool-learn-me-some-ldap">Ok, cool. Learn me some LDAP!</a></div>
   <ul>
-    <li><div><a href="#Install"><span class="method name"><span class="name">Install</span></span></a></div></li>
-    <li><div><a href="#Bind"><span class="method name"><span class="name">Bind</span></span></a></div></li>
-    <li><div><a href="#Search"><span class="method name"><span class="name">Search</span></span></a></div></li>
-    <li><div><a href="#Add"><span class="method name"><span class="name">Add</span></span></a></div></li>
-    <li><div><a href="#Modify"><span class="method name"><span class="name">Modify</span></span></a></div></li>
-    <li><div><a href="#Delete"><span class="method name"><span class="name">Delete</span></span></a></div></li>
+    <li><div><a href="#install">Install</a></div></li>
+    <li><div><a href="#bind">Bind</a></div></li>
+    <li><div><a href="#search">Search</a></div></li>
+    <li><div><a href="#add">Add</a></div></li>
+    <li><div><a href="#modify">Modify</a></div></li>
+    <li><div><a href="#delete">Delete</a></div></li>
   </ul></li>
   <li><div><a href="#where-to-go-from-here">Where to go from here</a></div></li>
 </ul>
 
-    </div>
-  </span>
-
-  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
-    <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
-         alt="Fork me on GitHub">
-  </a>
 </div>
     <div id="content">
 
@@ -171,7 +129,7 @@ much more complex X.500 directories,  which means that a lot of that
 baggage has carried through to today.  That makes for a high barrier to entry,
 when most applications just don't need most of those features.</p>
 
-<h2 id="How-is-ldapjs-any-different?"><span class="method name"><span class="name">How is ldapjs any different?</span></span></h2>
+<h2 id="how-is-ldapjs-any-different">How is ldapjs any different?</h2>
 
 <p>Well, on the one hand, since ldapjs has to be 100% wire compatible with LDAP to
 be useful, it's not. On the other hand, there are no forced assumptions about
@@ -198,7 +156,7 @@ authentication module">PAM</a> module to LDAP. While this is probably not a supe
 useful real-world use case, it will teach you some of the basics. If it is
 useful to you, then that's gravy.</p>
 
-<h2 id="Install"><span class="method name"><span class="name">Install</span></span></h2>
+<h2 id="install">Install</h2>
 
 <p>If you don't already have node.js and npm, clearly you need those, so follow
 the steps at <a href="http://nodejs.org">nodejs.org</a> and <a href="http://npmjs.org">npmjs.org</a>,
@@ -231,9 +189,9 @@ since we haven't added any support in yet, but go ahead and try it anyway:</p>
 </code></pre>
 
 <p>Before we go any further, note that the complete code for the server we are
-about to build up is on the <a href="http://ldapjs.org/examples.html">examples</a> page.</p>
+about to build up is on the <a href="examples.html">examples</a> page.</p>
 
-<h2 id="Bind"><span class="method name"><span class="name">Bind</span></span></h2>
+<h2 id="bind">Bind</h2>
 
 <p>So, lesson #1 about LDAP: unlike HTTP, it's connection-oriented; that means that
 you authenticate (in LDAP nomenclature this is called a <em>bind</em>), and all
@@ -329,7 +287,7 @@ authorization handler that we'll use in all our subsequent routes:</p>
 oriented, so we check that the connection remote user was indeed our <code>cn=root</code>
 (by default ldapjs will have a DN of <code>cn=anonymous</code> if the client didn't bind).</p>
 
-<h2 id="Search"><span class="method name"><span class="name">Search</span></span></h2>
+<h2 id="search">Search</h2>
 
 <p>We said we wanted to allow LDAP operations over /etc/passwd, so let's detour
 for a moment to explain an /etc/passwd record.</p>
@@ -340,14 +298,41 @@ for a moment to explain an /etc/passwd record.</p>
 <p>The sample record above maps to:</p>
 
 <table>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Description</th>
+</tr>
+</thead>
 <tbody>
-<tr><td>jsmith</td><td>user name.</td></tr>
-<tr><td>x</td><td>historically this contained the password hash, but that's usually in /etc/shadow now, so you get an 'x'.</td></tr>
-<tr><td>1001</td><td>the unix numeric user id.</td></tr>
-<tr><td>1000</td><td>the unix numeric group id. (primary).</td></tr>
-<tr><td>'Joe Smith,...'</td><td>the "gecos," which is a description, and is usually a comma separated list of contact details.</td></tr>
-<tr><td>/home/jsmith</td><td>the user's home directory.</td></tr>
-<tr><td>/bin/sh</td><td>the user's shell.</td></tr>
+<tr>
+  <td>jsmith</td>
+  <td>Username</td>
+</tr>
+<tr>
+  <td>x</td>
+  <td>Placeholder for password hash</td>
+</tr>
+<tr>
+  <td>1001</td>
+  <td>Numeric UID</td>
+</tr>
+<tr>
+  <td>1000</td>
+  <td>Numeric Primary GID</td>
+</tr>
+<tr>
+  <td>'Joe Smith,...'</td>
+  <td>DisplayName</td>
+</tr>
+<tr>
+  <td>/home/jsmith</td>
+  <td>Home directory</td>
+</tr>
+<tr>
+  <td>/bin/sh</td>
+  <td>Shell</td>
+</tr>
 </tbody>
 </table>
 
@@ -431,7 +416,7 @@ objectclass: unixUser
 <p>You should have seen an entry for every record in /etc/passwd with the second.
 What all did we do here?  A lot.  Let's break this down...</p>
 
-<h3>What did I just do on the command line?</h3>
+<h3 id="what-did-i-just-do-on-the-command-line">What did I just do on the command line?</h3>
 
 <p>Let's start with looking at what you even asked for:</p>
 
@@ -461,7 +446,7 @@ entries that have attributes that match that.  In the second invocation, we used
 a 'presence' filter, to say 'return any entries that have an objectclass'
 attribute, which in LDAP parlance is saying "give me everything."</p>
 
-<h3>The code</h3>
+<h3 id="the-code">The code</h3>
 
 <p>In the code above, let's ignore the fs and split stuff, since really all we
 did was read in /etc/passwd line by line.  After that, we looked at each record
@@ -506,7 +491,7 @@ cn: pulse
 gid: 114
 </code></pre>
 
-<h2 id="Add"><span class="method name"><span class="name">Add</span></span></h2>
+<h2 id="add">Add</h2>
 
 <p>This is going to be a little bit ghetto, since what we're going to do is just
 use node's child process module to spawn calls to <code>adduser</code>.  Go ahead and add
@@ -648,7 +633,7 @@ otherwise we'd use that.</p>
 <p>Now, what's missing?  Oh, right, we need to let you set a password.  Well, let's
 support that via the <em>modify</em> command.</p>
 
-<h2 id="Modify"><span class="method name"><span class="name">Modify</span></span></h2>
+<h2 id="modify">Modify</h2>
 
 <p>Unlike HTTP, "partial" document updates are fully specified as part of the
 RFC, so appending, removing, or replacing a single attribute is pretty natural.
@@ -683,7 +668,7 @@ Go ahead and add the following code into your source file:</p>
 
   passwd.on('exit', function(code) {
     if (code !== 0)
-      return next(new ldap.OperationsError(code.toString()));
+      return next(new ldap.OperationsError(code));
 
     res.end();
     return next();
@@ -713,7 +698,7 @@ userPassword: secret
 <p>You should now be able to login to your box as the ldapjs user. Let's get
 the last "mainline" piece of work out of the way, and delete the user.</p>
 
-<h2 id="Delete"><span class="method name"><span class="name">Delete</span></span></h2>
+<h2 id="delete">Delete</h2>
 
 <p>Delete is pretty straightforward. The client gives you a dn to delete, and you
 delete it :).  Add the following code into your server:</p>
@@ -754,8 +739,8 @@ delete it :).  Add the following code into your server:</p>
 <h1 id="where-to-go-from-here">Where to go from here</h1>
 
 <p>The complete source code for this example server is available in
-<a href="/examples.html">examples</a>.  Make sure to read up on the <a href="/server.html">server</a>
-and <a href="/client.html">client</a> APIs.  If you're looking for a "drop in" solution,
+<a href="examples.html">examples</a>.  Make sure to read up on the <a href="server.html">server</a>
+and <a href="client.html">client</a> APIs.  If you're looking for a "drop in" solution,
 take a look at <a href="https://github.com/mcavage/node-ldapjs-riak">ldapjs-riak</a>.</p>
 
 <p><a href="https://wiki.mozilla.org/Mozilla_LDAP_SDK_Programmer%27s_Guide/Understanding_LDAP">Mozilla</a>
@@ -764,56 +749,50 @@ looking for more tutorials.  After that, you'll need to work your way through
 the <a href="http://tools.ietf.org/html/rfc4510">RFCs</a> as you work through the APIs in
 ldapjs.</p>
 
-    </div>
-<div id="footer">
-  <p class='copy'>Copyright &copy; 2011 <a href="https://github.com/mcavage">Mark Cavage</a></p>
-</div>
-</div> <!-- end of #main -->
-</div> <!-- end of #wrapper -->
+    </div> <!-- #content -->
 <script type="text/javascript" charset="utf-8">
-$(function () {
-    $("#toc").click(function(event) {
-        // This to ensure clicks in the #toc don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#toc a").click(function(event) {
-        $("#tocbutton").click();
-    })
-    $("#tocbutton").click(function(event) {
-        var target = $("#toc");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.tocCloser", function(event) {
-                $("#tocbutton").click();
-                event.stopPropagation();
-            });
+$(function() {
+    var headerHeight = $("#header").height();
+    var offsets = [];
+    var current = -1;
+
+    function endpoint(scrollDistance) {
+        if (scrollDistance < offsets[0]) {
+            return -1;
         } else {
-            $("body").unbind("click.tocCloser");
+            for (var id = offsets.length; id > 0; id--) {
+                if (scrollDistance > offsets[id - 1]) {
+                    return id - 1;
+                    break;
+                }
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
+    }
+
+    $("h2").each(function(i) {
+        offsets.push($(this).offset().top - headerHeight)
     });
 
-    $("#api").click(function(event) {
-        // This to ensure clicks in the #api don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#api a").click(function(event) {
-        $("#apibutton").click();
-    })
-    $("#apibutton").click(function(event) {
-        var target = $("#api");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.apiCloser", function(event) {
-                $("#apibutton").click();
-                event.stopPropagation();
-            });
-        } else {
-            $("body").unbind("click.apiCloser");
+    $("#content").append('<h2 class="fixed" style="display: none"><span>&nbsp;</span></h2>');
+    var fixed_h2 = $("h2.fixed");
+    var fixed_span = $("h2.fixed span");
+
+    $("#content").scroll(function() {
+        var scrollDistance = $("#content").attr('scrollTop');
+        var now = endpoint(scrollDistance);
+
+        if (now !== current) {
+            $("#sidebar li").removeClass("current");
+            current = now;
+            if (current < 0) {
+                fixed_h2.hide();
+            } else if (current >= 0) {
+                var heading = $($("h2 span")[current]).text();
+                $("#sidebar a[href|=#" + heading.replace(' ', '-') + "]").parent().addClass("current");
+                fixed_span.text(heading);
+                fixed_h2.show();
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
     });
 });
 </script>

@@ -1,73 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Client API | ldapjs</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" type="text/css" href="media/css/style.css">
-  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aldrich">
-<style>
-
-#logo {
-  color: green;
-}
-
-#logo {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-h1,h2,h3,h4,h5,h6 {
-  font-family: Aldrich, Verdana, sans-serif;
-}
-
-</style>
-
-  <script type="text/javascript" src="media/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-25326304-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
+    <title>Client API | ldapjs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="media/css/restdown.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
-<div id="wrapper">
-<div id="main">
-<div id="fadeout"></div>
 <div id="header">
-  <span id="logo">
-    <a id="homelink" href="http://ldapjs.org">ldapjs</a>
-  </span>
+    <h1>Client API | ldapjs Documentation</h1>
+</div>
+<div id="sidebar">
 
-  <a class="navbutton" href="guide.html">Guide</a>
+<div>Sections</div>
+<span>
+<ul>
+<li><div><a href="index.html">Home</a></div></li>
+<li><div><a href="guide.html">Guide</a></div></li>
+<li><div><a href="examples.html">Examples</a></div></li>
+<li><div><a href="client.html">Client API</a></div></li>
+<li><div><a href="server.html">Server API</a></div></li>
+<li><div><a href="dn.html">DN API</a></div></li>
+<li><div><a href="filters.html">Filters API</a></div></li>
+<li><div><a href="errors.html">Error API</a></div></li>
+</ul>
+</span>
 
-  <span id="apibox">
-    <span id="apibutton" class="navbutton">API</span>
-    <div id="api" class="popup" style="display: none">
-      <ul>
-        <li><div><a href="server.html">server</a></div></li>
-        <li><div><a href="client.html">client</a></div></li>
-        <li><div><a href="dn.html">dn</a></div></li>
-        <li><div><a href="filters.html">filters</a></div></li>
-        <li><div><a href="errors.html">errors</a></div></li>
-        <li><div><a href="examples.html">examples</a></div></li>
-      </ul>
-    </div>
-  </span>
-
-  <span id="tocbox">
-    <span id="tocbutton" class="navbutton">Page Contents</span>
-    <div id="toc" class="popup" style="display: none">
-      <ul>
+<div>Contents</div>
+</span>
+<ul>
   <li><div><a href="#create-a-client">Create a client</a></div>
   <ul>
-    <li><div><a href="#Connection-management"><span class="method name"><span class="name">Connection management</span></span></a></div></li>
-    <li><div><a href="#Common-patterns"><span class="method name"><span class="name">Common patterns</span></span></a></div></li>
+    <li><div><a href="#connection-management">Connection management</a></div></li>
+    <li><div><a href="#common-patterns">Common patterns</a></div></li>
   </ul></li>
   <li><div><a href="#bind">bind</a></div></li>
   <li><div><a href="#add">add</a></div></li>
@@ -76,23 +41,17 @@ h1,h2,h3,h4,h5,h6 {
   <li><div><a href="#exop">exop</a></div></li>
   <li><div><a href="#modify">modify</a></div>
   <ul>
-    <li><div><a href="#Change"><span class="method name"><span class="name">Change</span></span></a></div></li>
+    <li><div><a href="#change">Change</a></div></li>
   </ul></li>
   <li><div><a href="#modifydn">modifyDN</a></div></li>
   <li><div><a href="#search">search</a></div>
   <ul>
-    <li><div><a href="#Filter-Strings"><span class="method name"><span class="name">Filter Strings</span></span></a></div></li>
+    <li><div><a href="#filter-strings">Filter Strings</a></div></li>
   </ul></li>
+  <li><div><a href="#starttls">starttls</a></div></li>
   <li><div><a href="#unbind">unbind</a></div></li>
 </ul>
 
-    </div>
-  </span>
-
-  <a id="githubfork" href="http://github.com/mcavage/node-ldapjs">
-    <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
-         alt="Fork me on GitHub">
-  </a>
 </div>
     <div id="content">
 
@@ -101,7 +60,7 @@ h1,h2,h3,h4,h5,h6 {
 
 
 <p>This document covers the ldapjs client API and assumes that you are familiar
-with LDAP. If you're not, read the <a href="http://ldapjs.org/guide.html">guide</a> first.</p>
+with LDAP. If you're not, read the <a href="guide.html">guide</a> first.</p>
 
 
 </div>
@@ -121,45 +80,55 @@ connection to port 636, as in LDAP v2). The full set of options to create a
 client is:</p>
 
 <table>
+<thead>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+</tr>
+</thead>
 <tbody>
-<tr><td>url</td><td>a valid LDAP url.</td></tr>
-<tr><td>socketPath</td><td>If you're running an LDAP server over a Unix Domain Socket, use this.</td></tr>
-<tr><td>log</td><td>You can optionally pass in a bunyan instance the client will use to acquire a logger.  The client logs all messages at the <code>trace</code> level.</td></tr>
-<tr><td>timeout</td><td>How long the client should let operations live for before timing out. Default is Infinity.</td></tr>
-<tr><td>connectTimeout</td><td>How long the client should wait before timing out on TCP connections. Default is up to the OS.</td></tr>
-<tr><td>maxConnections</td><td>Whether or not to enable connection pooling, and if so, how many to maintain.</td></tr>
+<tr>
+  <td>url</td>
+  <td>A valid LDAP URL (proto/host/port only)</td>
+</tr>
+<tr>
+  <td>socketPath</td>
+  <td>Socket path if using AF_UNIX sockets</td>
+</tr>
+<tr>
+  <td>log</td>
+  <td>Bunyan logger instance (Default: built-in instance)</td>
+</tr>
+<tr>
+  <td>timeout</td>
+  <td>How long the client should let operations live for before timing out (Default: Infinity)</td>
+</tr>
+<tr>
+  <td>connectTimeout</td>
+  <td>How long the client should wait before timing out on TCP connections (Default: OS default)</td>
+</tr>
+<tr>
+  <td>tlsOptions</td>
+  <td>Additional options passed to the TLS connection layer when connecting via <code>ldaps://</code> (See: The TLS docs for node.js)</td>
+</tr>
+<tr>
+  <td>idleTimeout</td>
+  <td>Seconds after last activity before client emits idle event</td>
+</tr>
+<tr>
+  <td>strictDN</td>
+  <td>Force strict DN parsing for client methods (Default is true)</td>
+</tr>
 </tbody>
 </table>
 
-<p>If using connection pooling, you can additionally pass in:</p>
-
-<table>
-<tbody>
-<tr><td>bindDN</td><td>The DN all connections should be bound as.</td></tr>
-<tr><td>bindCredentials</td><td>The credentials to use with bindDN.</td></tr>
-<tr><td>checkInterval</td><td>How often to schedule health checks.</td></tr>
-<tr><td>maxIdleTime</td><td>How long a client can sit idle before initiating a health check (subject to the frequency set by checkInterval).</td></tr>
-</tbody>
-</table>
-
-<h2 id="Connection-management"><span class="method name"><span class="name">Connection management</span></span></h2>
+<h2 id="connection-management">Connection management</h2>
 
 <p>As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
-down from underneath you is difficult to deal with.  That said, the "raw"
-client, which is what you get when maxConnections is either unset or &lt;= 1, does
-not do anything for you here; you can handle that however you want.</p>
+down from underneath you is can be difficult to deal with.  Several mechanisms
+have been provided to mitigate this trouble.</p>
 
-<p>More commonly, you probably want to use connection pooling, which performs
-health checks, and while you will see occasional errors from a client, those
-will be highly transient, as the pooling logic will purge them and create new
-ones for you.</p>
-
-<p>It is highly recommended you just provide bindCredentials initially, as all
-clients used will be authenticated, but you can call <code>bind</code> at any given time.
-This is expensive though, as the pool must first drain, be destroyed, and then
-recreated.  So try not to do that.</p>
-
-<h2 id="Common-patterns"><span class="method name"><span class="name">Common patterns</span></span></h2>
+<h2 id="common-patterns">Common patterns</h2>
 
 <p>The last two parameters in every API are <code>controls</code> and <code>callback</code>. <code>controls</code>
 can be either a single instance of a <code>Control</code> or an array of <code>Control</code> objects.
@@ -171,16 +140,13 @@ You probably won't need to check the <code>res</code> parameter, but it's there 
 
 <h1 id="bind">bind</h1>
 
-<p><code>bind(dn, password, controls,callback)</code></p>
+<p><code>bind(dn, password, controls, callback)</code></p>
 
 <p>Performs a bind operation against the LDAP server.</p>
 
 <p>The bind API only allows LDAP 'simple' binds (equivalent to HTTP Basic
 Authentication) for now. Note that all client APIs can optionally take an array
 of <code>Control</code> objects. You probably don't need them though...</p>
-
-<p>If you have more than 1 connection in the connection pool, you will be called
-back after <em>all</em> of the connections are bound, not just the first one.</p>
 
 <p>Example:</p>
 
@@ -280,19 +246,15 @@ client.modify('cn=foo, o=example', change, function(err) {
 });
 </code></pre>
 
-<h2 id="Change"><span class="method name"><span class="name">Change</span></span></h2>
+<h2 id="change">Change</h2>
 
 <p>A <code>Change</code> object maps to the LDAP protocol of a modify change, and requires you
 to set the <code>operation</code> and <code>modification</code>.  The <code>operation</code> is a string, and
 must be one of:</p>
 
-<table>
-<tbody>
-<tr><td>replace</td><td>Replaces the attribute referenced in <code>modification</code>.  If the modification has no values, it is equivalent to a delete.</td></tr>
-<tr><td>add</td><td>Adds the attribute value(s) referenced in <code>modification</code>.  The attribute may or may not already exist.</td></tr>
-<tr><td>delete</td><td>Deletes the attribute (and all values) referenced in <code>modification</code>.</td></tr>
-</tbody>
-</table>
+<p>||replace||Replaces the attribute referenced in <code>modification</code>.  If the modification has no values, it is equivalent to a delete.||
+||add||Adds the attribute value(s) referenced in <code>modification</code>.  The attribute may or may not already exist.||
+||delete||Deletes the attribute (and all values) referenced in <code>modification</code>.||</p>
 
 <p><code>modification</code> is just a plain old JS object with the values you want.</p>
 
@@ -306,7 +268,7 @@ server.  A couple points with this client API:</p>
 <ul>
 <li>There is no ability to set "keep old dn."  It's always going to flag the old
 dn to be purged.</li>
-<li>The client code will automagically figure out if the request is a "new
+<li>The client code will automatically figure out if the request is a "new
 superior" request ("new superior" means move to a different part of the tree,
 as opposed to just renaming the leaf).</li>
 </ul>
@@ -330,17 +292,43 @@ defaults for you so that if you pass nothing in, it's pretty much equivalent
 to an HTTP GET operation (i.e., base search against the DN, filter set to
 always match).</p>
 
-<p>Like every other operation, <code>base</code> is a DN string.  Options has the following
-fields:</p>
+<p>Like every other operation, <code>base</code> is a DN string.</p>
+
+<p>Options can be a string representing a valid LDAP filter or an object
+containing the following fields:</p>
 
 <table>
+<thead>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+</tr>
+</thead>
 <tbody>
-<tr><td>scope</td><td>One of <code>base</code>, <code>one</code>, or <code>sub</code>. Defaults to <code>base</code>.</td></tr>
-<tr><td>filter</td><td>A string version of an LDAP filter (see below), or a programatically constructed <code>Filter</code> object. Defaults to <code>(objectclass=*)</code>.</td></tr>
-<tr><td>attributes</td><td>attributes to select and return (if these are set, the server will return <em>only</em> these attributes). Defaults to the empty set, which means all attributes.</td></tr>
-<tr><td>attrsOnly</td><td>boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.</td></tr>
-<tr><td>sizeLimit</td><td>the maximum number of entries to return. Defaults to 0 (unlimited).</td></tr>
-<tr><td>timeLimit</td><td>the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.</td></tr>
+<tr>
+  <td>scope</td>
+  <td>One of <code>base</code>, <code>one</code>, or <code>sub</code>. Defaults to <code>base</code>.</td>
+</tr>
+<tr>
+  <td>filter</td>
+  <td>A string version of an LDAP filter (see below), or a programatically constructed <code>Filter</code> object. Defaults to <code>(objectclass=*)</code>.</td>
+</tr>
+<tr>
+  <td>attributes</td>
+  <td>attributes to select and return (if these are set, the server will return <em>only</em> these attributes). Defaults to the empty set, which means all attributes. You can provide a string if you want a single attribute or an array of string for one or many.</td>
+</tr>
+<tr>
+  <td>attrsOnly</td>
+  <td>boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.</td>
+</tr>
+<tr>
+  <td>sizeLimit</td>
+  <td>the maximum number of entries to return. Defaults to 0 (unlimited).</td>
+</tr>
+<tr>
+  <td>timeLimit</td>
+  <td>the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.</td>
+</tr>
 </tbody>
 </table>
 
@@ -358,7 +346,8 @@ the code matching.</p>
 
 <pre><code>var opts = {
   filter: '(&amp;(l=Seattle)(email=*@foo.com))',
-  scope: 'sub'
+  scope: 'sub',
+  attributes: ['dn', 'sn', 'cn']
 };
 
 client.search('o=example', opts, function(err, res) {
@@ -379,7 +368,7 @@ client.search('o=example', opts, function(err, res) {
 });
 </code></pre>
 
-<h2 id="Filter-Strings"><span class="method name"><span class="name">Filter Strings</span></span></h2>
+<h2 id="filter-strings">Filter Strings</h2>
 
 <p>The easiest way to write search filters is to write them compliant with RFC2254,
 which is "The string representation of LDAP search filters."  Note that
@@ -396,31 +385,53 @@ for an attribute <code>email</code> with a value of <code>foo@bar.com</code>.  T
 </code></pre>
 
 <p>ldapjs requires all filters to be surrounded by '()' blocks. Ok, that was easy.
-Let's now assume you want to find all records where the email is actually just
-anything in the "@bar.com" domain, and the location attribute is set to Seattle:</p>
+Let's now assume that you want to find all records where the email is actually
+just anything in the "@bar.com" domain and the location attribute is set to
+Seattle:</p>
 
 <pre><code>(&amp;(email=*@bar.com)(l=Seattle))
 </code></pre>
 
-<p>Now our filter is actually three LDAP filters.  We have an <code>and</code> filter,
-an <code>equality</code> filter (the l=Seattle), and a <code>substring</code> filter.  Substrings are
-wildcard filters.  Now, let's say we want to also set our filter to include a
-specification that either the employeeType <em>not</em> be a manager or a secretary:</p>
+<p>Now our filter is actually three LDAP filters.  We have an <code>and</code> filter (single
+amp <code>&amp;</code>), an <code>equality</code> filter <code>(the l=Seattle)</code>, and a <code>substring</code> filter.
+Substrings are wildcard filters. They use <code>*</code> as the wildcard. You can put more
+than one wildcard for a given string. For example you could do <code>(email=*@*bar.com)</code>
+to match any email of @bar.com or its subdomains like "example@foo.bar.com".</p>
+
+<p>Now, let's say we also want to set our filter to include a
+specification that either the employeeType <em>not</em> be a manager nor a secretary:</p>
 
 <pre><code>(&amp;(email=*@bar.com)(l=Seattle)(!(|(employeeType=manager)(employeeType=secretary))))
 </code></pre>
 
-<p>It gets a little bit complicated, but it's actually quite powerful, and lets you
+<p>The <code>not</code> character is represented as a <code>!</code>, the <code>or</code> as a single pipe <code>|</code>.
+It gets a little bit complicated, but it's actually quite powerful, and lets you
 find almost anything you're looking for.</p>
+
+<h1 id="starttls">starttls</h1>
+
+<p><code>starttls(options, controls, callback)</code></p>
+
+<p>Attempt to secure existing LDAP connection via STARTTLS.</p>
+
+<p>Example:</p>
+
+<pre><code>var opts = {
+  ca: [fs.readFileSync('mycacert.pem')]
+};
+
+client.starttls(opts, function(err, res) {
+  assert.ifError(err);
+
+  // Client communication now TLS protected
+});
+</code></pre>
 
 <h1 id="unbind">unbind</h1>
 
 <p><code>unbind(callback)</code></p>
 
 <p>Performs an unbind operation against the LDAP server.</p>
-
-<p>The unbind operation takes no parameters other than a callback, and will unbind
-(and disconnect) <em>all</em> of the connections in the pool.</p>
 
 <p>Example:</p>
 
@@ -429,56 +440,50 @@ find almost anything you're looking for.</p>
 });
 </code></pre>
 
-    </div>
-<div id="footer">
-  <p class='copy'>Copyright &copy; 2011 <a href="https://github.com/mcavage">Mark Cavage</a></p>
-</div>
-</div> <!-- end of #main -->
-</div> <!-- end of #wrapper -->
+    </div> <!-- #content -->
 <script type="text/javascript" charset="utf-8">
-$(function () {
-    $("#toc").click(function(event) {
-        // This to ensure clicks in the #toc don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#toc a").click(function(event) {
-        $("#tocbutton").click();
-    })
-    $("#tocbutton").click(function(event) {
-        var target = $("#toc");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.tocCloser", function(event) {
-                $("#tocbutton").click();
-                event.stopPropagation();
-            });
+$(function() {
+    var headerHeight = $("#header").height();
+    var offsets = [];
+    var current = -1;
+
+    function endpoint(scrollDistance) {
+        if (scrollDistance < offsets[0]) {
+            return -1;
         } else {
-            $("body").unbind("click.tocCloser");
+            for (var id = offsets.length; id > 0; id--) {
+                if (scrollDistance > offsets[id - 1]) {
+                    return id - 1;
+                    break;
+                }
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
+    }
+
+    $("h2").each(function(i) {
+        offsets.push($(this).offset().top - headerHeight)
     });
 
-    $("#api").click(function(event) {
-        // This to ensure clicks in the #api don't make it up to the
-        // button handler.
-        event.stopPropagation();
-    });
-    $("#api a").click(function(event) {
-        $("#apibutton").click();
-    })
-    $("#apibutton").click(function(event) {
-        var target = $("#api");
-        if (target.css("display") !== "block") {
-            $("body").bind("click.apiCloser", function(event) {
-                $("#apibutton").click();
-                event.stopPropagation();
-            });
-        } else {
-            $("body").unbind("click.apiCloser");
+    $("#content").append('<h2 class="fixed" style="display: none"><span>&nbsp;</span></h2>');
+    var fixed_h2 = $("h2.fixed");
+    var fixed_span = $("h2.fixed span");
+
+    $("#content").scroll(function() {
+        var scrollDistance = $("#content").attr('scrollTop');
+        var now = endpoint(scrollDistance);
+
+        if (now !== current) {
+            $("#sidebar li").removeClass("current");
+            current = now;
+            if (current < 0) {
+                fixed_h2.hide();
+            } else if (current >= 0) {
+                var heading = $($("h2 span")[current]).text();
+                $("#sidebar a[href|=#" + heading.replace(' ', '-') + "]").parent().addClass("current");
+                fixed_span.text(heading);
+                fixed_h2.show();
+            }
         }
-        target.slideToggle(100);
-        event.stopPropagation();
     });
 });
 </script>
