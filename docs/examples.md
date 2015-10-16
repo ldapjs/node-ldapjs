@@ -15,7 +15,9 @@ with ldapjs.
     ///--- Shared handlers
 
     function authorize(req, res, next) {
-      if (!req.connection.ldap.bindDN.equals('cn=root'))
+      /* Any user may search after bind, only cn=root has full power */
+      var isSearch = (req instanceof ldap.SearchRequest);
+      if (!req.connection.ldap.bindDN.equals('cn=root') && !isSearch)
         return next(new ldap.InsufficientAccessRightsError());
 
       return next();
@@ -54,10 +56,10 @@ with ldapjs.
       if (!db[dn])
         return next(new ldap.NoSuchObjectError(dn));
 
-      if (!dn[dn].userpassword)
+      if (!db[dn].userpassword)
         return next(new ldap.NoSuchAttributeError('userPassword'));
 
-      if (db[dn].userpassword !== req.credentials)
+      if (db[dn].userpassword.indexOf(req.credentials) === -1)
         return next(new ldap.InvalidCredentialsError());
 
       res.end();
