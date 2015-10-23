@@ -1,11 +1,25 @@
 # ldapjs Changelog
 
-## CURRENT
+## 1.0.0
 
+- Update dependencies
+  * asn1 to 0.2.3
+  * bunyan to 1.5.1
+  * dtrace-provider to 0.6.0
+- Removed pooled client
+- Removed custom formatting for GUIDs
+- Completely overhaul DN parsing/formatting
+  - Add options for format preservation
+  - Removed `spaced()` and `rndSpaced` from DN API
+  - Fix parent/child rules regarding empty DNs
+- Request routing overhaul
+    * #154 Route lookups do not depend on object property order
+    * #111 Null ('') DN will act as catch-all
+- Add StartTLS support to client (Sponsored by: DoubleCheck Email Manager)
+- Improve robustness of client reconnect logic
 - Add 'resultError' event to client
 - Update paged search automation in client
 - Add Change.apply method for modifying objects
-- Update bunyan to 0.23.1
 - #143 Preserve raw Buffer value in Control objects
 - Test code coverage with node-istanbul
 - Convert tests to node-tape
@@ -14,9 +28,6 @@
 - #134 Allow configuration of derefAliases client option
 - #197 Properly dispatch unbind requests
 - #196 Handle string ports properly in server.listen
-- Request routing overhaul
-    * #154 Route lookups do not depend on object property order
-    * #111 Null ('') DN will act as catch-all
 - Add basic server API tests
 - Store EqualityFilter value as Buffer
 - Run full test suite during 'make test'
@@ -24,12 +35,7 @@
 - #178 Perform strict presence testing on attribute vals
 - #183 Accept buffers or strings for cert/key in createServer
 - #180 Add '-i, --insecure' option and to all ldapjs-\* CLIs
-- Completely overhaul DN parsing/formatting
-  - Add options for format preservation
-  - Removed `spaced()` and `rndSpaced` from DN API
-  - Fix parent/child rules regarding empty DNs
 - #254 Allow simple client bind with empty credentials
-- Add StartTLS support to client
 
 ## 0.7.1
 

@@ -14,7 +14,7 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "0.7.1",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
