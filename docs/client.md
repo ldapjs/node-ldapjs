@@ -204,6 +204,7 @@ containing the following fields:
 |attrsOnly  |boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.|
 |sizeLimit  |the maximum number of entries to return. Defaults to 0 (unlimited).|
 |timeLimit  |the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.|
+|paging     |enable and/or configure automatic result paging|
 
 Responses from the `search` method are an `EventEmitter` where you will get a
 notification for each `searchEntry` that comes back from the server.  You will
@@ -276,6 +277,80 @@ specification that either the employeeType *not* be a manager nor a secretary:
 The `not` character is represented as a `!`, the `or` as a single pipe `|`.
 It gets a little bit complicated, but it's actually quite powerful, and lets you
 find almost anything you're looking for.
+
+## Paging
+Many LDAP server enforce size limits upon the returned result set (commonly
+1000).  In order to retrieve results beyond this limit, a `PagedResultControl`
+is passed between the client and server to iterate through the entire dataset.
+While callers could choose to do this manually via the `controls` parameter to
+`search()`, ldapjs has internal mechanisms to easily automate the process.  The
+most simple way to use the paging automation is to set the `paging` option to
+true when performing a search:
+
+    var opts = {
+      filter: '(objectclass=commonobject)',
+      scope: 'sub',
+      paging: true,
+      sizeLimit: 200
+    };
+    client.search('o=largedir', opts, function(err, res) {
+      assert.ifError(err);
+      res.on('searchEntry', function(entry) {
+        // do per-entry processing
+      });
+      res.on('page', function(result) {
+        console.log('page end');
+      });
+      res.on('error', function(resErr) {
+        assert.ifError(resErr);
+      });
+      res.on('end', function(result) {
+        console.log('done ');
+      });
+    });
+
+This will enable paging with a default page size of 199 (`sizeLimit` - 1) and
+will output all of the resulting objects via the `searchEntry` event.  At the
+end of each result during the operation, a `page` event will be emitted as
+well (which includes the intermediate `searchResult` object).
+
+For those wanting more precise control over the process, an object with several
+parameters can be provided for the `paged` option.  The `pageSize` parameter
+sets the size of result pages requested from the server.  If no value is
+specified, it will fall back to the default (100 or `sizeLimit` - 1, to obey
+the RFC).  The `pagePause` parameter allows back-pressure to be exerted on the
+paged search operation by pausing  at the end of each page.  When enabled, a
+callback function is passed as an additional parameter to `page` events.  The
+client will wait to request the next page until that callback is executed.
+
+Here is an example where both of those parameters are used:
+
+    var queue = new MyWorkQueue(someSlowWorkFunction);
+    var opts = {
+      filter: '(objectclass=commonobject)',
+      scope: 'sub',
+      paging: {
+        pageSize: 250,
+        pagePause: true
+      },
+    };
+    client.search('o=largerdir', opts, function(err, res) {
+      assert.ifError(err);
+      res.on('searchEntry', function(entry) {
+        // Submit incoming objects to queue
+        queue.push(entry);
+      });
+      res.on('page', function(result, cb) {
+        // Allow the queue to flush before fetching next page
+        queue.cbWhenFlushed(cb);
+      });
+      res.on('error', function(resErr) {
+        assert.ifError(resErr);
+      });
+      res.on('end', function(result) {
+        console.log('done');
+      });
+    });
 
 # starttls
 `starttls(options, controls, callback)`
