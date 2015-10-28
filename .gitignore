@@ -6,4 +6,3 @@ coverage
 *.tar.*
 *.tgz
 .DS_Store
-.idea

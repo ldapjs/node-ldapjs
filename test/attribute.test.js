@@ -4,6 +4,7 @@ var test = require('tape').test;
 
 var asn1 = require('asn1');
 
+
 ///--- Globals
 
 var BerReader = asn1.BerReader;
@@ -33,20 +34,20 @@ test('new with args', function (t) {
   });
   t.ok(attr);
   attr.addValue('baz');
-  t.throws(function() {
-    new Attribute('not an object');
-  });
-  t.throws(function() {
-    var typeThatIsNotAString = 1;
-    new Attribute({
-      type: typeThatIsNotAString
-    })
-  });
   t.equal(attr.type, 'cn');
   t.equal(attr.vals.length, 3);
   t.equal(attr.vals[0], 'foo');
   t.equal(attr.vals[1], 'bar');
   t.equal(attr.vals[2], 'baz');
+  t.throws(function () {
+    attr = new Attribute('not an object');
+  });
+  t.throws(function () {
+    var typeThatIsNotAString = 1;
+    attr = new Attribute({
+      type: typeThatIsNotAString
+    });
+  });
   t.end();
 });
 
@@ -89,7 +90,7 @@ test('parse', function (t) {
   t.end();
 });
 
-test('parse - without 0x31', function(t) {
+test('parse - without 0x31', function (t) {
   var ber = new BerWriter;
   ber.startSequence();
   ber.writeString('sn');
@@ -105,7 +106,7 @@ test('parse - without 0x31', function(t) {
   t.end();
 });
 
-test('toString', function(t) {
+test('toString', function (t) {
   var attr = new Attribute({
     type: 'foobar',
     vals: ['asdf']
@@ -154,11 +155,11 @@ test('compare', function (t) {
   });
   var notAnAttribute = 'this is not an attribute';
 
-  t.throws(function() {
+  t.throws(function () {
     comp(a, notAnAttribute);
   });
-  t.throws(function() {
-    comp(notAnAttribute, b)
+  t.throws(function () {
+    comp(notAnAttribute, b);
   });
 
   t.equal(comp(a, b), 0);
