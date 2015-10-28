@@ -27,10 +27,10 @@ client is:
 |url            |A valid LDAP URL (proto/host/port only)                    |
 |socketPath     |Socket path if using AF\_UNIX sockets                      |
 |log            |Bunyan logger instance (Default: built-in instance)        |
-|timeout        |How long the client should let operations live for before timing out (Default: Infinity)|
-|connectTimeout |How long the client should wait before timing out on TCP connections (Default: OS default)|
-|tlsOptions     |Additional options passed to the TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
-|idleTimeout    |Seconds after last activity before client emits idle event|
+|timeout        |Milliseconds client should let operations live for before timing out (Default: Infinity)|
+|connectTimeout |Milliseconds client should wait before timing out on TCP connections (Default: OS default)|
+|tlsOptions     |Additional options passed to TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
+|idleTimeout    |Milliseconds after last activity before client emits idle event|
 |strictDN       |Force strict DN parsing for client methods (Default is true)|
 
 ## Connection management

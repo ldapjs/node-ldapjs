@@ -83,7 +83,6 @@ Specifically:
 * LDIF
 * Aliases
 * Attributes by OID
-* TLS extended operation (seriously, just use SSL)
 * Extensible matching
 
 There are a few others, but those are the "big" ones.
