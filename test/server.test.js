@@ -45,12 +45,30 @@ test('basic create', function (t) {
   t.end();
 });
 
+test('properties', function (t) {
+  t.equal(server.name, 'LDAPServer');
+
+  // TODO: better test
+  server.maxConnections = 10;
+  t.equal(server.maxConnections, 10);
+
+  t.equal(server.url, null, 'url empty before bind');
+  // listen on a random port so we have a url
+  server.listen(0, 'localhost', function () {
+    t.ok(server.url);
+
+    server.close();
+    t.end();
+  });
+});
+
 test('listen on unix/named socket', function (t) {
-  t.plan(1);
+  t.plan(2);
   server = ldap.createServer();
   sock = getSock();
   server.listen(sock, function () {
-    t.ok(true);
+    t.ok(server.url);
+    t.equal(server.url.split(':')[0], 'ldapi');
     server.close();
     t.end();
   });
