@@ -215,7 +215,71 @@ test('route unbind', function (t) {
   });
 });
 
-test('non-strict route', function (t) {
+test('strict routing', function (t) {
+  var testDN = 'cn=valid';
+  var clt;
+  vasync.pipeline({
+    funcs: [
+      function setup(_, cb) {
+        server = ldap.createServer({
+          // strictDN: true - on by default
+        });
+        sock = getSock();
+        // invalid DNs would go to default handler
+        server.search('', function (req, res, next) {
+          t.ok(req.dn);
+          t.equal(typeof (req.dn), 'object');
+          t.equal(req.dn.toString(), testDN);
+          res.end();
+          next();
+        });
+        server.listen(sock, function () {
+          t.ok(true, 'server startup');
+          clt = ldap.createClient({
+            socketPath: sock,
+            strictDN: false
+          });
+          cb();
+        });
+      },
+      function testBad(_, cb) {
+        clt.search('not a dn', {scope: 'base'}, function (err, res) {
+          t.ifError(err);
+          res.once('error', function (err2) {
+            t.ok(err2);
+            t.equal(err2.code, ldap.LDAP_INVALID_DN_SYNTAX);
+            cb();
+          });
+          res.once('end', function () {
+            t.fail('accepted invalid dn');
+            cb('bogus');
+          });
+        });
+      },
+      function testGood(_, cb) {
+        clt.search(testDN, {scope: 'base'}, function (err, res) {
+          t.ifError(err);
+          res.once('error', function (err2) {
+            t.ifError(err2);
+            cb(err2);
+          });
+          res.once('end', function (result) {
+            t.ok(result, 'accepted invalid dn');
+            cb();
+          });
+        });
+      }
+    ]
+  }, function (err, res) {
+    if (clt) {
+      clt.destroy();
+    }
+    server.close();
+    t.end();
+  });
+});
+
+test('non-strict routing', function (t) {
   server = ldap.createServer({
     strictDN: false
   });
