@@ -32,7 +32,7 @@ test('new no args', function (t) {
 
 test('new with args', function (t) {
   var change = new Change({
-    operation: 0x00,
+    operation: 'add',
     modification: new Attribute({
       type: 'cn',
       vals: ['foo', 'bar']
@@ -50,19 +50,35 @@ test('new with args', function (t) {
 });
 
 
+test('validate fields', function (t) {
+  var c = new Change();
+  t.ok(c);
+  t.throws(function () {
+    c.operation = 'bogus';
+  });
+  t.throws(function () {
+    c.modification = {too: 'many', fields: 'here'};
+  });
+  c.modification = {
+    foo: ['bar', 'baz']
+  };
+  t.ok(c.modification);
+  t.end();
+});
+
+
 test('GH-31 (multiple attributes per Change)', function (t) {
-  try {
-    t.notOk(new Change({
+  t.throws(function () {
+    var c = new Change({
       operation: 'replace',
       modification: {
         cn: 'foo',
         sn: 'bar'
       }
-    }), 'should have thrown');
-  } catch (e) {
-    t.ok(e);
-    t.end();
-  }
+    });
+    t.notOk(c);
+  });
+  t.end();
 });
 
 
