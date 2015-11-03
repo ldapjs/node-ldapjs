@@ -3,11 +3,9 @@
 var test = require('tape').test;
 
 
-
 ///--- Globals
 
 var dn;
-
 
 
 ///--- Tests
@@ -201,6 +199,51 @@ test('format persists across clone', function (t) {
   var clone = _dn.clone();
   t.equals(_dn.toString(), OUT);
   t.equals(clone.toString(), OUT);
+  t.end();
+});
+
+
+test('initialization', function (t) {
+  var dn1 = new dn.DN();
+  t.ok(dn1);
+  t.equals(dn1.toString(), '');
+  t.ok(dn1.isEmpty(), 'DN with no initializer defaults to null DN');
+
+  var data = [
+    new dn.RDN({ foo: 'bar' }),
+    new dn.RDN({ o: 'base' })
+  ];
+  var dn2 = new dn.DN(data);
+  t.ok(dn2);
+  t.equals(dn2.toString(), 'foo=bar, o=base');
+  t.ok(!dn2.isEmpty());
+
+  t.end();
+});
+
+
+test('array functions', function (t) {
+  var dn1 = dn.parse('a=foo, b=bar, c=baz');
+  t.ok(dn1);
+  t.equal(dn1.toString(), 'a=foo, b=bar, c=baz');
+
+  t.ok(dn1.reverse());
+  t.equal(dn1.toString(), 'c=baz, b=bar, a=foo');
+
+  var rdn = dn1.pop();
+  t.ok(rdn);
+  t.equal(dn1.toString(), 'c=baz, b=bar');
+
+  t.ok(dn1.push(rdn));
+  t.equal(dn1.toString(), 'c=baz, b=bar, a=foo');
+
+  rdn = dn1.shift();
+  t.ok(rdn);
+  t.equal(dn1.toString(), 'b=bar, a=foo');
+
+  t.ok(dn1.unshift(rdn));
+  t.equal(dn1.toString(), 'c=baz, b=bar, a=foo');
+
   t.end();
 });
 
