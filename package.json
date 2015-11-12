@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "asn1": "0.2.3",
-    "assert-plus": "0.1.5",
+    "assert-plus": "0.2.0",
     "bunyan": "1.5.1",
     "dashdash": "1.10.1",
     "backoff": "2.4.1",
