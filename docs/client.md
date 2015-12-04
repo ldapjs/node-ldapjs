@@ -329,7 +329,7 @@ Here is an example where both of those parameters are used:
     var opts = {
       filter: '(objectclass=commonobject)',
       scope: 'sub',
-      paging: {
+      paged: {
         pageSize: 250,
         pagePause: true
       },
