@@ -1,7 +1,7 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
 var test = require('tape').test;
-
+var fs = require('fs');
 var asn1 = require('asn1');
 
 
@@ -49,6 +49,27 @@ test('new with args', function (t) {
   t.end();
 });
 
+test('new with args and buffer', function (t) {
+  
+
+  var img = fs.readFileSync(__dirname + '/imgs/test.jpg');
+  
+  var change = new Change({
+    operation: 'add',
+    modification: {
+      thumbnailPhoto: img
+    }
+  });
+
+  t.ok(change);
+
+  t.equal(change.operation, 'add');
+  t.equal(change.modification.type, 'thumbnailPhoto');
+  t.equal(change.modification.vals.length, 1);
+  t.equal(change.modification.buffers[0].compare(img), 0);
+
+  t.end();
+});
 
 test('validate fields', function (t) {
   var c = new Change();
