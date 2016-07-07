@@ -535,3 +535,54 @@ To test out this example, try:
 
     $ ldapsearch -H ldap://localhost:389 -x -D cn=demo,dc=example,dc=com \
       -w demo -b "dc=example,dc=com" objectclass=*
+
+# Create a user in Active Directory Lightweight Directory Services (ADLDS) 
+
+In order to create a user with a password in Active Directory you will need to configure the Active Directory server to use SSL.
+The instructions for doing this are here.
+http://social.technet.microsoft.com/wiki/contents/articles/2980.ldap-over-ssl-ldaps-certificate.aspx 
+
+Note you can use certsrv.exe or generate a self signed certificate using OpenSSL.
+
+If you use a self signed certificate then you will need to uncomment `process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";`
+
+```
+var ldap = require('ldapjs');
+
+// Uncomment if you are using a self signed cert
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+var client = ldap.createClient({
+  url: 'ldaps://MACHINE_NAME.test.ldap.com:636'
+});
+
+client.bind('Administrator@test.ldap.com', 'password', function(err) {
+    if(err) {
+        console.log("error from bind ",err);
+        return;
+    }
+    console.log('LDAP Binding Successful');
+
+    // Surround the password with " " and encode it with utf16le
+    const buf = new Buffer('"pwd1234$$"', 'utf16le');
+
+    //sAMAccountName is required by windows
+    //userAccountControl 512 = enable the account
+    //pwdLastSet -1 prevents the user from needing to change their password on first login
+    var entry = {
+    'name':'foouser',
+    'objectClass':'user',
+    'sAMAccountName' : 'foouser',
+    'unicodePwd' : buf, 
+    'userAccountControl': 512,
+    'pwdLastSet' : -1
+    };
+
+    client.add('CN=foouser, CN=Users, DC=test,DC=ldap,DC=com', entry, function(err) {
+        if(err) {
+            console.log('Add error--> ',err);
+            return;
+        }
+        console.log('User created!!');
+    });
+});
+```
