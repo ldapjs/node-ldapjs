@@ -1,7 +1,10 @@
 # ldapjs Changelog
 
-## CURRENT
+## 0.8.0 (Compatibility release)
 
+- Update dependencies
+    * dtrace-provider to 0.6.0
+    * bunyan to 1.8.1
 - #201 Replace nopt with dashdash
 - #134 Allow configuration of derefAliases client option
 - #197 Properly dispatch unbind requests
