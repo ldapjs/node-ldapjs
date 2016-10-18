@@ -31,7 +31,7 @@
   "dependencies": {
     "asn1": "0.2.3",
     "assert-plus": "0.2.0",
-    "bunyan": "1.5.1",
+    "bunyan": "1.8.2",
     "dashdash": "1.10.1",
     "backoff": "2.4.1",
     "ldap-filter": "0.2.2",
@@ -40,7 +40,7 @@
     "verror": "1.6.0"
   },
   "optionalDependencies": {
-    "dtrace-provider": "0.6.0"
+    "dtrace-provider": "0.7.0"
   },
   "devDependencies": {
     "node-uuid": "1.4.3",
