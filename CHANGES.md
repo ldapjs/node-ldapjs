@@ -1,5 +1,18 @@
 # ldapjs Changelog
 
+## master
+
+- Update dependencies
+  * assert-plus to 1.0.0
+  * bunyan to 1.8.3
+  * dashdash to 1.14.0
+  * backoff to 2.5.0
+  * once to 1.4.0
+  * vasync to 1.6.4
+  * verror to 1.8.1
+  * dtrace-provider to 0.7.0
+- Drop any semblence of support for node 0.8.x
+
 ## 1.0.0
 
 - Update dependencies
