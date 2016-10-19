@@ -331,7 +331,7 @@ containing the following fields:</p>
   <td>the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.</td>
 </tr>
 <tr>
-  <td>paging</td>
+  <td>paged</td>
   <td>enable and/or configure automatic result paging</td>
 </tr>
 </tbody>
@@ -420,13 +420,13 @@ find almost anything you're looking for.</p>
 is passed between the client and server to iterate through the entire dataset.
 While callers could choose to do this manually via the <code>controls</code> parameter to
 <code>search()</code>, ldapjs has internal mechanisms to easily automate the process.  The
-most simple way to use the paging automation is to set the <code>paging</code> option to
+most simple way to use the paging automation is to set the <code>paged</code> option to
 true when performing a search:</p>
 
 <pre><code>var opts = {
   filter: '(objectclass=commonobject)',
   scope: 'sub',
-  paging: true,
+  paged: true,
   sizeLimit: 200
 };
 client.search('o=largedir', opts, function(err, res) {
@@ -466,7 +466,7 @@ client will wait to request the next page until that callback is executed.</p>
 var opts = {
   filter: '(objectclass=commonobject)',
   scope: 'sub',
-  paging: {
+  paged: {
     pageSize: 250,
     pagePause: true
   },
