@@ -204,7 +204,7 @@ containing the following fields:
 |attrsOnly  |boolean on whether you want the server to only return the names of the attributes, and not their values.  Borderline useless.  Defaults to false.|
 |sizeLimit  |the maximum number of entries to return. Defaults to 0 (unlimited).|
 |timeLimit  |the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.|
-|paging     |enable and/or configure automatic result paging|
+|paged     |enable and/or configure automatic result paging|
 
 Responses from the `search` method are an `EventEmitter` where you will get a
 notification for each `searchEntry` that comes back from the server.  You will
@@ -284,13 +284,13 @@ Many LDAP server enforce size limits upon the returned result set (commonly
 is passed between the client and server to iterate through the entire dataset.
 While callers could choose to do this manually via the `controls` parameter to
 `search()`, ldapjs has internal mechanisms to easily automate the process.  The
-most simple way to use the paging automation is to set the `paging` option to
+most simple way to use the paging automation is to set the `paged` option to
 true when performing a search:
 
     var opts = {
       filter: '(objectclass=commonobject)',
       scope: 'sub',
-      paging: true,
+      paged: true,
       sizeLimit: 200
     };
     client.search('o=largedir', opts, function(err, res) {
