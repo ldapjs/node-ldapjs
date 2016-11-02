@@ -1,6 +1,6 @@
 # ldapjs Changelog
 
-## master
+## 1.0.1
 
 - Update dependencies
   * assert-plus to 1.0.0
