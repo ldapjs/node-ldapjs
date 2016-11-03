@@ -26,12 +26,24 @@ client is:
 |---------------|-----------------------------------------------------------|
 |url            |A valid LDAP URL (proto/host/port only)                    |
 |socketPath     |Socket path if using AF\_UNIX sockets                      |
-|log            |Bunyan logger instance (Default: built-in instance)        |
+|log            |A compatible logger instance (Default: no-op logger)       |
 |timeout        |Milliseconds client should let operations live for before timing out (Default: Infinity)|
 |connectTimeout |Milliseconds client should wait before timing out on TCP connections (Default: OS default)|
 |tlsOptions     |Additional options passed to TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
 |idleTimeout    |Milliseconds after last activity before client emits idle event|
 |strictDN       |Force strict DN parsing for client methods (Default is true)|
+
+### Note On Logger
+
+A passed in logger is expected to conform to the [Bunyan](https://www.npmjs.com/package/bunyan)
+API. Specifically, the logger is expected to have a `child()` method. If a logger
+is supplied that does not have such a method, then a shim version is added
+that merely returns the passed in logger.
+
+Known compatible loggers are:
+
++ [Bunyan](https://www.npmjs.com/package/bunyan)
++ [Pino](https://www.npmjs.com/package/pino)
 
 ## Connection management
 

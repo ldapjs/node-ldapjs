@@ -16,9 +16,21 @@ The code to create a new server looks like:
 
 The full list of options is:
 
-||log||You can optionally pass in a bunyan instance the client will use to acquire a logger.||
+||log||You can optionally pass in a Bunyan compatible logger instance the client will use to acquire a child logger.||
 ||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.||
 ||key||A PEM-encoded private key that corresponds to _certificate_ for SSL.||
+
+### Note On Logger
+
+The passed in logger is expected to conform to the Log4j standard API.
+Internally, [abstract-logging](https://www.npmjs.com/packages/abstract-logging) is
+used to implement the interface. As a result, no log messages will be generated
+unless an external logger is supplied.
+
+Known compatible loggers are:
+
++ [Bunyan](https://www.npmjs.com/package/bunyan)
++ [Pino](https://www.npmjs.com/package/pino)
 
 ## Properties on the server object
 

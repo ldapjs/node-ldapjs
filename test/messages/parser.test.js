@@ -1,13 +1,12 @@
 // Copyright 2014 Joyent, Inc.  All rights reserved.
 
 var test = require('tape').test;
-var bunyan = require('bunyan');
+var logger = require('abstract-logging');
 
 ///--- Globals
 
 var lib;
 var Parser;
-var LOG = bunyan.createLogger({name: 'ldapjs-test'});
 
 ///--- Tests
 test('load library', function (t) {
@@ -19,7 +18,7 @@ test('load library', function (t) {
 });
 
 test('wrong protocol error', function (t) {
-  var p = new Parser({log: LOG});
+  var p = new Parser({log: logger});
 
   p.once('error', function (err) {
     t.ok(err);
@@ -31,7 +30,7 @@ test('wrong protocol error', function (t) {
 });
 
 test('bad protocol op', function (t) {
-  var p = new Parser({log: LOG});
+  var p = new Parser({log: logger});
   var message = new lib.LDAPMessage({
     protocolOp: 254 // bogus (at least today)
   });
@@ -44,7 +43,7 @@ test('bad protocol op', function (t) {
 });
 
 test('bad message structure', function (t) {
-  var p = new Parser({log: LOG});
+  var p = new Parser({log: logger});
 
   // message with bogus structure
   var message = new lib.LDAPMessage({

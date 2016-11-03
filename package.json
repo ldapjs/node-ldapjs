@@ -29,12 +29,12 @@
     "node": ">=0.10"
   },
   "dependencies": {
+    "abstract-logging": "^1.0.0",
     "asn1": "0.2.3",
     "assert-plus": "^1.0.0",
-    "bunyan": "^1.8.3",
-    "dashdash": "^1.14.0",
     "backoff": "^2.5.0",
     "ldap-filter": "^0.2.2",
+    "dashdash": "^1.14.0",
     "once": "^1.4.0",
     "vasync": "^1.6.4",
     "verror": "^1.8.1"
@@ -49,7 +49,7 @@
     "tape": "^4.6.2"
   },
   "scripts": {
-        "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
-        "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
+    "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
+    "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
   }
 }
