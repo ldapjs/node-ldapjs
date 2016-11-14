@@ -34,7 +34,7 @@
     "bunyan": "^1.8.3",
     "dashdash": "^1.14.0",
     "backoff": "^2.5.0",
-    "ldap-filter": "0.2.2",
+    "ldap-filter": "0.3.3",
     "once": "^1.4.0",
     "vasync": "^1.6.4",
     "verror": "^1.8.1"
