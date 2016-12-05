@@ -322,6 +322,14 @@ test('simple bind success', function (t) {
   });
 });
 
+test('simple anonymous bind (empty credentials)', function (t) {
+  client.bind('', '', function (err, res) {
+    t.ifError(err);
+    t.ok(res);
+    t.equal(res.status, 0);
+    t.end();
+  });
+});
 
 test('simple anonymous bind (empty credentials)', function (t) {
   client.bind('', '', function (err, res) {
