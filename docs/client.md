@@ -156,9 +156,11 @@ A `Change` object maps to the LDAP protocol of a modify change, and requires you
 to set the `operation` and `modification`.  The `operation` is a string, and
 must be one of:
 
-||replace||Replaces the attribute referenced in `modification`.  If the modification has no values, it is equivalent to a delete.||
-||add||Adds the attribute value(s) referenced in `modification`.  The attribute may or may not already exist.||
-||delete||Deletes the attribute (and all values) referenced in `modification`.||
+| Operation | Description |
+|-----------|-------------|
+| replace   | Replaces the attribute referenced in `modification`.  If the modification has no values, it is equivalent to a delete. |
+| add       | Adds the attribute value(s) referenced in `modification`.  The attribute may or may not already exist. |
+| delete    | Deletes the attribute (and all values) referenced in `modification`. |
 
 `modification` is just a plain old JS object with the values you want.
 
