@@ -53,7 +53,7 @@ available.
 Example:
 
      server.listen(389, '127.0.0.1', function() {
-       console.log(LDAP server listening at: ' + server.url);
+       console.log('LDAP server listening at: ' + server.url);
      });
 
 
