@@ -16,9 +16,11 @@ The code to create a new server looks like:
 
 The full list of options is:
 
-||log||You can optionally pass in a bunyan instance the client will use to acquire a logger.||
-||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.||
-||key||A PEM-encoded private key that corresponds to _certificate_ for SSL.||
+|             |                                                                                       |
+| ---         | ---                                                                                   |
+| log         | You can optionally pass in a bunyan instance the client will use to acquire a logger. |
+| certificate | A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.           |
+| key         | A PEM-encoded private key that corresponds to _certificate_ for SSL.                  |
 
 ## Properties on the server object
 
