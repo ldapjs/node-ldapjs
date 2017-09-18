@@ -40,7 +40,7 @@
     "verror": "^1.8.1"
   },
   "optionalDependencies": {
-    "dtrace-provider": "^0.7.0"
+    "dtrace-provider": "^0.8.0"
   },
   "devDependencies": {
     "node-uuid": "^1.4.7",
