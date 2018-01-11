@@ -1,5 +1,9 @@
 # ldapjs Changelog
 
+## 1.0.2
+
+- Update dtrace-provider dependency
+
 ## 1.0.1
 
 - Update dependencies

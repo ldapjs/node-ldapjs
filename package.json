@@ -14,7 +14,7 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -40,7 +40,7 @@
     "verror": "^1.8.1"
   },
   "optionalDependencies": {
-    "dtrace-provider": "^0.7.0"
+    "dtrace-provider": "~0.8"
   },
   "devDependencies": {
     "node-uuid": "^1.4.7",
