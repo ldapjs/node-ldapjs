@@ -2,8 +2,8 @@
 
 [!['Build status'][travis_image_url]][travis_page_url]
 
-[travis_image_url]: https://api.travis-ci.org/mcavage/node-ldapjs.svg
-[travis_page_url]: https://travis-ci.org/mcavage/node-ldapjs
+[travis_image_url]: https://api.travis-ci.org/joyent/node-ldapjs.svg
+[travis_page_url]: https://travis-ci.org/joyent/node-ldapjs
 
 LDAPjs makes the LDAP protocol a first class citizen in Node.js.
 
