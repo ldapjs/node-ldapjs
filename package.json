@@ -39,9 +39,6 @@
     "vasync": "^1.6.4",
     "verror": "^1.8.1"
   },
-  "optionalDependencies": {
-    "dtrace-provider": "~0.8"
-  },
   "devDependencies": {
     "node-uuid": "^1.4.7",
     "faucet": "0.0.1",

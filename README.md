@@ -45,6 +45,8 @@ client on your system:
 
     npm install ldapjs
 
+DTrace support is included in ldapjs. To enable it, `npm install dtrace-provider`
+
 ## License
 
 MIT.
