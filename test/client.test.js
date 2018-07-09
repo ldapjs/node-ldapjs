@@ -1238,6 +1238,37 @@ test('unbind (GH-30)', function (t) {
   });
 });
 
+test('unbind (GH-483) - Call unbind callback when socket is connected', function (t) {
+  var clt = ldap.createClient({
+    socketPath: SOCKET,
+    reconnect: true,
+    log: LOG
+  });
+
+  clt.on('setup', function (sclt, cb) {
+    sclt.bind(BIND_DN, BIND_PW, function (err, res) {
+      t.ifError(err);
+      cb(err);
+    });
+  });
+
+  clt.once('connect', function () {
+    t.ok(clt._socket);
+
+    var callbackCalled = false;
+
+    clt.unbind(function (err) {
+      t.ifError(err);
+      t.end();
+      callbackCalled = true;
+    });
+
+    setImmediate(function () {
+      t.ok(true, 'Checking unbind callback status');
+      t.ok(callbackCalled, 'should have called unbind callback');
+    });
+  });
+});
 
 test('shutdown', function (t) {
   server.on('close', function () {
