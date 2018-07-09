@@ -1232,7 +1232,12 @@ test('resultError handling', function (t) {
 
 
 test('unbind (GH-30)', function (t) {
-  client.unbind(function (err) {
+  var clt = ldap.createClient({
+    socketPath: SOCKET,
+    log: LOG
+  });
+
+  clt.unbind(function (err) {
     t.ifError(err);
     t.end();
   });
@@ -1265,6 +1270,7 @@ test('unbind (GH-483) - Call unbind callback when socket is connected', function
     setImmediate(function () {
       t.ok(true, 'Checking unbind callback status');
       t.ok(callbackCalled, 'should have called unbind callback');
+      t.end();
     });
   });
 });
