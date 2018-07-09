@@ -1259,7 +1259,6 @@ test('unbind (GH-483) - Call unbind callback when socket is connected', function
 
     clt.unbind(function (err) {
       t.ifError(err);
-      t.end();
       callbackCalled = true;
     });
 
