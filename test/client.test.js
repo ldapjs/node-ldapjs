@@ -1265,7 +1265,6 @@ test('unbind (GH-483) - Call unbind callback when socket is connected', function
     setImmediate(function () {
       t.ok(true, 'Checking unbind callback status');
       t.ok(callbackCalled, 'should have called unbind callback');
-      t.end();
     });
   });
 });
