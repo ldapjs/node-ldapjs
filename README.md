@@ -1,3 +1,12 @@
+#DigitalArsenal Fork of LDAPjs
+
+##Purpose
+
+We started this fork as the original appears abandoned and we need support for Node 10 (and later).
+
+Pull requests welcome.
+
+
 # LDAPjs
 
 [!['Build status'][travis_image_url]][travis_page_url]
