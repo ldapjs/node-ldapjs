@@ -1,6 +1,6 @@
-#DigitalArsenal Fork of LDAPjs
+# DigitalArsenal Fork of LDAPjs
 
-##Purpose
+## Purpose
 
 We started this fork as the original appears abandoned and we need support for Node 10 (and later).
 
