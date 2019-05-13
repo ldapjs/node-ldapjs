@@ -3,7 +3,7 @@
 var Logger = require('bunyan');
 
 var test = require('tape').test;
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var vasync = require('vasync');
 var util = require('util');
 

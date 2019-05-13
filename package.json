@@ -31,11 +31,12 @@
   "dependencies": {
     "asn1": "0.2.3",
     "assert-plus": "^1.0.0",
+    "backoff": "^2.5.0",
     "bunyan": "^1.8.3",
     "dashdash": "^1.14.0",
-    "backoff": "^2.5.0",
     "ldap-filter": "0.2.2",
     "once": "^1.4.0",
+    "uuid": "^3.3.2",
     "vasync": "^1.6.4",
     "verror": "^1.8.1"
   },
@@ -43,13 +44,12 @@
     "dtrace-provider": "~0.8"
   },
   "devDependencies": {
-    "node-uuid": "^1.4.7",
     "faucet": "0.0.1",
     "istanbul": "^0.4.5",
     "tape": "^4.6.2"
   },
   "scripts": {
-        "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
-        "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
+    "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
+    "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
   }
 }
