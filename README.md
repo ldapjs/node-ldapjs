@@ -1,4 +1,9 @@
-# DigitalArsenal Fork of LDAPjs
+# DigitalArsenal fork of LDAPjs
+
+[!['Build status'][travis_image_url]][travis_page_url]
+
+[travis_image_url]: https://travis-ci.com/DigitalArsenal/node-ldapjs.svg
+[travis_page_url]: https://travis-ci.com/DigitalArsenal/node-ldapjs
 
 ## Purpose
 
@@ -8,11 +13,6 @@ Pull requests welcome.
 
 
 # LDAPjs
-
-[!['Build status'][travis_image_url]][travis_page_url]
-
-[travis_image_url]: https://travis-ci.com/DigitalArsenal/node-ldapjs.svg
-[travis_page_url]: https://travis-ci.com/DigitalArsenal/node-ldapjs
 
 LDAPjs makes the LDAP protocol a first class citizen in Node.js.
 
