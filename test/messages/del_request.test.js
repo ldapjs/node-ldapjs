@@ -2,7 +2,7 @@
 
 
 var asn1 = require('asn1');
-var Logger = require('bunyan');
+var logger = Object.create(require('abstract-logging'));
 var test = require('tape').test;
 
 
@@ -45,7 +45,7 @@ test('parse', function (t) {
   ber.writeString('cn=test', 0x4a);
 
   var req = new DeleteRequest({
-    log: new Logger({name: 'del_request.test.js'})
+    log: logger
   });
   var reader = new BerReader(ber.buffer);
   reader.readSequence(0x4a);

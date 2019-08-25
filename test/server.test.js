@@ -1,6 +1,6 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
-var Logger = require('bunyan');
+var logger = Object.create(require('abstract-logging'));
 
 var test = require('tape').test;
 var uuid = require('node-uuid');

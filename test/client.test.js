@@ -1,6 +1,6 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
-var Logger = require('bunyan');
+var logger = Object.create(require('abstract-logging'));
 
 var test = require('tape').test;
 var uuid = require('node-uuid');
@@ -15,14 +15,6 @@ var BIND_PW = 'secret';
 var SOCKET = '/tmp/.' + uuid();
 
 var SUFFIX = 'dc=test';
-
-var LOG = new Logger({
-  name: 'ldapjs_unit_test',
-  stream: process.stderr,
-  level: (process.env.LOG_LEVEL || 'info'),
-  serializers: Logger.stdSerializers,
-  src: true
-});
 
 var ldap;
 var Attribute;
@@ -288,7 +280,7 @@ test('setup', function (t) {
     client = ldap.createClient({
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
-      log: LOG
+      log: logger
     });
     t.ok(client);
     t.end();
@@ -338,7 +330,7 @@ test('auto-bind bad credentials', function (t) {
     socketPath: SOCKET,
     bindDN: BIND_DN,
     bindCredentials: 'totallybogus',
-    log: LOG
+    log: logger
   });
   clt.once('error', function (err) {
     t.equal(err.code, ldap.LDAP_INVALID_CREDENTIALS);
@@ -353,7 +345,7 @@ test('auto-bind success', function (t) {
     socketPath: SOCKET,
     bindDN: BIND_DN,
     bindCredentials: BIND_PW,
-    log: LOG
+    log: logger
   });
   clt.once('connect', function () {
     t.ok(clt);
@@ -978,7 +970,7 @@ test('setup action', function (t) {
   var setupClient = ldap.createClient({
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
-      log: LOG
+      log: logger
     });
   setupClient.on('setup', function (clt, cb) {
     clt.bind(BIND_DN, BIND_PW, function (err, res) {
@@ -1002,7 +994,7 @@ test('setup reconnect', function (t) {
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
       reconnect: true,
-      log: LOG
+      log: logger
     });
   rClient.on('setup', function (clt, cb) {
     clt.bind(BIND_DN, BIND_PW, function (err, res) {
@@ -1059,7 +1051,7 @@ test('setup abort', function (t) {
       connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
       socketPath: SOCKET,
       reconnect: true,
-      log: LOG
+      log: logger
     });
   var message = 'It\'s a trap!';
   setupClient.on('setup', function (clt, cb) {
@@ -1081,7 +1073,7 @@ test('abort reconnect', function (t) {
     connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
     socketPath: '/dev/null',
     reconnect: true,
-    log: LOG
+    log: logger
   });
   var retryCount = 0;
   abortClient.on('connectError', function () {
@@ -1109,7 +1101,7 @@ test('reconnect max retries', function (t) {
       initialDelay: 10,
       maxDelay: 100
     },
-    log: LOG
+    log: logger
   });
   var count = 0;
   rClient.on('connectError', function () {
@@ -1127,7 +1119,7 @@ test('reconnect on server close', function (t) {
   var clt = ldap.createClient({
     socketPath: SOCKET,
     reconnect: true,
-    log: LOG
+    log: logger
   });
   clt.on('setup', function (sclt, cb) {
     sclt.bind(BIND_DN, BIND_PW, function (err, res) {
@@ -1153,7 +1145,7 @@ test('no auto-reconnect on unbind', function (t) {
   var clt = ldap.createClient({
     socketPath: SOCKET,
     reconnect: true,
-    log: LOG
+    log: logger
   });
   clt.on('setup', function (sclt, cb) {
     sclt.bind(BIND_DN, BIND_PW, function (err, res) {
