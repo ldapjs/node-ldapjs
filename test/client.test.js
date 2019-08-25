@@ -3,7 +3,7 @@
 var logger = Object.create(require('abstract-logging'));
 
 var test = require('tape').test;
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var vasync = require('vasync');
 var util = require('util');
 
@@ -12,7 +12,7 @@ var util = require('util');
 
 var BIND_DN = 'cn=root';
 var BIND_PW = 'secret';
-var SOCKET = '/tmp/.' + uuid();
+var SOCKET = process.platform === 'win32' ? '\\\\.\\pipe\\' + uuid() : '/tmp/.' + uuid();
 
 var SUFFIX = 'dc=test';
 
