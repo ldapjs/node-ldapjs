@@ -1,7 +1,7 @@
 // Copyright 2014 Joyent, Inc.  All rights reserved.
 
 var test = require('tape').test;
-var logger = require('abstract-logging');
+var logger = Object.create(require('abstract-logging'));
 
 ///--- Globals
 

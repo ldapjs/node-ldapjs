@@ -2,7 +2,7 @@
 
 
 var asn1 = require('asn1');
-var logger = require('abstract-logging');
+var logger = Object.create(require('abstract-logging'));
 var test = require('tape').test;
 
 
