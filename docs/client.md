@@ -387,6 +387,13 @@ Example:
 
 Performs an unbind operation against the LDAP server.
 
+Note that unbind operation is not an opposite operation
+for bind. Unbinding results in disconnecting the client
+regardless of whether a bind operation was performed.
+
+The `callback` argument is optional as unbind does
+not have a response.
+
 Example:
 
     client.unbind(function(err) {
