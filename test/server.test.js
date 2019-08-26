@@ -310,4 +310,32 @@ test('non-strict routing', function (t) {
       });
     });
   });
+
+  test('close accept a callback', function (t) {
+    server = ldap.createServer();
+    // callback is called when the server is closed
+    server.close(function(err){
+      t.end();
+    });
+  });
+
+  test('close without error calls callback', function (t) {
+    server = ldap.createServer();
+    // when the server is closed without error, the callback parameter is undefined
+    server.listen(389,'127.0.0.1',function(err){
+      server.close(function(err){
+        t.error(err);
+        t.end();
+      });
+    });
+  });
+
+  test('close passes error to callback', function (t) {
+    server = ldap.createServer();
+    // when the server is closed with an error, the error is the first parameter of the callback
+    server.close(function(err){
+      t.ok(err);
+      t.end();
+    });
+  });
 });
