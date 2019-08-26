@@ -32,12 +32,21 @@ client is:
 |tlsOptions     |Additional options passed to TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
 |idleTimeout    |Milliseconds after last activity before client emits idle event|
 |strictDN       |Force strict DN parsing for client methods (Default is true)|
+|reconnect      |Try to reconnect when the connection gets lost (Default is false)|
 
 ## Connection management
 
 As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
 down from underneath you can be difficult to deal with. Several mechanisms
 have been provided to mitigate this trouble.
+
+### Reconnect
+
+You can provide a Boolean option indicating if a reconnect should be tried. For
+more sophisticated control, you can provide an Object with the properties
+`initialDelay` (default: `100`), `maxDelay` (default: `10000`) and
+`failAfter` (default: `Infinity`).
+After the reconnect you maybe need to [bind](#bind) again.
 
 
 ## Common patterns
