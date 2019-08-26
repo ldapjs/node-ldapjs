@@ -3,7 +3,7 @@
 var logger = Object.create(require('abstract-logging'));
 
 var test = require('tape').test;
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var vasync = require('vasync');
 
 

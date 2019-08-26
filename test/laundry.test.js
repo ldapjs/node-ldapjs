@@ -1,14 +1,14 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
 var test = require('tape').test;
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 var ldap = require('../lib/index');
 
 
 ///--- Globals
 
-var SOCKET = '/tmp/.' + uuid();
+var SOCKET = process.platform === 'win32' ? '\\\\.\\pipe\\' + uuid() : '/tmp/.' + uuid();
 var SUFFIX = 'dc=' + uuid();
 
 var client;

@@ -40,10 +40,10 @@
     "verror": "^1.8.1"
   },
   "devDependencies": {
-    "node-uuid": "^1.4.7",
     "faucet": "0.0.1",
     "istanbul": "^0.4.5",
-    "tape": "^4.6.2"
+    "tape": "^4.6.2",
+    "uuid": "^3.3.3"
   },
   "scripts": {
     "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
