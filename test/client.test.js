@@ -506,6 +506,22 @@ test('modify change plain object success', function (t) {
 });
 
 
+// https://github.com/ldapjs/node-ldapjs/pull/435
+test('can delete attributes', function (t) {
+  try {
+    var change = new Change({
+      type: 'Delete',
+      modification: { cn: null }
+    });
+    t.ok(true);
+    t.end();
+  } catch (err) {
+    t.ifError(err);
+    t.end();
+  }
+});
+
+
 test('modify array success', function (t) {
   var changes = [
     new Change({
