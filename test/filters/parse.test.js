@@ -52,28 +52,6 @@ test(') in filter', function (t) {
 });
 
 
-test('( in filter', function (t) {
-  var str = 'foo(bar=baz\\()';
-  var f = parse(str);
-  t.ok(f);
-  t.equal(f.attribute, 'foo(bar');
-  t.equal(f.value, 'baz()');
-  t.equal(f.toString(), '(foo\\28bar=baz\\28\\29)');
-  t.end();
-});
-
-
-test('( in filter', function (t) {
-  var str = 'foo)(&(bar=baz)(';
-  var f = parse(str);
-  t.ok(f);
-  t.equal(f.attribute, 'foo)(&(bar');
-  t.equal(f.value, 'baz)(');
-  t.equal(f.toString(), '(foo\\29\\28&\\28bar=baz\\29\\28)');
-  t.end();
-});
-
-
 test('\\ in filter', function (t) {
   var str = '(foo=bar\\\\)';
   var f = parse(str);
