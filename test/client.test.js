@@ -334,6 +334,7 @@ test('auto-bind bad credentials', function (t) {
   });
   clt.once('error', function (err) {
     t.equal(err.code, ldap.LDAP_INVALID_CREDENTIALS);
+    t.ok(clt._socket.destroyed, 'expect socket to be destroyed');
     clt.destroy();
     t.end();
   });
