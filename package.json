@@ -40,13 +40,14 @@
     "verror": "^1.8.1"
   },
   "devDependencies": {
-    "faucet": "0.0.1",
-    "istanbul": "^0.4.5",
-    "tape": "^4.6.2",
+    "nyc": "^14.1.1",
+    "open-cli": "^5.0.0",
+    "tap-nyc": "^1.0.3",
+    "tape": "^4.11.0",
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
-    "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
+    "report": "nyc --reporter=lcov tape test/test.js | tap-nyc && open-cli ./coverage/lcov-report/index.html",
+    "test": "nyc tape test/test.js | tap-nyc"
   }
 }

@@ -9,7 +9,6 @@ function runTests(directory) {
   fs.readdir(directory, function (err, files) {
     assert.ifError(err);
 
-    console.dir(files);
     files.filter(function (f) {
       return (/\.test\.js$/.test(f));
     }).map(function (f) {
