@@ -36,7 +36,7 @@ client is:
 ## Connection management
 
 As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
-down from underneath you is can be difficult to deal with.  Several mechanisms
+down from underneath you can be difficult to deal with. Several mechanisms
 have been provided to mitigate this trouble.
 
 
