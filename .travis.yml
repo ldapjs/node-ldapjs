@@ -10,14 +10,6 @@ branches:
 
 language: node_js
 
-node_js:
-  - lts/*
-  - node
-
-os:
-  - linux
-  # - windows
-
 cache:
   npm: true
 
@@ -28,6 +20,13 @@ jobs:
   include:
     # - stage: lint ✨
     #   script: npm run lint
+    #   node_js: lts/*
 
     - stage: test 👩🏽‍💻
       script: npm run test:cov
+      node_js: node
+    - node_js: lts/*
+    # - os: windows
+    #   node_js: node
+    # - os: windows
+    #   node_js: lts/*
