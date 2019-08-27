@@ -36,12 +36,12 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "test": "tap --no-cov 'test/**/*.test.js'",
-    "test:cov": "tap 'test/**/*.test.js'",
-    "test:cov:html": "tap --coverage-report=html 'test/**/*.test.js'",
-    "test:watch": "tap -n -w --no-coverage-report 'test/**/*.test.js'",
-    "lint": "standard 'examples/**/*.js' 'lib/**/*.js' 'test/**/*.js' | snazzy",
-    "lint:ci": "standard 'examples/**/*.js' 'lib/**/*.js' 'test/**/*.js'"
+    "test": "tap --no-cov test/**/*.test.js",
+    "test:cov": "tap test/**/*.test.js",
+    "test:cov:html": "tap --coverage-report=html test/**/*.test.js",
+    "test:watch": "tap -n -w --no-coverage-report test/**/*.test.js",
+    "lint": "standard examples/**/*.js lib/**/*.js test/**/*.js | snazzy",
+    "lint:ci": "standard examples/**/*.js lib/**/*.js test/**/*.js"
   },
   "husky": {
     "hooks": {

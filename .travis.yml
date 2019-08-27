@@ -24,10 +24,18 @@ jobs:
       node_js: lts/*
 
     - stage: test 👩🏽‍💻
+      os: linux
       script: npm run test:cov
       node_js: node
-    - node_js: lts/*
-    # - os: windows
-    #   node_js: node
-    # - os: windows
-    #   node_js: lts/*
+
+    - os: linux
+      script: npm run test:cov
+      node_js: lts/*
+
+    - os: windows
+      script: npm run test:cov
+      node_js: node
+
+    - os: windows
+      script: npm run test:cov
+      node_js: lts/*
