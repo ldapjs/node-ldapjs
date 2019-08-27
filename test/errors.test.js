@@ -1,7 +1,14 @@
 'use strict'
 
 const { test } = require('tap')
-const { LDAPError, ConnectionError, AbandonedError, TimeoutError, LDAP_OTHER } = require('../lib')
+const {
+  LDAPError,
+  ConnectionError,
+  AbandonedError,
+  TimeoutError,
+  ConstraintViolationError,
+  LDAP_OTHER
+} = require('../lib')
 
 test('basic error', function (t) {
   const msg = 'mymsg'
@@ -9,6 +16,17 @@ test('basic error', function (t) {
   t.ok(err)
   t.equal(err.name, 'LDAPError')
   t.equal(err.code, LDAP_OTHER)
+  t.equal(err.dn, '')
+  t.equal(err.message, msg)
+  t.end()
+})
+
+test('exports ConstraintViolationError', function (t) {
+  const msg = 'mymsg'
+  const err = new ConstraintViolationError(msg, null, null)
+  t.ok(err)
+  t.equal(err.name, 'ConstraintViolationError')
+  t.equal(err.code, 19)
   t.equal(err.dn, '')
   t.equal(err.message, msg)
   t.end()
