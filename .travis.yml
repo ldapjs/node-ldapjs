@@ -19,9 +19,9 @@ stages:
 
 jobs:
   include:
-    # - stage: lint ✨
-    #   script: npm run lint
-    #   node_js: lts/*
+    - stage: lint ✨
+      script: npm run lint:ci
+      node_js: lts/*
 
     - stage: test 👩🏽‍💻
       script: npm run test:cov
