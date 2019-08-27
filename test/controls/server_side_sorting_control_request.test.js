@@ -1,5 +1,5 @@
 
-var test = require('tape').test;
+var test = require('tap').test;
 
 var asn1 = require('asn1');
 

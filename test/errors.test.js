@@ -1,6 +1,6 @@
 // Copyright 2015 Joyent, Inc.
 
-var test = require('tape').test;
+var test = require('tap').test;
 
 var ldap = require('../lib/index');
 

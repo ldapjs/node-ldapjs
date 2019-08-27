@@ -2,7 +2,7 @@
 
 var logger = Object.create(require('abstract-logging'));
 
-var test = require('tape').test;
+var test = require('tap').test;
 var uuid = require('uuid');
 var vasync = require('vasync');
 var util = require('util');
@@ -642,10 +642,12 @@ test('search sizeLimit', function (t) {
       res.on('error', t2.ifError.bind(t));
     });
   });
+
+  t.end()
 });
 
 
-test('search paged', function (t) {
+test('search paged', {timeout: 10000}, function (t) {
   t.test('paged - no pauses', function (t2) {
     var countEntries = 0;
     var countPages = 0;
