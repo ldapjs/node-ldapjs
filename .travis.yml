@@ -10,7 +10,7 @@ branches:
 
 language: node_js
 
-node_versions: &versions
+node_js:
   - lts/*
   - node
 
@@ -21,6 +21,9 @@ os:
 cache:
   npm: true
 
+stages:
+  - test
+
 jobs:
   include:
     # - stage: lint ✨
@@ -28,4 +31,3 @@ jobs:
 
     - stage: test 👩🏽‍💻
       script: npm run test:cov
-      node_js: *versions
