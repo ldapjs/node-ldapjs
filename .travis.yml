@@ -27,5 +27,5 @@ jobs:
     #   script: npm run lint
 
     - stage: test 👩🏽‍💻
-      script: npm test:cov
+      script: npm run test:cov
       node_js: *versions
