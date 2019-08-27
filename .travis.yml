@@ -10,10 +10,6 @@ branches:
 
 language: node_js
 
-os:
-  - linux
-  # - windows
-
 cache:
   npm: true
 
@@ -30,3 +26,7 @@ jobs:
       script: npm run test:cov
       node_js: node
     - node_js: lts/*
+    # - os: windows
+    #   node_js: node
+    # - os: windows
+    #   node_js: lts/*
