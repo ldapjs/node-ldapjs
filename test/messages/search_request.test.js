@@ -1,39 +1,16 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-var SearchRequest;
-var EqualityFilter;
-var dn;
-
-///--- Tests
-
-test('load library', function (t) {
-  SearchRequest = require('../../lib/index').SearchRequest;
-  EqualityFilter = require('../../lib/index').EqualityFilter;
-  dn = require('../../lib/index').dn;
-  t.ok(SearchRequest);
-  t.ok(EqualityFilter);
-  t.ok(dn);
-  t.end();
-});
-
+const { test } = require('tap');
+const { BerReader, BerWriter } = require('asn1');
+const { SearchRequest, EqualityFilter, dn } = require('../../lib');
 
 test('new no args', function (t) {
   t.ok(new SearchRequest());
   t.end();
 });
 
-
 test('new with args', function (t) {
-  var req = new SearchRequest({
+  const req = new SearchRequest({
     baseObject: dn.parse('cn=foo, o=test'),
     filter: new EqualityFilter({
       attribute: 'email',
@@ -50,14 +27,13 @@ test('new with args', function (t) {
   t.end();
 });
 
-
 test('parse', function (t) {
-  var f = new EqualityFilter({
+  const f = new EqualityFilter({
     attribute: 'email',
     value: 'foo@bar.com'
   });
 
-  var ber = new BerWriter();
+  let ber = new BerWriter();
   ber.writeString('cn=foo, o=test');
   ber.writeEnumeration(0);
   ber.writeEnumeration(0);
@@ -66,7 +42,7 @@ test('parse', function (t) {
   ber.writeBoolean(false);
   ber = f.toBer(ber);
 
-  var req = new SearchRequest();
+  const req = new SearchRequest();
   t.ok(req._parse(new BerReader(ber.buffer)));
   t.equal(req.dn.toString(), 'cn=foo, o=test');
   t.equal(req.scope, 'base');
@@ -79,9 +55,8 @@ test('parse', function (t) {
   t.end();
 });
 
-
 test('toBer', function (t) {
-  var req = new SearchRequest({
+  const req = new SearchRequest({
     messageID: 123,
     baseObject: dn.parse('cn=foo, o=test'),
     scope: 1,
@@ -98,7 +73,7 @@ test('toBer', function (t) {
 
   t.ok(req);
 
-  var ber = new BerReader(req.toBer());
+  const ber = new BerReader(req.toBer());
   t.ok(ber);
   t.equal(ber.readSequence(), 0x30);
   t.equal(ber.readInt(), 123);

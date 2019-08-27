@@ -1,14 +1,11 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var parse = require('../../lib/index').parseFilter;
-
-
+const { test } = require('tap');
+const { parseFilter: parse } = require('../../lib');
 
 test('GH-48 XML Strings in filter', function (t) {
-  var str = '(&(CentralUIEnrollments=\\<mydoc\\>*)(objectClass=User))';
-  var f = parse(str);
+  const str = '(&(CentralUIEnrollments=\\<mydoc\\>*)(objectClass=User))';
+  const f = parse(str);
   t.ok(f);
   t.ok(f.filters);
   t.equal(f.filters.length, 2);
@@ -18,11 +15,10 @@ test('GH-48 XML Strings in filter', function (t) {
   t.end();
 });
 
-
 test('GH-50 = in filter', function (t) {
-  var str = '(uniquemember=uuid=930896af-bf8c-48d4-885c-6573a94b1853, ' +
+  const str = '(uniquemember=uuid=930896af-bf8c-48d4-885c-6573a94b1853, ' +
     'ou=users, o=smartdc)';
-  var f = parse(str);
+  const f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'uniquemember');
   t.equal(f.value,
@@ -30,10 +26,9 @@ test('GH-50 = in filter', function (t) {
   t.end();
 });
 
-
 test('( in filter', function (t) {
-  var str = '(foo=bar\\()';
-  var f = parse(str);
+  const str = '(foo=bar\\()';
+  const f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
   t.equal(f.value, 'bar(');
@@ -42,8 +37,8 @@ test('( in filter', function (t) {
 });
 
 test(') in filter', function (t) {
-  var str = '(foo=bar\\))';
-  var f = parse(str);
+  const str = '(foo=bar\\))';
+  const f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
   t.equal(f.value, 'bar)');
@@ -51,10 +46,9 @@ test(') in filter', function (t) {
   t.end();
 });
 
-
 test('\\ in filter', function (t) {
-  var str = '(foo=bar\\\\)';
-  var f = parse(str);
+  const str = '(foo=bar\\\\)';
+  const f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
   t.equal(f.value, 'bar\\');
@@ -62,10 +56,9 @@ test('\\ in filter', function (t) {
   t.end();
 });
 
-
 test('* in equality filter', function (t) {
-  var str = '(foo=bar\\*)';
-  var f = parse(str);
+  const str = '(foo=bar\\*)';
+  const f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
   t.equal(f.value, 'bar*');
@@ -73,10 +66,9 @@ test('* in equality filter', function (t) {
   t.end();
 });
 
-
 test('* substr filter (prefix)', function (t) {
-  var str = '(foo=bar*)';
-  var f = parse(str);
+  const str = '(foo=bar*)';
+  const f = parse(str);
   t.ok(f);
   t.equal(f.attribute, 'foo');
   t.equal(f.initial, 'bar');
@@ -84,10 +76,9 @@ test('* substr filter (prefix)', function (t) {
   t.end();
 });
 
-
 test('GH-53 NotFilter', function (t) {
-  var str = '(&(objectClass=person)(!(objectClass=shadowAccount)))';
-  var f = parse(str);
+  const str = '(&(objectClass=person)(!(objectClass=shadowAccount)))';
+  const f = parse(str);
   t.ok(f);
   t.equal(f.type, 'and');
   t.equal(f.filters.length, 2);
@@ -99,16 +90,14 @@ test('GH-53 NotFilter', function (t) {
   t.end();
 });
 
-
 test('presence filter', function (t) {
-  var f = parse('(foo=*)');
+  const f = parse('(foo=*)');
   t.ok(f);
   t.equal(f.type, 'present');
   t.equal(f.attribute, 'foo');
   t.equal(f.toString(), '(foo=*)');
   t.end();
 });
-
 
 test('bogus filter', function (t) {
   t.throws(function () {
@@ -117,14 +106,12 @@ test('bogus filter', function (t) {
   t.end();
 });
 
-
 test('bogus filter !=', function (t) {
   t.throws(function () {
     parse('foo!=1');
   });
   t.end();
 });
-
 
 test('mismatched parens', function (t) {
   t.throws(function () {

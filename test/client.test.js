@@ -1,44 +1,23 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var logger = Object.create(require('abstract-logging'));
+const util = require('util');
+const tap = require('tap');
+const uuid = require('uuid');
+const vasync = require('vasync');
+const { getSock } = require('./utils');
+const ldap = require('../lib');
+const { Attribute, Change } = ldap;
 
-var test = require('tap').test;
-var uuid = require('uuid');
-var vasync = require('vasync');
-var util = require('util');
+const SUFFIX = 'dc=test';
+const LDAP_CONNECT_TIMEOUT = process.env.LDAP_CONNECT_TIMEOUT || 0;
+const BIND_DN = 'cn=root';
+const BIND_PW = 'secret';
 
+tap.beforeEach((done, t) => {
+  t.context.socketPath = getSock();
+  t.context.server = ldap.createServer();
 
-///--- Globals
-
-var BIND_DN = 'cn=root';
-var BIND_PW = 'secret';
-var SOCKET = process.platform === 'win32' ? '\\\\.\\pipe\\' + uuid() : '/tmp/.' + uuid();
-
-var SUFFIX = 'dc=test';
-
-var ldap;
-var Attribute;
-var Change;
-var client;
-var server;
-
-
-///--- Tests
-
-test('setup', function (t) {
-  ldap = require('../lib/index');
-  t.ok(ldap);
-  t.ok(ldap.createClient);
-  t.ok(ldap.createServer);
-  t.ok(ldap.Attribute);
-  t.ok(ldap.Change);
-
-  Attribute = ldap.Attribute;
-  Change = ldap.Change;
-
-  server = ldap.createServer();
-  t.ok(server);
-
+  const server = t.context.server;
   server.bind(BIND_DN, function (req, res, next) {
     if (req.credentials !== BIND_PW)
       return next(new ldap.InvalidCredentialsError('Invalid password'));
@@ -95,11 +74,10 @@ test('setup', function (t) {
   });
 
   server.search('dc=timeout', function (req, res, next) {
-    // Haha client!
+    // Cause the client to timeout by not sending a response.
   });
 
   server.search(SUFFIX, function (req, res, next) {
-
     if (req.dn.equals('cn=ref,' + SUFFIX)) {
       res.send(res.createSearchReference('ldap://localhost'));
     } else if (req.dn.equals('cn=bin,' + SUFFIX)) {
@@ -107,7 +85,7 @@ test('setup', function (t) {
         objectName: req.dn,
         attributes: {
           'foo;binary': 'wr0gKyDCvCA9IMK+',
-          'gb18030': new Buffer([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]),
+          'gb18030': Buffer.from([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]),
           'objectclass': 'binary'
         }
       }));
@@ -123,15 +101,13 @@ test('setup', function (t) {
       res.send(e);
     }
 
-
     res.end();
     return next();
   });
 
   server.search('cn=sizelimit', function (req, res, next) {
-    var sizeLimit = 200;
-    var i;
-    for (i = 0; i < 1000; i++) {
+    const sizeLimit = 200;
+    for (let i = 0; i < 1000; i++) {
       if (req.sizeLimit > 0 && i >= req.sizeLimit) {
         break;
       } else if (i > sizeLimit) {
@@ -151,13 +127,13 @@ test('setup', function (t) {
   });
 
   server.search('cn=paged', function (req, res, next) {
-    var min = 0;
-    var max = 1000;
+    const min = 0;
+    const max = 1000;
 
     function sendResults(start, end) {
       start = (start < min) ? min : start;
       end = (end > max || end < min) ? max : end;
-      var i;
+      let i;
       for (i = start; i < end; i++) {
         res.send({
           dn: util.format('o=%d, cn=paged', i),
@@ -170,8 +146,8 @@ test('setup', function (t) {
       return i;
     }
 
-    var cookie = null;
-    var pageSize = 0;
+    let cookie = null;
+    let pageSize = 0;
     req.controls.forEach(function (control) {
       if (control.type === ldap.PagedResultsControl.OID) {
         pageSize = control.value.size;
@@ -181,17 +157,17 @@ test('setup', function (t) {
 
     if (cookie && Buffer.isBuffer(cookie)) {
       // Do simple paging
-      var first = min;
+      let first = min;
       if (cookie.length !== 0) {
         first = parseInt(cookie.toString(), 10);
       }
-      var last = sendResults(first, first + pageSize);
+      const last = sendResults(first, first + pageSize);
 
-      var resultCookie;
+      let resultCookie;
       if (last < max) {
-        resultCookie = new Buffer(last.toString());
+        resultCookie = Buffer.from(last.toString());
       } else {
-        resultCookie = new Buffer('');
+        resultCookie = Buffer.from('');
       }
       res.controls.push(new ldap.PagedResultsControl({
         value: {
@@ -208,7 +184,7 @@ test('setup', function (t) {
   });
 
   server.search('cn=pagederr', function (req, res, next) {
-    var cookie = null;
+    let cookie = null;
     req.controls.forEach(function (control) {
       if (control.type === ldap.PagedResultsControl.OID) {
         cookie = control.value.cookie;
@@ -226,7 +202,7 @@ test('setup', function (t) {
         res.controls.push(new ldap.PagedResultsControl({
           value: {
             size: 2,
-            cookie: new Buffer('a')
+            cookie: Buffer.from('a')
           }
         }));
         res.end();
@@ -276,21 +252,25 @@ test('setup', function (t) {
     return next();
   });
 
-  server.listen(SOCKET, function () {
-    client = ldap.createClient({
-      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
-      socketPath: SOCKET,
-      log: logger
+  server.listen(t.context.socketPath, function () {
+    const client = ldap.createClient({
+      connectTimeout: parseInt(LDAP_CONNECT_TIMEOUT, 10),
+      socketPath: t.context.socketPath
     });
-    t.ok(client);
-    t.end();
-  });
+    t.context.client = client;
+    client.on('connect', () => done())
+  })
+})
 
-});
+tap.afterEach((done, t) => {
+  t.context.client.unbind((err) => {
+    t.error(err);
+    t.context.server.close(() => done());
+  })
+})
 
-
-test('simple bind failure', function (t) {
-  client.bind(BIND_DN, uuid(), function (err, res) {
+tap.test('simple bind failure', function (t) {
+  t.context.client.bind(BIND_DN, uuid(), function (err, res) {
     t.ok(err);
     t.notOk(res);
 
@@ -304,33 +284,29 @@ test('simple bind failure', function (t) {
   });
 });
 
-
-test('simple bind success', function (t) {
-  client.bind(BIND_DN, BIND_PW, function (err, res) {
-    t.ifError(err);
+tap.test('simple bind success', function (t) {
+  t.context.client.bind(BIND_DN, BIND_PW, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('simple anonymous bind (empty credentials)', function (t) {
-  client.bind('', '', function (err, res) {
-    t.ifError(err);
+tap.test('simple anonymous bind (empty credentials)', function (t) {
+  t.context.client.bind('', '', function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('auto-bind bad credentials', function (t) {
-  var clt = ldap.createClient({
-    socketPath: SOCKET,
+tap.test('auto-bind bad credentials', function (t) {
+  const clt = ldap.createClient({
+    socketPath: t.context.socketPath,
     bindDN: BIND_DN,
-    bindCredentials: 'totallybogus',
-    log: logger
+    bindCredentials: 'totallybogus'
   });
   clt.once('error', function (err) {
     t.equal(err.code, ldap.LDAP_INVALID_CREDENTIALS);
@@ -340,13 +316,11 @@ test('auto-bind bad credentials', function (t) {
   });
 });
 
-
-test('auto-bind success', function (t) {
-  var clt = ldap.createClient({
-    socketPath: SOCKET,
+tap.test('auto-bind success', function (t) {
+  const clt = ldap.createClient({
+    socketPath: t.context.socketPath,
     bindDN: BIND_DN,
-    bindCredentials: BIND_PW,
-    log: logger
+    bindCredentials: BIND_PW
   });
   clt.once('connect', function () {
     t.ok(clt);
@@ -355,65 +329,54 @@ test('auto-bind success', function (t) {
   });
 });
 
-
-test('add success', function (t) {
-  var attrs = [
+tap.test('add success', function (t) {
+  const attrs = [
     new Attribute({
       type: 'cn',
       vals: ['test']
     })
   ];
-  client.add('cn=add, ' + SUFFIX, attrs, function (err, res) {
-    t.ifError(err);
+  t.context.client.add('cn=add, ' + SUFFIX, attrs, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('add success with object', function (t) {
-  var entry = {
+tap.test('add success with object', function (t) {
+  const entry = {
     cn: ['unit', 'add'],
     sn: 'test'
   };
-  client.add('cn=add, ' + SUFFIX, entry, function (err, res) {
-    t.ifError(err);
+  t.context.client.add('cn=add, ' + SUFFIX, entry, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('compare success', function (t) {
-  client.compare('cn=compare, ' + SUFFIX, 'cn', 'test', function (err,
-                                                                 matched,
-                                                                 res) {
-    t.ifError(err);
+tap.test('compare success', function (t) {
+  t.context.client.compare('cn=compare, ' + SUFFIX, 'cn', 'test', function (err, matched, res) {
+    t.error(err);
     t.ok(matched);
     t.ok(res);
     t.end();
   });
 });
 
-
-test('compare false', function (t) {
-  client.compare('cn=compare, ' + SUFFIX, 'cn', 'foo', function (err,
-                                                                matched,
-                                                                res) {
-    t.ifError(err);
+tap.test('compare false', function (t) {
+  t.context.client.compare('cn=compare, ' + SUFFIX, 'cn', 'foo', function (err, matched, res) {
+    t.error(err);
     t.notOk(matched);
     t.ok(res);
     t.end();
   });
 });
 
-
-test('compare bad suffix', function (t) {
-  client.compare('cn=' + uuid(), 'cn', 'foo', function (err,
-                                                       matched,
-                                                       res) {
+tap.test('compare bad suffix', function (t) {
+  t.context.client.compare('cn=' + uuid(), 'cn', 'foo', function (err, matched, res) {
     t.ok(err);
     t.ok(err instanceof ldap.NoSuchObjectError);
     t.notOk(matched);
@@ -422,32 +385,29 @@ test('compare bad suffix', function (t) {
   });
 });
 
-
-test('delete success', function (t) {
-  client.del('cn=delete, ' + SUFFIX, function (err, res) {
-    t.ifError(err);
+tap.test('delete success', function (t) {
+  t.context.client.del('cn=delete, ' + SUFFIX, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.end();
   });
 });
 
-
-test('delete with control (GH-212)', function (t) {
-  var control = new ldap.Control({
+tap.test('delete with control (GH-212)', function (t) {
+  const control = new ldap.Control({
     type: '1.2.3.4',
     criticality: false
   });
-  client.del('cn=delete, ' + SUFFIX, control, function (err, res) {
-    t.ifError(err);
+  t.context.client.del('cn=delete, ' + SUFFIX, control, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.end();
   });
 });
 
-
-test('exop success', function (t) {
-  client.exop('1.3.6.1.4.1.4203.1.11.3', function (err, value, res) {
-    t.ifError(err);
+tap.test('exop success', function (t) {
+  t.context.client.exop('1.3.6.1.4.1.4203.1.11.3', function (err, value, res) {
+    t.error(err);
     t.ok(value);
     t.ok(res);
     t.equal(value, 'u:xxyyz@EXAMPLE.NET');
@@ -455,9 +415,8 @@ test('exop success', function (t) {
   });
 });
 
-
-test('exop invalid', function (t) {
-  client.exop('1.2.3.4', function (err, res) {
+tap.test('exop invalid', function (t) {
+  t.context.client.exop('1.2.3.4', function (err, res) {
     t.ok(err);
     t.ok(err instanceof ldap.ProtocolError);
     t.notOk(res);
@@ -465,66 +424,60 @@ test('exop invalid', function (t) {
   });
 });
 
-
-test('bogus exop (GH-17)', function (t) {
-  client.exop('cn=root', function (err, value) {
+tap.test('bogus exop (GH-17)', function (t) {
+  t.context.client.exop('cn=root', function (err) {
     t.ok(err);
     t.end();
   });
 });
 
-
-test('modify success', function (t) {
-  var change = new Change({
+tap.test('modify success', function (t) {
+  const change = new Change({
     type: 'Replace',
     modification: new Attribute({
       type: 'cn',
       vals: ['test']
     })
   });
-  client.modify('cn=modify, ' + SUFFIX, change, function (err, res) {
-    t.ifError(err);
+  t.context.client.modify('cn=modify, ' + SUFFIX, change, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('modify change plain object success', function (t) {
-  var change = new Change({
+tap.test('modify change plain object success', function (t) {
+  const change = new Change({
     type: 'Replace',
     modification: {
       cn: 'test'
     }
   });
-  client.modify('cn=modify, ' + SUFFIX, change, function (err, res) {
-    t.ifError(err);
+  t.context.client.modify('cn=modify, ' + SUFFIX, change, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
 // https://github.com/ldapjs/node-ldapjs/pull/435
-test('can delete attributes', function (t) {
-  try {
-    var change = new Change({
-      type: 'Delete',
-      modification: { cn: null }
-    });
-    t.ok(true);
+tap.test('can delete attributes', function (t) {
+  const change = new Change({
+    type: 'Delete',
+    modification: { cn: null }
+  });
+  t.context.client.modify('cn=modify,' + SUFFIX, change, function (err, res) {
+    t.error(err);
+    t.ok(res);
+    t.equal(res.status, 0);
     t.end();
-  } catch (err) {
-    t.ifError(err);
-    t.end();
-  }
+  });
 });
 
-
-test('modify array success', function (t) {
-  var changes = [
+tap.test('modify array success', function (t) {
+  const changes = [
     new Change({
       operation: 'Replace',
       modification: new Attribute({
@@ -539,57 +492,53 @@ test('modify array success', function (t) {
       })
     })
   ];
-  client.modify('cn=modify, ' + SUFFIX, changes, function (err, res) {
-    t.ifError(err);
+  t.context.client.modify('cn=modify, ' + SUFFIX, changes, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('modify change plain object success (GH-31)', function (t) {
-  var change = {
+tap.test('modify change plain object success (GH-31)', function (t) {
+  const change = {
     type: 'replace',
     modification: {
       cn: 'test',
       sn: 'bar'
     }
   };
-  client.modify('cn=modify, ' + SUFFIX, change, function (err, res) {
-    t.ifError(err);
+  t.context.client.modify('cn=modify, ' + SUFFIX, change, function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('modify DN new RDN only', function (t) {
-  client.modifyDN('cn=old, ' + SUFFIX, 'cn=new', function (err, res) {
-    t.ifError(err);
+tap.test('modify DN new RDN only', function (t) {
+  t.context.client.modifyDN('cn=old, ' + SUFFIX, 'cn=new', function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('modify DN new superior', function (t) {
-  client.modifyDN('cn=old, ' + SUFFIX, 'cn=new, dc=foo', function (err, res) {
-    t.ifError(err);
+tap.test('modify DN new superior', function (t) {
+  t.context.client.modifyDN('cn=old, ' + SUFFIX, 'cn=new, dc=foo', function (err, res) {
+    t.error(err);
     t.ok(res);
     t.equal(res.status, 0);
     t.end();
   });
 });
 
-
-test('search basic', function (t) {
-  client.search('cn=test, ' + SUFFIX, '(objectclass=*)', function (err, res) {
-    t.ifError(err);
+tap.test('search basic', function (t) {
+  t.context.client.search('cn=test, ' + SUFFIX, '(objectclass=*)', function (err, res) {
+    t.error(err);
     t.ok(res);
-    var gotEntry = 0;
+    let gotEntry = 0;
     res.on('searchEntry', function (entry) {
       t.ok(entry);
       t.ok(entry instanceof ldap.SearchEntry);
@@ -614,11 +563,10 @@ test('search basic', function (t) {
   });
 });
 
-
-test('search sizeLimit', function (t) {
+tap.test('search sizeLimit', function (t) {
   t.test('over limit', function (t2) {
-    client.search('cn=sizelimit', {}, function (err, res) {
-      t2.ifError(err);
+    t.context.client.search('cn=sizelimit', {}, function (err, res) {
+      t2.error(err);
       res.on('error', function (error) {
         t2.equal(error.name, 'SizeLimitExceededError');
         t2.end();
@@ -627,10 +575,10 @@ test('search sizeLimit', function (t) {
   });
 
   t.test('under limit', function (t2) {
-    var limit = 100;
-    client.search('cn=sizelimit', {sizeLimit: limit}, function (err, res) {
-      t2.ifError(err);
-      var count = 0;
+    const limit = 100;
+    t.context.client.search('cn=sizelimit', {sizeLimit: limit}, function (err, res) {
+      t2.error(err);
+      let count = 0;
       res.on('searchEntry', function (entry) {
         count++;
       });
@@ -639,68 +587,78 @@ test('search sizeLimit', function (t) {
         t2.equal(count, limit);
         t2.end();
       });
-      res.on('error', t2.ifError.bind(t));
+      res.on('error', t2.error.bind(t));
     });
   });
 
   t.end()
 });
 
-
-test('search paged', {timeout: 10000}, function (t) {
+tap.test('search paged', { timeout: 10000 }, function (t) {
   t.test('paged - no pauses', function (t2) {
-    var countEntries = 0;
-    var countPages = 0;
-    client.search('cn=paged', {paged: {pageSize: 100}}, function (err, res) {
-      t2.ifError(err);
-      res.on('searchEntry', function () {
-        countEntries++;
-      });
-      res.on('page', function () {
-        countPages++;
-      });
-      res.on('error', t2.ifError.bind(t2));
+    let countEntries = 0;
+    let countPages = 0;
+    t.context.client.search('cn=paged', {paged: {pageSize: 100}}, function (err, res) {
+      t2.error(err);
+      res.on('searchEntry', entryListener);
+      res.on('page', pageListener);
+      res.on('error', (err) => t2.error(err));
       res.on('end', function () {
         t2.equal(countEntries, 1000);
         t2.equal(countPages, 10);
         t2.end();
       });
+
+      t2.tearDown(() => {
+        res.removeListener('searchEntry', entryListener);
+        res.removeListener('page', pageListener);
+      })
+
+      function entryListener() {
+        countEntries += 1;
+      }
+
+      function pageListener () {
+        countPages += 1;
+      }
     });
   });
 
   t.test('paged - pauses', function (t2) {
-    var countPages = 0;
-    client.search('cn=paged', {
+    let countPages = 0;
+    t.context.client.search('cn=paged', {
       paged: {
         pageSize: 100,
         pagePause: true
       }
     }, function (err, res) {
-      t2.ifError(err);
-      res.on('page', function (result, cb) {
-        countPages++;
-        // cancel after 9 to verify callback usage
-        if (countPages === 9) {
-          // another page should never be encountered
-          res.removeAllListeners('page')
-            .on('page', t2.fail.bind(null, 'unexpected page'));
-          return cb(new Error());
-        }
-        return cb();
-      });
-      res.on('error', t2.ifError.bind(t2));
+      t2.error(err);
+      res.on('page', pageListener);
+      res.on('error', (err) => t2.error(err));
       res.on('end', function () {
         t2.equal(countPages, 9);
         t2.end();
       });
+
+      function pageListener (result, cb) {
+        countPages++;
+        // cancel after 9 to verify callback usage
+        if (countPages === 9) {
+          // another page should never be encountered
+          res.removeListener('page', pageListener)
+            .on('page', t2.fail.bind(null, 'unexpected page'));
+          return cb(new Error());
+        }
+        return cb();
+      }
     });
   });
 
   t.test('paged - no support (err handled)', function (t2) {
-    client.search(SUFFIX, {
+    t.context.client.search(SUFFIX, {
       paged: { pageSize: 100 }
     }, function (err, res) {
-      t2.ifError(err);
+      t2.error(err);
       res.on('pageError', t2.ok.bind(t2));
       res.on('end', function () {
         t2.pass();
@@ -710,10 +668,10 @@ test('search paged', {timeout: 10000}, function (t) {
   });
 
   t.test('paged - no support (err not handled)', function (t2) {
-    client.search(SUFFIX, {
+    t.context.client.search(SUFFIX, {
       paged: { pageSize: 100 }
     }, function (err, res) {
-      t2.ifError(err);
+      t2.error(err);
       res.on('end', t2.fail.bind(t2));
       res.on('error', function (error) {
         t2.ok(error);
@@ -724,7 +682,7 @@ test('search paged', {timeout: 10000}, function (t) {
 
   t.test('paged - redundant control', function (t2) {
     try {
-      client.search(SUFFIX, {
+      t.context.client.search(SUFFIX, {
         paged: { pageSize: 100 }
       }, new ldap.PagedResultsControl(),
       function (err, res) {
@@ -737,12 +695,12 @@ test('search paged', {timeout: 10000}, function (t) {
   });
 
   t.test('paged - handle later error', function (t2) {
-    var countEntries = 0;
-    var countPages = 0;
-    client.search('cn=pagederr', {
+    let countEntries = 0;
+    let countPages = 0;
+    t.context.client.search('cn=pagederr', {
       paged: { pageSize: 1 }
     }, function (err, res) {
-      t2.ifError(err);
+      t2.error(err);
       res.on('searchEntry', function () {
         t2.ok(++countEntries);
       });
@@ -763,13 +721,12 @@ test('search paged', {timeout: 10000}, function (t) {
   t.end();
 });
 
-
-test('search referral', function (t) {
-  client.search('cn=ref, ' + SUFFIX, '(objectclass=*)', function (err, res) {
-    t.ifError(err);
+tap.test('search referral', function (t) {
+  t.context.client.search('cn=ref, ' + SUFFIX, '(objectclass=*)', function (err, res) {
+    t.error(err);
     t.ok(res);
-    var gotEntry = 0;
-    var gotReferral = false;
+    let gotEntry = 0;
+    let gotReferral = false;
     res.on('searchEntry', function (entry) {
       gotEntry++;
     });
@@ -794,10 +751,9 @@ test('search referral', function (t) {
   });
 });
 
-
-test('search rootDSE', function (t) {
-  client.search('', '(objectclass=*)', function (err, res) {
-    t.ifError(err);
+tap.test('search rootDSE', function (t) {
+  t.context.client.search('', '(objectclass=*)', function (err, res) {
+    t.error(err);
     t.ok(res);
     res.on('searchEntry', function (entry) {
       t.ok(entry);
@@ -817,12 +773,11 @@ test('search rootDSE', function (t) {
   });
 });
 
-
-test('search empty attribute', function (t) {
-  client.search('dc=empty', '(objectclass=*)', function (err, res) {
-    t.ifError(err);
+tap.test('search empty attribute', function (t) {
+  t.context.client.search('dc=empty', '(objectclass=*)', function (err, res) {
+    t.error(err);
     t.ok(res);
-    var gotEntry = 0;
+    let gotEntry = 0;
     res.on('searchEntry', function (entry) {
       var obj = entry.toObject();
       t.equal('dc=empty', obj.dn);
@@ -845,14 +800,13 @@ test('search empty attribute', function (t) {
   });
 });
 
-
-test('GH-21 binary attributes', function (t) {
-  client.search('cn=bin, ' + SUFFIX, '(objectclass=*)', function (err, res) {
-    t.ifError(err);
+tap.test('GH-21 binary attributes', function (t) {
+  t.context.client.search('cn=bin, ' + SUFFIX, '(objectclass=*)', function (err, res) {
+    t.error(err);
     t.ok(res);
-    var gotEntry = 0;
-    var expect = new Buffer('\u00bd + \u00bc = \u00be', 'utf8');
-    var expect2 = new Buffer([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]);
+    let gotEntry = 0;
+    const expect = Buffer.from('\u00bd + \u00bc = \u00be', 'utf8');
+    const expect2 = Buffer.from([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]);
     res.on('searchEntry', function (entry) {
       t.ok(entry);
       t.ok(entry instanceof ldap.SearchEntry);
@@ -886,16 +840,15 @@ test('GH-21 binary attributes', function (t) {
   });
 });
 
-
-test('GH-23 case insensitive attribute filtering', function (t) {
-  var opts = {
+tap.test('GH-23 case insensitive attribute filtering', function (t) {
+  const opts = {
     filter: '(objectclass=*)',
     attributes: ['Cn']
   };
-  client.search('cn=test, ' + SUFFIX, opts, function (err, res) {
-    t.ifError(err);
+  t.context.client.search('cn=test, ' + SUFFIX, opts, function (err, res) {
+    t.error(err);
     t.ok(res);
-    var gotEntry = 0;
+    let gotEntry = 0;
     res.on('searchEntry', function (entry) {
       t.ok(entry);
       t.ok(entry instanceof ldap.SearchEntry);
@@ -919,16 +872,15 @@ test('GH-23 case insensitive attribute filtering', function (t) {
   });
 });
 
-
-test('GH-24 attribute selection of *', function (t) {
-  var opts = {
+tap.test('GH-24 attribute selection of *', function (t) {
+  const opts = {
     filter: '(objectclass=*)',
     attributes: ['*']
   };
-  client.search('cn=test, ' + SUFFIX, opts, function (err, res) {
-    t.ifError(err);
+  t.context.client.search('cn=test, ' + SUFFIX, opts, function (err, res) {
+    t.error(err);
     t.ok(res);
-    var gotEntry = 0;
+    let gotEntry = 0;
     res.on('searchEntry', function (entry) {
       t.ok(entry);
       t.ok(entry instanceof ldap.SearchEntry);
@@ -953,52 +905,49 @@ test('GH-24 attribute selection of *', function (t) {
   });
 });
 
-
-test('idle timeout', function (t) {
-  client.idleTimeout = 250;
+tap.test('idle timeout', function (t) {
+  t.context.client.idleTimeout = 250;
   function premature() {
-    t.ifError(true);
+    t.error(true);
   }
-  client.on('idle', premature);
-  client.search('dc=slow', 'objectclass=*', function (err, res) {
-    t.ifError(err);
+  t.context.client.on('idle', premature);
+  t.context.client.search('dc=slow', 'objectclass=*', function (err, res) {
+    t.error(err);
     res.on('searchEntry', function (res) {
       t.ok(res);
     });
     res.on('error', function (err) {
-      t.ifError(err);
+      t.error(err);
     });
     res.on('end', function () {
       var late = setTimeout(function () {
-        t.ifError(false, 'too late');
+        t.error(false, 'too late');
       }, 500);
       // It's ok to go idle now
-      client.removeListener('idle', premature);
-      client.on('idle', function () {
+      t.context.client.removeListener('idle', premature);
+      t.context.client.on('idle', function () {
         clearTimeout(late);
-        client.removeAllListeners('idle');
-        client.idleTimeout = 0;
+        t.context.client.removeAllListeners('idle');
+        t.context.client.idleTimeout = 0;
         t.end();
       });
     });
   });
 });
 
-
-test('setup action', function (t) {
-  var setupClient = ldap.createClient({
-      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
-      socketPath: SOCKET,
-      log: logger
+tap.test('setup action', function (t) {
+  const setupClient = ldap.createClient({
+      connectTimeout: parseInt(LDAP_CONNECT_TIMEOUT, 10),
+      socketPath: t.context.socketPath
     });
   setupClient.on('setup', function (clt, cb) {
     clt.bind(BIND_DN, BIND_PW, function (err, res) {
-      t.ifError(err);
+      t.error(err);
       cb(err);
     });
   });
   setupClient.search(SUFFIX, {scope: 'base'}, function (err, res) {
-    t.ifError(err);
+    t.error(err);
     t.ok(res);
     res.on('end', function () {
       setupClient.destroy();
@@ -1007,36 +956,35 @@ test('setup action', function (t) {
   });
 });
 
-
-test('setup reconnect', function (t) {
-  var rClient = ldap.createClient({
-      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
-      socketPath: SOCKET,
-      reconnect: true,
-      log: logger
+tap.test('setup reconnect', function (t) {
+  const rClient = ldap.createClient({
+      connectTimeout: parseInt(LDAP_CONNECT_TIMEOUT, 10),
+      socketPath: t.context.socketPath,
+      reconnect: true
     });
   rClient.on('setup', function (clt, cb) {
     clt.bind(BIND_DN, BIND_PW, function (err, res) {
-      t.ifError(err);
+      t.error(err);
       cb(err);
     });
   });
 
   function doSearch(_, cb) {
     rClient.search(SUFFIX, {scope: 'base'}, function (err, res) {
-      t.ifError(err);
+      t.error(err);
       res.on('end', function () {
         cb();
       });
     });
   }
+
   vasync.pipeline({
     funcs: [
       doSearch,
       function cleanDisconnect(_, cb) {
         t.ok(rClient.connected);
         rClient.once('close', function (had_err) {
-          t.ifError(had_err);
+          t.error(had_err);
           t.equal(rClient.connected, false);
           cb();
         });
@@ -1044,7 +992,7 @@ test('setup reconnect', function (t) {
       },
       doSearch,
       function simulateError(_, cb) {
-        var msg = 'fake socket error';
+        const msg = 'fake socket error';
         rClient.once('error', function (err) {
           t.equal(err.message, msg);
           t.ok(err);
@@ -1057,22 +1005,20 @@ test('setup reconnect', function (t) {
       },
       doSearch
     ]
-  }, function (err, res) {
-    t.ifError(err);
+  }, function (err) {
+    t.error(err);
     rClient.destroy();
     t.end();
   });
 });
 
-
-test('setup abort', function (t) {
-  var setupClient = ldap.createClient({
-      connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
-      socketPath: SOCKET,
-      reconnect: true,
-      log: logger
+tap.test('setup abort', function (t) {
+  const setupClient = ldap.createClient({
+      connectTimeout: parseInt(LDAP_CONNECT_TIMEOUT, 10),
+      socketPath: t.context.socketPath,
+      reconnect: true
     });
-  var message = 'It\'s a trap!';
+  const message = "It's a trap!";
   setupClient.on('setup', function (clt, cb) {
     // simulate failure
     t.ok(clt);
@@ -1086,13 +1032,11 @@ test('setup abort', function (t) {
   });
 });
 
-
-test('abort reconnect', function (t) {
-  var abortClient = ldap.createClient({
-    connectTimeout: parseInt(process.env.LDAP_CONNECT_TIMEOUT || 0, 10),
-    socketPath: '/dev/null',
-    reconnect: true,
-    log: logger
+tap.test('abort reconnect', function (t) {
+  const abortClient = ldap.createClient({
+    connectTimeout: parseInt(LDAP_CONNECT_TIMEOUT, 10),
+    socketPath: 'an invalid path',
+    reconnect: true
   });
   var retryCount = 0;
   abortClient.on('connectError', function () {
@@ -1108,21 +1052,19 @@ test('abort reconnect', function (t) {
   });
 });
 
-
-test('reconnect max retries', function (t) {
-  var RETRIES = 5;
-  var rClient = ldap.createClient({
+tap.test('reconnect max retries', function (t) {
+  const RETRIES = 5;
+  const rClient = ldap.createClient({
     connectTimeout: 100,
-    socketPath: '/dev/null',
+    socketPath: 'an invalid path',
     reconnect: {
       failAfter: RETRIES,
       // Keep the test duration low
       initialDelay: 10,
       maxDelay: 100
-    },
-    log: logger
+    }
   });
-  var count = 0;
+  let count = 0;
   rClient.on('connectError', function () {
     count++;
   });
@@ -1133,16 +1075,14 @@ test('reconnect max retries', function (t) {
   });
 });
 
-
-test('reconnect on server close', function (t) {
-  var clt = ldap.createClient({
-    socketPath: SOCKET,
-    reconnect: true,
-    log: logger
+tap.test('reconnect on server close', function (t) {
+  const clt = ldap.createClient({
+    socketPath: t.context.socketPath,
+    reconnect: true
   });
   clt.on('setup', function (sclt, cb) {
     sclt.bind(BIND_DN, BIND_PW, function (err, res) {
-      t.ifError(err);
+      t.error(err);
       cb(err);
     });
   });
@@ -1159,22 +1099,20 @@ test('reconnect on server close', function (t) {
   });
 });
 
-
-test('no auto-reconnect on unbind', function (t) {
-  var clt = ldap.createClient({
-    socketPath: SOCKET,
-    reconnect: true,
-    log: logger
+tap.test('no auto-reconnect on unbind', function (t) {
+  const clt = ldap.createClient({
+    socketPath: t.context.socketPath,
+    reconnect: true
   });
   clt.on('setup', function (sclt, cb) {
     sclt.bind(BIND_DN, BIND_PW, function (err, res) {
-      t.ifError(err);
+      t.error(err);
       cb(err);
     });
   });
   clt.once('connect', function () {
     clt.once('connect', function () {
-      t.ifError(new Error('client should not reconnect'));
+      t.error(new Error('client should not reconnect'));
     });
     clt.once('close', function () {
       t.ok(true, 'initial close');
@@ -1190,69 +1128,58 @@ test('no auto-reconnect on unbind', function (t) {
   });
 });
 
-
-test('abandon (GH-27)', function (t) {
+tap.test('abandon (GH-27)', function (t) {
   // FIXME: test abandoning a real request
-  client.abandon(401876543, function (err) {
-    t.ifError(err);
+  t.context.client.abandon(401876543, function (err) {
+    t.error(err);
     t.end();
   });
 });
 
-
-test('search timeout (GH-51)', function (t) {
-  client.timeout = 250;
-  client.search('dc=timeout', 'objectclass=*', function (err, res) {
-    t.ifError(err);
+tap.test('search timeout (GH-51)', function (t) {
+  t.context.client.timeout = 250;
+  t.context.client.search('dc=timeout', 'objectclass=*', function (err, res) {
+    t.error(err);
     res.on('error', function () {
       t.end();
     });
   });
 });
 
-
-test('resultError handling', function (t) {
-  t.plan(3);
-  vasync.pipeline({
-    funcs: [
-      function errSearch(_, cb) {
-        client.once('resultError', function (error) {
-          t.equal(error.name, 'BusyError');
-        });
-        client.search('cn=busy', {}, function (err, res) {
-          res.once('error', function (error) {
-            t.equal(error.name, 'BusyError');
-            cb();
-          });
-        });
-      },
-      function cleanSearch(_, cb) {
-        client.on('resultError', t.ifError.bind(null));
-        client.search(SUFFIX, {}, function (err, res) {
-          res.once('end', function () {
-            t.ok(true);
-            cb();
-          });
-        });
-      }
-    ]
-  }, function (err, res) {
-    client.removeAllListeners('resultError');
-  });
-});
-
-
-test('unbind (GH-30)', function (t) {
-  client.unbind(function (err) {
-    t.ifError(err);
+tap.test('resultError handling', function (t) {
+  const client = t.context.client;
+  vasync.pipeline({ funcs: [errSearch, cleanSearch] }, function (err) {
+    t.error(err);
+    client.removeListener('resultError', error1);
+    client.removeListener('resultError', error2);
     t.end();
   });
-});
 
+  function errSearch(_, cb) {
+    client.once('resultError', error1);
+    client.search('cn=busy', {}, function (err, res) {
+      res.once('error', function (error) {
+        t.equal(error.name, 'BusyError');
+        cb();
+      });
+    });
+  }
 
-test('shutdown', function (t) {
-  server.on('close', function () {
-    t.end();
-  });
-  server.close();
+  function cleanSearch(_, cb) {
+    client.on('resultError', error2);
+    client.search(SUFFIX, {}, function (err, res) {
+      res.once('end', function () {
+        t.pass();
+        cb();
+      });
+    });
+  }
+
+  function error1 (error) {
+    t.equal(error.name, 'BusyError');
+  }
+
+  function error2 () {
+    t.fail('should not get error')
+  }
 });

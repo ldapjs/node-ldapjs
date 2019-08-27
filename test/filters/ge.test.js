@@ -1,40 +1,19 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var GreaterThanEqualsFilter;
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-
-
-
-///--- Tests
-
-test('load library', function (t) {
-  var filters = require('../../lib/index').filters;
-  t.ok(filters);
-  GreaterThanEqualsFilter = filters.GreaterThanEqualsFilter;
-  t.ok(GreaterThanEqualsFilter);
-  t.end();
-});
-
+const { test } = require('tap');
+const { BerReader, BerWriter } = require('asn1');
+const { filters: { GreaterThanEqualsFilter } } = require('../../lib');
 
 test('Construct no args', function (t) {
-  var f = new GreaterThanEqualsFilter();
+  const f = new GreaterThanEqualsFilter();
   t.ok(f);
   t.ok(!f.attribute);
   t.ok(!f.value);
   t.end();
 });
 
-
 test('Construct args', function (t) {
-  var f = new GreaterThanEqualsFilter({
+  const f = new GreaterThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
   });
@@ -45,9 +24,8 @@ test('Construct args', function (t) {
   t.end();
 });
 
-
 test('GH-109 = escape value only in toString()', function (t) {
-  var f = new GreaterThanEqualsFilter({
+  const f = new GreaterThanEqualsFilter({
     attribute: 'foo',
     value: 'ba(r)'
   });
@@ -58,9 +36,8 @@ test('GH-109 = escape value only in toString()', function (t) {
   t.end();
 });
 
-
 test('match true', function (t) {
-  var f = new GreaterThanEqualsFilter({
+  const f = new GreaterThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
   });
@@ -69,9 +46,8 @@ test('match true', function (t) {
   t.end();
 });
 
-
 test('match multiple', function (t) {
-  var f = new GreaterThanEqualsFilter({
+  const f = new GreaterThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
   });
@@ -81,7 +57,7 @@ test('match multiple', function (t) {
 });
 
 test('match false', function (t) {
-  var f = new GreaterThanEqualsFilter({
+  const f = new GreaterThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
   });
@@ -90,26 +66,24 @@ test('match false', function (t) {
   t.end();
 });
 
-
 test('parse ok', function (t) {
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   writer.writeString('foo');
   writer.writeString('bar');
 
-  var f = new GreaterThanEqualsFilter();
+  const f = new GreaterThanEqualsFilter();
   t.ok(f);
   t.ok(f.parse(new BerReader(writer.buffer)));
   t.ok(f.matches({ foo: 'bar' }));
   t.end();
 });
 
-
 test('parse bad', function (t) {
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   writer.writeString('foo');
   writer.writeInt(20);
 
-  var f = new GreaterThanEqualsFilter();
+  const f = new GreaterThanEqualsFilter();
   t.ok(f);
   try {
     f.parse(new BerReader(writer.buffer));
@@ -120,20 +94,19 @@ test('parse bad', function (t) {
   t.end();
 });
 
-
 test('GH-109 = to ber uses plain values', function (t) {
-  var f = new GreaterThanEqualsFilter({
+  let f = new GreaterThanEqualsFilter({
     attribute: 'foo',
     value: 'ba(r)'
   });
   t.ok(f);
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   f.toBer(writer);
 
   f = new GreaterThanEqualsFilter();
   t.ok(f);
 
-  var reader = new BerReader(writer.buffer);
+  const reader = new BerReader(writer.buffer);
   reader.readSequence();
   t.ok(f.parse(reader));
 

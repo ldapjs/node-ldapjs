@@ -1,64 +1,43 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-var uuid = require('uuid');
-
-var ldap = require('../lib/index');
-
-
-///--- Globals
-
-var SOCKET = process.platform === 'win32' ? '\\\\.\\pipe\\' + uuid() : '/tmp/.' + uuid();
-var SUFFIX = 'dc=' + uuid();
-
-var client;
-var server;
-
-
-
-///--- Helper
+const tap = require('tap');
+const uuid = require('uuid')
+const { getSock } = require('./utils')
+const ldap = require('../lib');
 
 function search(t, options, callback) {
-  client.search(SUFFIX, options, function (err, res) {
-    t.ifError(err);
+  t.context.client.search(t.context.suffix, options, function (err, res) {
+    t.error(err);
     t.ok(res);
-    var found = false;
+    let found = false;
     res.on('searchEntry', function (entry) {
       t.ok(entry);
       found = true;
     });
     res.on('end', function () {
-      t.ok(found);
-      if (callback)
-        return callback();
-
+      t.true(found);
+      if (callback) return callback();
       return t.end();
     });
   });
 }
 
+tap.beforeEach((done, t) => {
+  const suffix = `dc=${uuid()}`;
+  const server = ldap.createServer();
 
-
-///--- Tests
-
-test('setup', function (t) {
-  server = ldap.createServer();
-  t.ok(server);
-  server.listen(SOCKET, function () {
-    client = ldap.createClient({
-      socketPath: SOCKET
-    });
-    t.ok(client);
-    t.end();
-  });
+  t.context.server = server;
+  t.context.socketPath = getSock();
+  t.context.suffix = suffix;
 
   server.bind('cn=root', function (req, res, next) {
     res.end();
     return next();
   });
-  server.search(SUFFIX, function (req, res, next) {
+
+  server.search(suffix, function (req, res, next) {
     var entry = {
-      dn: 'cn=foo, ' + SUFFIX,
+      dn: 'cn=foo, ' + suffix,
       attributes: {
         objectclass: ['person', 'top'],
         cn: 'Pogo Stick',
@@ -73,12 +52,32 @@ test('setup', function (t) {
 
     res.end();
   });
-});
 
+  server.listen(t.context.socketPath, function () {
+    t.context.client = ldap.createClient({
+      socketPath: t.context.socketPath
+    });
 
-test('Evolution search filter (GH-3)', function (t) {
+    t.context.client.on('connectError', (err) => {
+      t.context.server.close(() => done(err));
+    })
+    t.context.client.on('connect', (socket) => {
+      t.context.socket = socket;
+      done();
+    })
+  });
+})
+
+tap.afterEach((done, t) => {
+  if (!t.context.client) return done()
+  t.context.client.unbind(() => {
+    t.context.server.close(done)
+  })
+})
+
+tap.test('Evolution search filter (GH-3)', function (t) {
   // This is what Evolution sends, when searching for a contact 'ogo'. Wow.
-  var filter =
+  const filter =
     '(|(cn=ogo*)(givenname=ogo*)(sn=ogo*)(mail=ogo*)(member=ogo*)' +
     '(primaryphone=ogo*)(telephonenumber=ogo*)(homephone=ogo*)(mobile=ogo*)' +
     '(carphone=ogo*)(facsimiletelephonenumber=ogo*)' +
@@ -99,9 +98,8 @@ test('Evolution search filter (GH-3)', function (t) {
   return search(t, filter);
 });
 
-
-test('GH-49 Client errors on bad attributes', function (t) {
-  var searchOpts = {
+tap.test('GH-49 Client errors on bad attributes', function (t) {
+  const searchOpts = {
     filter: 'cn=*ogo*',
     scope: 'one',
     attributes: 'dn'
@@ -109,32 +107,21 @@ test('GH-49 Client errors on bad attributes', function (t) {
   return search(t, searchOpts);
 });
 
-
-test('GH-55 Client emits connect multiple times', function (t) {
-  var c = ldap.createClient({
-    socketPath: SOCKET
+tap.test('GH-55 Client emits connect multiple times', function (t) {
+  const c = ldap.createClient({
+    socketPath: t.context.socketPath
   });
 
-  var count = 0;
+  let count = 0;
   c.on('connect', function (socket) {
     t.ok(socket);
     count++;
-    c.bind('cn=root', 'secret', function (err, res) {
+    c.bind('cn=root', 'secret', function (err) {
       t.ifError(err);
       c.unbind(function () {
         t.equal(count, 1);
         t.end();
       });
     });
-  });
-});
-
-
-test('shutdown', function (t) {
-  client.unbind(function () {
-    server.on('close', function () {
-      t.end();
-    });
-    server.close();
   });
 });

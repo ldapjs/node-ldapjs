@@ -1,38 +1,15 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var EqualityFilter;
-var OrFilter;
-
-
-
-///--- Tests
-
-test('load library', function (t) {
-  var filters = require('../../lib/index').filters;
-  t.ok(filters);
-  EqualityFilter = filters.EqualityFilter;
-  OrFilter = filters.OrFilter;
-  t.ok(EqualityFilter);
-  t.ok(OrFilter);
-  t.end();
-});
-
+const { test } = require('tap');
+const { filters: { EqualityFilter, OrFilter } } = require('../../lib');
 
 test('Construct no args', function (t) {
   t.ok(new OrFilter());
   t.end();
 });
 
-
 test('Construct args', function (t) {
-  var f = new OrFilter();
+  const f = new OrFilter();
   f.addFilter(new EqualityFilter({
     attribute: 'foo',
     value: 'bar'
@@ -46,9 +23,8 @@ test('Construct args', function (t) {
   t.end();
 });
 
-
 test('match true', function (t) {
-  var f = new OrFilter();
+  const f = new OrFilter();
   f.addFilter(new EqualityFilter({
     attribute: 'foo',
     value: 'bar'
@@ -62,9 +38,8 @@ test('match true', function (t) {
   t.end();
 });
 
-
 test('match false', function (t) {
-  var f = new OrFilter();
+  const f = new OrFilter();
   f.addFilter(new EqualityFilter({
     attribute: 'foo',
     value: 'bar'

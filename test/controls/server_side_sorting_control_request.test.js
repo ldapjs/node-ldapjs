@@ -1,23 +1,8 @@
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-var getControl;
-var SSSRControl;
-
-///--- Tests
-
-
-test('load library', function (t) {
-  SSSRControl = require('../../lib').ServerSideSortingRequestControl;
-  t.ok(SSSRControl);
-  getControl = require('../../lib').getControl;
-  t.ok(getControl);
-  t.end();
-});
+const { test } = require('tap');
+const { BerReader, BerWriter } = require('asn1');
+const { getControl, ServerSideSortingRequestControl: SSSRControl } = require('../../lib');
 
 test('new no args', function (t) {
   t.ok(new SSSRControl());
@@ -25,7 +10,7 @@ test('new no args', function (t) {
 });
 
 test('new with args', function (t) {
-  var c = new SSSRControl({
+  const c = new SSSRControl({
     criticality: true,
     value: {
       attributeType: 'sn'
@@ -41,7 +26,7 @@ test('new with args', function (t) {
 });
 
 test('toBer - object', function (t) {
-  var sssc = new SSSRControl({
+  const sssc = new SSSRControl({
     criticality: true,
     value: {
       attributeType: 'sn',
@@ -49,10 +34,10 @@ test('toBer - object', function (t) {
       reverseOrder: true
     }});
 
-  var ber = new BerWriter();
+  const ber = new BerWriter();
   sssc.toBer(ber);
 
-  var c = getControl(new BerReader(ber.buffer));
+  const c = getControl(new BerReader(ber.buffer));
   t.ok(c);
   t.equal(c.type, '1.2.840.113556.1.4.473');
   t.ok(c.criticality);
@@ -64,7 +49,7 @@ test('toBer - object', function (t) {
 });
 
 test('toBer - array', function (t) {
-  var sssc = new SSSRControl({
+  const sssc = new SSSRControl({
     criticality: true,
     value: [
       {
@@ -79,10 +64,10 @@ test('toBer - array', function (t) {
     ]
   });
 
-  var ber = new BerWriter();
+  const ber = new BerWriter();
   sssc.toBer(ber);
 
-  var c = getControl(new BerReader(ber.buffer));
+  const c = getControl(new BerReader(ber.buffer));
   t.ok(c);
   t.equal(c.type, '1.2.840.113556.1.4.473');
   t.ok(c.criticality);
@@ -97,11 +82,11 @@ test('toBer - array', function (t) {
 });
 
 test('toBer - empty', function (t) {
-  var sssc = new SSSRControl();
-  var ber = new BerWriter();
+  const sssc = new SSSRControl();
+  const ber = new BerWriter();
   sssc.toBer(ber);
 
-  var c = getControl(new BerReader(ber.buffer));
+  const c = getControl(new BerReader(ber.buffer));
   t.ok(c);
   t.equal(c.type, '1.2.840.113556.1.4.473');
   t.equal(c.value.length, 0);
