@@ -1,4 +1,18 @@
+sudo: false
+
+git:
+  depth: 3
+
+branches:
+  only:
+    - next
+    - master
+
 language: node_js
+
+node_js:
+  - lts/*
+  - node
 
 os:
   - linux
@@ -7,9 +21,10 @@ os:
 cache:
   npm: true
 
-node_js:
-  - lts/*
-  - node
+jobs:
+  include:
+    # - stage: lint ✨
+    #   script: npm run lint
 
-script:
-  - npm run test:cov
+    - stage: test 👩🏽‍💻
+      script: npm test:cov
