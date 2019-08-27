@@ -5,7 +5,7 @@ cache:
 
 node_js:
   - lts/*
-  - 12
+  - node
 
 script:
   - npm run test:cov
