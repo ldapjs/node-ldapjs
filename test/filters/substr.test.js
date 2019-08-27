@@ -1,40 +1,19 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var SubstringFilter;
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-
-
-
-///--- Tests
-
-test('load library', function (t) {
-  var filters = require('../../lib/index').filters;
-  t.ok(filters);
-  SubstringFilter = filters.SubstringFilter;
-  t.ok(SubstringFilter);
-  t.end();
-});
-
+const { test } = require('tap');
+const { BerReader, BerWriter } = require('asn1');
+const { filters: { SubstringFilter } } = require('../../lib');
 
 test('Construct no args', function (t) {
-  var f = new SubstringFilter();
+  const f = new SubstringFilter();
   t.ok(f);
   t.ok(!f.attribute);
   t.ok(!f.value);
   t.end();
 });
 
-
 test('Construct args', function (t) {
-  var f = new SubstringFilter({
+  const f = new SubstringFilter({
     attribute: 'foo',
     initial: 'bar',
     any: ['zig', 'zag'],
@@ -51,9 +30,8 @@ test('Construct args', function (t) {
   t.end();
 });
 
-
 test('GH-109 = escape value only in toString()', function (t) {
-  var f = new SubstringFilter({
+  const f = new SubstringFilter({
     attribute: 'fo(o',
     initial: 'ba(r)',
     any: ['zi)g', 'z(ag'],
@@ -70,9 +48,8 @@ test('GH-109 = escape value only in toString()', function (t) {
   t.end();
 });
 
-
 test('match true', function (t) {
-  var f = new SubstringFilter({
+  const f = new SubstringFilter({
     attribute: 'foo',
     initial: 'bar',
     any: ['zig', 'zag'],
@@ -83,9 +60,8 @@ test('match true', function (t) {
   t.end();
 });
 
-
 test('match false', function (t) {
-  var f = new SubstringFilter({
+  const f = new SubstringFilter({
     attribute: 'foo',
     initial: 'bar',
     foo: ['zig', 'zag'],
@@ -96,9 +72,8 @@ test('match false', function (t) {
   t.end();
 });
 
-
 test('match any', function (t) {
-  var f = new SubstringFilter({
+  const f = new SubstringFilter({
     attribute: 'foo',
     initial: 'bar'
   });
@@ -107,9 +82,8 @@ test('match any', function (t) {
   t.end();
 });
 
-
 test('GH-109 = escape for regex in matches', function (t) {
-  var f = new SubstringFilter({
+  const f = new SubstringFilter({
     attribute: 'fo(o',
     initial: 'ba(r)',
     any: ['zi)g', 'z(ag'],
@@ -120,29 +94,27 @@ test('GH-109 = escape for regex in matches', function (t) {
   t.end();
 });
 
-
 test('parse ok', function (t) {
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   writer.writeString('foo');
   writer.startSequence();
   writer.writeString('bar', 0x80);
   writer.writeString('bad', 0x81);
   writer.writeString('baz', 0x82);
   writer.endSequence();
-  var f = new SubstringFilter();
+  const f = new SubstringFilter();
   t.ok(f);
   t.ok(f.parse(new BerReader(writer.buffer)));
   t.ok(f.matches({ foo: 'bargoobadgoobaz' }));
   t.end();
 });
 
-
 test('parse bad', function (t) {
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   writer.writeString('foo');
   writer.writeInt(20);
 
-  var f = new SubstringFilter();
+  const f = new SubstringFilter();
   t.ok(f);
   try {
     f.parse(new BerReader(writer.buffer));
@@ -152,22 +124,21 @@ test('parse bad', function (t) {
   t.end();
 });
 
-
 test('GH-109 = to ber uses plain values', function (t) {
-  var f = new SubstringFilter({
+  let f = new SubstringFilter({
     attribute: 'fo(o',
     initial: 'ba(r)',
     any: ['zi)g', 'z(ag'],
     'final': '(baz)'
   });
   t.ok(f);
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   f.toBer(writer);
 
   f = new SubstringFilter();
   t.ok(f);
 
-  var reader = new BerReader(writer.buffer);
+  const reader = new BerReader(writer.buffer);
   reader.readSequence();
   t.ok(f.parse(reader));
 

@@ -1,39 +1,18 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var PresenceFilter;
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-
-
-
-///--- Tests
-
-test('load library', function (t) {
-  var filters = require('../../lib/index').filters;
-  t.ok(filters);
-  PresenceFilter = filters.PresenceFilter;
-  t.ok(PresenceFilter);
-  t.end();
-});
-
+const { test } = require('tap');
+const { BerReader, BerWriter } = require('asn1');
+const { filters: { PresenceFilter } } = require('../../lib');
 
 test('Construct no args', function (t) {
-  var f = new PresenceFilter();
+  const f = new PresenceFilter();
   t.ok(f);
   t.ok(!f.attribute);
   t.end();
 });
 
-
 test('Construct args', function (t) {
-  var f = new PresenceFilter({
+  const f = new PresenceFilter({
     attribute: 'foo'
   });
   t.ok(f);
@@ -43,7 +22,7 @@ test('Construct args', function (t) {
 });
 
 test('GH-109 = escape value only in toString()', function (t) {
-  var f = new PresenceFilter({
+  const f = new PresenceFilter({
     attribute: 'fo)o'
   });
   t.ok(f);
@@ -52,9 +31,8 @@ test('GH-109 = escape value only in toString()', function (t) {
   t.end();
 });
 
-
 test('match true', function (t) {
-  var f = new PresenceFilter({
+  const f = new PresenceFilter({
     attribute: 'foo'
   });
   t.ok(f);
@@ -62,9 +40,8 @@ test('match true', function (t) {
   t.end();
 });
 
-
 test('match false', function (t) {
-  var f = new PresenceFilter({
+  const f = new PresenceFilter({
     attribute: 'foo'
   });
   t.ok(f);
@@ -72,34 +49,32 @@ test('match false', function (t) {
   t.end();
 });
 
-
 test('parse ok', function (t) {
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   writer.writeString('foo', 0x87);
 
-  var f = new PresenceFilter();
+  const f = new PresenceFilter();
   t.ok(f);
 
-  var reader = new BerReader(writer.buffer);
+  const reader = new BerReader(writer.buffer);
   reader.readSequence();
   t.ok(f.parse(reader));
   t.ok(f.matches({ foo: 'bar' }));
   t.end();
 });
 
-
 test('GH-109 = to ber uses plain values', function (t) {
-  var f = new PresenceFilter({
+  let f = new PresenceFilter({
     attribute: 'f(o)o'
   });
   t.ok(f);
-  var writer = new BerWriter();
+  const writer = new BerWriter();
   f.toBer(writer);
 
   f = new PresenceFilter();
   t.ok(f);
 
-  var reader = new BerReader(writer.buffer);
+  const reader = new BerReader(writer.buffer);
   reader.readSequence();
   t.ok(f.parse(reader));
 

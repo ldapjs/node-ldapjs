@@ -1,36 +1,16 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-var CompareRequest;
-var dn;
-
-///--- Tests
-
-test('load library', function (t) {
-  CompareRequest = require('../../lib/index').CompareRequest;
-  dn = require('../../lib/index').dn;
-  t.ok(CompareRequest);
-  t.ok(dn);
-  t.end();
-});
-
+const { test } = require('tap');
+const { BerReader, BerWriter } = require('asn1');
+const { CompareRequest, dn } = require('../../lib');
 
 test('new no args', function (t) {
   t.ok(new CompareRequest());
   t.end();
 });
 
-
 test('new with args', function (t) {
-  var req = new CompareRequest({
+  const req = new CompareRequest({
     entry: dn.parse('cn=foo, o=test'),
     attribute: 'sn',
     value: 'testy'
@@ -42,9 +22,8 @@ test('new with args', function (t) {
   t.end();
 });
 
-
 test('parse', function (t) {
-  var ber = new BerWriter();
+  const ber = new BerWriter();
   ber.writeString('cn=foo, o=test');
 
   ber.startSequence();
@@ -52,8 +31,7 @@ test('parse', function (t) {
   ber.writeString('testy');
   ber.endSequence();
 
-
-  var req = new CompareRequest();
+  const req = new CompareRequest();
   t.ok(req._parse(new BerReader(ber.buffer)));
   t.equal(req.dn, 'cn=foo, o=test');
   t.equal(req.attribute, 'sn');
@@ -61,9 +39,8 @@ test('parse', function (t) {
   t.end();
 });
 
-
 test('toBer', function (t) {
-  var req = new CompareRequest({
+  const req = new CompareRequest({
     messageID: 123,
     entry: dn.parse('cn=foo, o=test'),
     attribute: 'sn',
@@ -72,7 +49,7 @@ test('toBer', function (t) {
 
   t.ok(req);
 
-  var ber = new BerReader(req.toBer());
+  const ber = new BerReader(req.toBer());
   t.ok(ber);
   t.equal(ber.readSequence(), 0x30);
   t.equal(ber.readInt(), 123);

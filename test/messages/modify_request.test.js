@@ -1,42 +1,16 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict';
 
-var test = require('tap').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-var ModifyRequest;
-var Attribute;
-var Change;
-var dn;
-
-///--- Tests
-
-test('load library', function (t) {
-  ModifyRequest = require('../../lib/index').ModifyRequest;
-  Attribute = require('../../lib/index').Attribute;
-  Change = require('../../lib/index').Change;
-  dn = require('../../lib/index').dn;
-  t.ok(ModifyRequest);
-  t.ok(Attribute);
-  t.ok(Change);
-  t.ok(dn);
-  t.end();
-});
-
+const { test } = require('tap');
+const { BerReader, BerWriter } = require('asn1');
+const { ModifyRequest, Attribute, Change, dn } = require('../../lib');
 
 test('new no args', function (t) {
   t.ok(new ModifyRequest());
   t.end();
 });
 
-
 test('new with args', function (t) {
-  var req = new ModifyRequest({
+  const req = new ModifyRequest({
     object: dn.parse('cn=foo, o=test'),
     changes: [new Change({
       operation: 'Replace',
@@ -52,9 +26,8 @@ test('new with args', function (t) {
   t.end();
 });
 
-
 test('parse', function (t) {
-  var ber = new BerWriter();
+  const ber = new BerWriter();
   ber.writeString('cn=foo, o=test');
   ber.startSequence();
 
@@ -72,7 +45,7 @@ test('parse', function (t) {
 
   ber.endSequence();
 
-  var req = new ModifyRequest();
+  const req = new ModifyRequest();
   t.ok(req._parse(new BerReader(ber.buffer)));
   t.equal(req.dn.toString(), 'cn=foo, o=test');
   t.equal(req.changes.length, 1);
@@ -82,9 +55,8 @@ test('parse', function (t) {
   t.end();
 });
 
-
 test('toBer', function (t) {
-  var req = new ModifyRequest({
+  const req = new ModifyRequest({
     messageID: 123,
     object: dn.parse('cn=foo, o=test'),
     changes: [new Change({
@@ -95,7 +67,7 @@ test('toBer', function (t) {
 
   t.ok(req);
 
-  var ber = new BerReader(req.toBer());
+  const ber = new BerReader(req.toBer());
   t.ok(ber);
   t.equal(ber.readSequence(), 0x30);
   t.equal(ber.readInt(), 123);
