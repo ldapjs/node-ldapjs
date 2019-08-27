@@ -1,16 +1,5 @@
 {
-  "author": "Mark Cavage <mcavage@gmail.com>",
-  "contributors": [
-    "Craig Baker",
-    "Austin King <shout@ozten.com>",
-    "Mathieu Lecarme <mathieu@garambrogne.net>>",
-    "Trent Mick <trentm@gmail.com>",
-    "Yunong Xiao <yunong@joyent.com>",
-    "Denis Vuyka <denis.vuyka@gmail.com>",
-    "Pedro Palazón <kusorbox@gmail.com>",
-    "Patrick Mooney <patrick.f.mooney@gmail.com>",
-    "Matt Simerson <matt@tnpi.net>"
-  ],
+  "originalAuthor": "Mark Cavage <mcavage@gmail.com>",
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
@@ -18,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mcavage/node-ldapjs.git"
+    "url": "git://github.com/ldapjs/node-ldapjs.git"
   },
   "main": "lib/index.js",
   "directories": {
@@ -26,7 +15,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">=0.10"
+    "node": ">=10.16.0"
   },
   "dependencies": {
     "abstract-logging": "^1.0.0",
