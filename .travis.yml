@@ -4,7 +4,7 @@ cache:
   npm: true
 
 node_js:
-  - 10
+  - lts/*
   - 12
 
 script:
