@@ -322,7 +322,7 @@ test('non-strict routing', function (t) {
   test('close without error calls callback', function (t) {
     server = ldap.createServer();
     // when the server is closed without error, the callback parameter is undefined
-    server.listen(389,'127.0.0.1',function(err){
+    server.listen(1389,'127.0.0.1',function(err){
       server.close(function(err){
         t.error(err);
         t.end();
