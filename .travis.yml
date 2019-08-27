@@ -14,6 +14,7 @@ cache:
   npm: true
 
 stages:
+  - lint
   - test
 
 jobs:
