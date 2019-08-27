@@ -51,8 +51,8 @@
     "test:cov": "tap 'test/**/*.test.js'",
     "test:cov:html": "tap --coverage-report=html 'test/**/*.test.js'",
     "test:watch": "tap -n -w --no-coverage-report 'test/**/*.test.js'",
-    "lint": "standard | snazzy",
-    "lint:ci": "standard"
+    "lint": "standard 'examples/**/*.js' 'lib/**/*.js' 'test/**/*.js' | snazzy",
+    "lint:ci": "standard 'examples/**/*.js' 'lib/**/*.js' 'test/**/*.js'"
   },
   "husky": {
     "hooks": {
