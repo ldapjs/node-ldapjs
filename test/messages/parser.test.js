@@ -27,7 +27,7 @@ test('wrong protocol error', function (t) {
   });
 
   // Send some bogus data to incur an error
-  p.write(new Buffer([16, 1, 4]));
+  p.write(Buffer.from([16, 1, 4]));
 });
 
 test('bad protocol op', function (t) {
@@ -51,7 +51,7 @@ test('bad message structure', function (t) {
     protocolOp: lib.LDAP_REQ_EXTENSION
   });
   message._toBer = function (writer) {
-    writer.writeBuffer(new Buffer([16, 1, 4]), 80);
+    writer.writeBuffer(Buffer.from([16, 1, 4]), 80);
     return writer;
   };
 

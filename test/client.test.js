@@ -115,7 +115,7 @@ test('setup', function (t) {
         objectName: req.dn,
         attributes: {
           'foo;binary': 'wr0gKyDCvCA9IMK+',
-          'gb18030': new Buffer([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]),
+          'gb18030': Buffer.from([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]),
           'objectclass': 'binary'
         }
       }));
@@ -197,9 +197,9 @@ test('setup', function (t) {
 
       var resultCookie;
       if (last < max) {
-        resultCookie = new Buffer(last.toString());
+        resultCookie = Buffer.from(last.toString());
       } else {
-        resultCookie = new Buffer('');
+        resultCookie = Buffer.from('');
       }
       res.controls.push(new ldap.PagedResultsControl({
         value: {
@@ -234,7 +234,7 @@ test('setup', function (t) {
         res.controls.push(new ldap.PagedResultsControl({
           value: {
             size: 2,
-            cookie: new Buffer('a')
+            cookie: Buffer.from('a')
           }
         }));
         res.end();
@@ -840,8 +840,8 @@ test('GH-21 binary attributes', function (t) {
     t.ifError(err);
     t.ok(res);
     var gotEntry = 0;
-    var expect = new Buffer('\u00bd + \u00bc = \u00be', 'utf8');
-    var expect2 = new Buffer([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]);
+    var expect = Buffer.from('\u00bd + \u00bc = \u00be', 'utf8');
+    var expect2 = Buffer.from([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]);
     res.on('searchEntry', function (entry) {
       t.ok(entry);
       t.ok(entry instanceof ldap.SearchEntry);

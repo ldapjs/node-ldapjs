@@ -160,7 +160,7 @@ test('GH-109 = to ber uses plain values', function (t) {
 
 
 test('handle values passed via buffer', function (t) {
-  var b = new Buffer([32, 64, 128, 254]);
+  var b = Buffer.from([32, 64, 128, 254]);
   var f = new EqualityFilter({
     attribute: 'foo',
     value: b

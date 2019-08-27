@@ -128,7 +128,7 @@ test('isAttribute', function (t) {
 
   t.ok(isA({
     type: 'foo',
-    vals: ['item', new Buffer(5)],
+    vals: ['item', Buffer.from(5)],
     toBer: function () { /* placeholder */ }
   }));
 
