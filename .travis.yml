@@ -2,7 +2,7 @@ language: node_js
 
 os:
   - linux
-  - windows
+  # - windows
 
 cache:
   npm: true
