@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
-const os = require('os');
-const path = require('path');
-const uuid = require('uuid');
+const os = require('os')
+const path = require('path')
+const uuid = require('uuid')
 
-function getSock() {
+function getSock () {
   if (process.platform === 'win32') {
-    return '\\\\.\\pipe\\' + uuid();
+    return '\\\\.\\pipe\\' + uuid()
   } else {
-    return path.join(os.tmpdir(), uuid());
+    return path.join(os.tmpdir(), uuid())
   }
 }
 
