@@ -49,7 +49,7 @@
     "tape": "^4.6.2"
   },
   "scripts": {
-        "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
-        "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
+    "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
+    "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
   }
 }
