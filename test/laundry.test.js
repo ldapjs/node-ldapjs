@@ -1,39 +1,39 @@
-'use strict';
+'use strict'
 
-const tap = require('tap');
+const tap = require('tap')
 const uuid = require('uuid')
 const { getSock } = require('./utils')
-const ldap = require('../lib');
+const ldap = require('../lib')
 
-function search(t, options, callback) {
+function search (t, options, callback) {
   t.context.client.search(t.context.suffix, options, function (err, res) {
-    t.error(err);
-    t.ok(res);
-    let found = false;
+    t.error(err)
+    t.ok(res)
+    let found = false
     res.on('searchEntry', function (entry) {
-      t.ok(entry);
-      found = true;
-    });
+      t.ok(entry)
+      found = true
+    })
     res.on('end', function () {
-      t.true(found);
-      if (callback) return callback();
-      return t.end();
-    });
-  });
+      t.true(found)
+      if (callback) return callback()
+      return t.end()
+    })
+  })
 }
 
 tap.beforeEach((done, t) => {
-  const suffix = `dc=${uuid()}`;
-  const server = ldap.createServer();
+  const suffix = `dc=${uuid()}`
+  const server = ldap.createServer()
 
-  t.context.server = server;
-  t.context.socketPath = getSock();
-  t.context.suffix = suffix;
+  t.context.server = server
+  t.context.socketPath = getSock()
+  t.context.suffix = suffix
 
   server.bind('cn=root', function (req, res, next) {
-    res.end();
-    return next();
-  });
+    res.end()
+    return next()
+  })
 
   server.search(suffix, function (req, res, next) {
     var entry = {
@@ -45,27 +45,26 @@ tap.beforeEach((done, t) => {
         givenname: 'ogo',
         mail: uuid() + '@pogostick.org'
       }
-    };
+    }
 
-    if (req.filter.matches(entry.attributes))
-      res.send(entry);
+    if (req.filter.matches(entry.attributes)) { res.send(entry) }
 
-    res.end();
-  });
+    res.end()
+  })
 
   server.listen(t.context.socketPath, function () {
     t.context.client = ldap.createClient({
       socketPath: t.context.socketPath
-    });
+    })
 
     t.context.client.on('connectError', (err) => {
-      t.context.server.close(() => done(err));
+      t.context.server.close(() => done(err))
     })
     t.context.client.on('connect', (socket) => {
-      t.context.socket = socket;
-      done();
+      t.context.socket = socket
+      done()
     })
-  });
+  })
 })
 
 tap.afterEach((done, t) => {
@@ -93,35 +92,35 @@ tap.test('Evolution search filter (GH-3)', function (t) {
     '(otherpostaladdress=ogo*)(jpegphoto=ogo*)(usercertificate=ogo*)' +
     '(labeleduri=ogo*)(displayname=ogo*)(spousename=ogo*)(note=ogo*)' +
     '(anniversary=ogo*)(birthdate=ogo*)(mailer=ogo*)(fileas=ogo*)' +
-    '(category=ogo*)(calcaluri=ogo*)(calfburl=ogo*)(icscalendar=ogo*))';
+    '(category=ogo*)(calcaluri=ogo*)(calfburl=ogo*)(icscalendar=ogo*))'
 
-  return search(t, filter);
-});
+  return search(t, filter)
+})
 
 tap.test('GH-49 Client errors on bad attributes', function (t) {
   const searchOpts = {
     filter: 'cn=*ogo*',
     scope: 'one',
     attributes: 'dn'
-  };
-  return search(t, searchOpts);
-});
+  }
+  return search(t, searchOpts)
+})
 
 tap.test('GH-55 Client emits connect multiple times', function (t) {
   const c = ldap.createClient({
     socketPath: t.context.socketPath
-  });
+  })
 
-  let count = 0;
+  let count = 0
   c.on('connect', function (socket) {
-    t.ok(socket);
-    count++;
+    t.ok(socket)
+    count++
     c.bind('cn=root', 'secret', function (err) {
-      t.ifError(err);
+      t.ifError(err)
       c.unbind(function () {
-        t.equal(count, 1);
-        t.end();
-      });
-    });
-  });
-});
+        t.equal(count, 1)
+        t.end()
+      })
+    })
+  })
+})
