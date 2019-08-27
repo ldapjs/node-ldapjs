@@ -3,7 +3,7 @@
 
 var asn1 = require('asn1');
 var logger = Object.create(require('abstract-logging'));
-var test = require('tape').test;
+var test = require('tap').test;
 
 
 ///--- Globals
