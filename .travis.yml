@@ -1,6 +1,33 @@
+sudo: false
+
+git:
+  depth: 3
+
+branches:
+  only:
+    - next
+    - master
+
 language: node_js
+
 node_js:
-  - "0.10"
-  - "0.12"
-  - "4"
-  - "stable"
+  - lts/*
+  - node
+
+os:
+  - linux
+  # - windows
+
+cache:
+  npm: true
+
+stages:
+  - test
+
+jobs:
+  include:
+    # - stage: lint ✨
+    #   script: npm run lint
+
+    - stage: test 👩🏽‍💻
+      script: npm run test:cov
