@@ -30,13 +30,13 @@
   },
   "dependencies": {
     "abstract-logging": "^1.0.0",
-    "asn1": "0.2.3",
+    "asn1": "^0.2.4",
     "assert-plus": "^1.0.0",
     "backoff": "^2.5.0",
     "dashdash": "^1.14.0",
     "ldap-filter": "^0.3.3",
     "once": "^1.4.0",
-    "vasync": "^1.6.4",
+    "vasync": "^2.2.0",
     "verror": "^1.8.1"
   },
   "devDependencies": {
