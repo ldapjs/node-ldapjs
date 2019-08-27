@@ -1,9 +1,7 @@
 # LDAPjs
 
-[!['Build status'][travis_image_url]][travis_page_url]
-
-[travis_image_url]: https://api.travis-ci.org/joyent/node-ldapjs.svg
-[travis_page_url]: https://travis-ci.org/joyent/node-ldapjs
+[![Build Status](https://travis-ci.org/ldapjs/node-ldapjs.svg)](https://travis-ci.org/ldapjs/node-ldapjs)
+[![Coverage Status](https://coveralls.io/repos/github/ldapjs/node-ldapjs/badge.svg?branch=ci-cleanup)](https://coveralls.io/github/ldapjs/node-ldapjs?branch=ci-cleanup)
 
 LDAPjs makes the LDAP protocol a first class citizen in Node.js.
 
@@ -53,4 +51,4 @@ MIT.
 
 ## Bugs
 
-See <https://github.com/mcavage/node-ldapjs/issues>.
+See <https://github.com/ldapjs/node-ldapjs/issues>.
