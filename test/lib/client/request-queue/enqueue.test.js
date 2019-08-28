@@ -35,7 +35,7 @@ test('adds a request and returns if no timeout', async t => {
   t.true(result)
 })
 
-test('adds a requests and returns timer not set', async t => {
+test('adds a request and returns timer not set', async t => {
   const q = {
     _queue: {
       length: 0,
