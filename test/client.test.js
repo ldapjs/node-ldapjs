@@ -1,6 +1,7 @@
 'use strict'
 
 const util = require('util')
+const assert = require('assert')
 const tap = require('tap')
 const uuid = require('uuid')
 const vasync = require('vasync')
@@ -53,6 +54,12 @@ tap.beforeEach((done, t) => {
   })
 
   server.modifyDN(SUFFIX, function (req, res, next) {
+    res.end()
+    return next()
+  })
+
+  server.modifyDN('cn=issue-480', function (req, res, next) {
+    assert(req.newRdn.toString().length > 132)
     res.end()
     return next()
   })
@@ -526,6 +533,15 @@ tap.test('modify DN new RDN only', function (t) {
 
 tap.test('modify DN new superior', function (t) {
   t.context.client.modifyDN('cn=old, ' + SUFFIX, 'cn=new, dc=foo', function (err, res) {
+    t.error(err)
+    t.ok(res)
+    t.equal(res.status, 0)
+    t.end()
+  })
+})
+
+tap.test('modify DN excessive length (GH-480)', function (t) {
+  t.context.client.modifyDN('cn=issue-480', 'cn=a292979f2c86d513d48bbb9786b564b3c5228146e5ba46f404724e322544a7304a2b1049168803a5485e2d57a544c6a0d860af91330acb77e5907a9e601ad1227e80e0dc50abe963b47a004f2c90f570450d0e920d15436fdc771e3bdac0487a9735473ed3a79361d1778d7e53a7fb0e5f01f97a75ef05837d1d5496fc86968ff47fcb64', function (err, res) {
     t.error(err)
     t.ok(res)
     t.equal(res.status, 0)
