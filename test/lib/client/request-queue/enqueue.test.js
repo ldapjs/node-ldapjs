@@ -15,7 +15,7 @@ test('rejects new requests if queue is frozen', async t => {
   t.false(result)
 })
 
-test('adds a requests and returns if no timeout', async t => {
+test('adds a request and returns if no timeout', async t => {
   const q = {
     _queue: {
       length: 0,
