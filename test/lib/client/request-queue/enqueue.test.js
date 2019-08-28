@@ -56,7 +56,7 @@ test('adds a requests and returns timer not set', async t => {
   t.true(result)
 })
 
-test('adds a requests, returns true, and clears queue', t => {
+test('adds a request, returns true, and clears queue', t => {
   // Must not be an async test due to an internal `setTimeout`
   t.plan(4)
   const q = {
