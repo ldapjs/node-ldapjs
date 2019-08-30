@@ -937,7 +937,7 @@ tap.test('idle timeout', function (t) {
     })
     res.on('end', function () {
       var late = setTimeout(function () {
-        t.error(false, 'too late')
+        t.fail('too late')
       }, 500)
       // It's ok to go idle now
       t.context.client.removeListener('idle', premature)
