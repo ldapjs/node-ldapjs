@@ -43,13 +43,14 @@
     "dtrace-provider": "~0.8"
   },
   "devDependencies": {
-    "node-uuid": "^1.4.7",
+    "buffer-compare": "^1.1.1",
     "faucet": "0.0.1",
     "istanbul": "^0.4.5",
+    "node-uuid": "^1.4.7",
     "tape": "^4.6.2"
   },
   "scripts": {
-        "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
-        "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
+    "report": "./node_modules/.bin/istanbul report html && open ./coverage/lcov-report/index.html",
+    "test": "./node_modules/.bin/istanbul cover --print none test/test.js | ./node_modules/.bin/faucet"
   }
 }

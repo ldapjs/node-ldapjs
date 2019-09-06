@@ -3,6 +3,7 @@
 var test = require('tape').test;
 var fs = require('fs');
 var asn1 = require('asn1');
+var compare = require('buffer-compare');
 
 
 ///--- Globals
@@ -50,10 +51,8 @@ test('new with args', function (t) {
 });
 
 test('new with args and buffer', function (t) {
-  
-
   var img = fs.readFileSync(__dirname + '/imgs/test.jpg');
-  
+
   var change = new Change({
     operation: 'add',
     modification: {
@@ -66,7 +65,7 @@ test('new with args and buffer', function (t) {
   t.equal(change.operation, 'add');
   t.equal(change.modification.type, 'thumbnailPhoto');
   t.equal(change.modification.vals.length, 1);
-  t.equal(change.modification.buffers[0].compare(img), 0);
+  t.equal(compare(change.modification.buffers[0], img), 0);
 
   t.end();
 });
