@@ -1,5 +1,7 @@
 'use strict'
 
+const fs = require('fs')
+const path = require('path')
 const { test } = require('tap')
 const { BerReader, BerWriter } = require('asn1')
 const { Attribute, Change } = require('../lib')
@@ -24,6 +26,26 @@ test('new with args', function (t) {
   t.equal(change.modification.vals.length, 2)
   t.equal(change.modification.vals[0], 'foo')
   t.equal(change.modification.vals[1], 'bar')
+
+  t.end()
+})
+
+test('new with args and buffer', function (t) {
+  var img = fs.readFileSync(path.join(__dirname, '/imgs/test.jpg'))
+
+  var change = new Change({
+    operation: 'add',
+    modification: {
+      thumbnailPhoto: img
+    }
+  })
+
+  t.ok(change)
+
+  t.equal(change.operation, 'add')
+  t.equal(change.modification.type, 'thumbnailPhoto')
+  t.equal(change.modification.vals.length, 1)
+  t.equal(change.modification.buffers[0].compare(img), 0)
 
   t.end()
 })
