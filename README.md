@@ -1,6 +1,6 @@
 # LDAPjs
 
-[![Build Status](https://travis-ci.org/ldapjs/node-ldapjs.svg)](https://travis-ci.org/ldapjs/node-ldapjs)
+[![Build Status](https://github.com/ldapjs/node-ldapjs/workflows/main/badge.svg)]
 [![Coverage Status](https://coveralls.io/repos/github/ldapjs/node-ldapjs/badge.svg?branch=ci-cleanup)](https://coveralls.io/github/ldapjs/node-ldapjs?branch=ci-cleanup)
 
 LDAPjs makes the LDAP protocol a first class citizen in Node.js.
