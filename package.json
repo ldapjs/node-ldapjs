@@ -14,7 +14,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">=10.16.0"
+    "node": ">=10.13.0"
   },
   "dependencies": {
     "abstract-logging": "^1.0.0",
@@ -35,6 +35,7 @@
   },
   "scripts": {
     "test": "tap --no-cov",
+    "test:ci": "tap --coverage-report=lcovonly",
     "test:cov": "tap",
     "test:cov:html": "tap --coverage-report=html",
     "test:watch": "tap -n -w --no-coverage-report",
