@@ -2,7 +2,6 @@
 // -*- mode: js -*-
 // Copyright 2011 Mark Cavage.  All rights reserved.
 
-var fs = require('fs');
 var path = require('path');
 
 var dashdash = require('dashdash');
