@@ -26,6 +26,16 @@ test('GH-50 = in filter', function (t) {
   t.end()
 })
 
+test('convert to hex code', function (t) {
+  const str = 'foo=bar\\(abcd\\e\\fg\\h\\69\\a'
+  const f = parse(str)
+  t.ok(f)
+  t.equal(f.attribute, 'foo')
+  t.equal(f.value, 'bar(abcdefghia')
+  t.equal(f.toString(), '(foo=bar\\28abcdefghia)')
+  t.end()
+})
+
 test('( in filter', function (t) {
   const str = '(foo=bar\\()'
   const f = parse(str)
@@ -48,6 +58,16 @@ test(') in filter', function (t) {
 
 test('\\ in filter', function (t) {
   const str = '(foo=bar\\\\)'
+  const f = parse(str)
+  t.ok(f)
+  t.equal(f.attribute, 'foo')
+  t.equal(f.value, 'bar\\')
+  t.equal(f.toString(), '(foo=bar\\5c)')
+  t.end()
+})
+
+test('not escaped \\ at end of filter', function (t) {
+  const str = 'foo=bar\\'
   const f = parse(str)
   t.ok(f)
   t.equal(f.attribute, 'foo')
