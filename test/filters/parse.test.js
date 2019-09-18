@@ -26,6 +26,16 @@ test('GH-50 = in filter', function (t) {
   t.end()
 })
 
+test('convert to hex code', function (t) {
+  const str = 'foo=bar\\(abcd\\e\\fg\\h\\69\\'
+  const f = parse(str)
+  t.ok(f)
+  t.equal(f.attribute, 'foo')
+  t.equal(f.value, 'bar(abcdefghi\\')
+  t.equal(f.toString(), '(foo=bar\\28abcdefghi\\5c)')
+  t.end()
+})
+
 test('( in filter', function (t) {
   const str = '(foo=bar\\()'
   const f = parse(str)
