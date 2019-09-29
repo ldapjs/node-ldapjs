@@ -188,6 +188,62 @@ tap.beforeEach((done, t) => {
       next(new ldap.UnwillingToPerformError())
     }
   })
+  server.search('cn=sssvlv', function (req, res, next) {
+    const min = 0
+    const max = 100
+    const results = []
+    let o = 'aa'
+    for (let i = min; i < max; i++) {
+      results.push({
+        dn: util.format('o=%s, cn=sssvlv', o),
+        attributes: {
+          o: [o],
+          objectclass: ['sssvlvResult']
+        }
+      })
+      o = ((parseInt(o, 36) + 1).toString(36)).replace(/0/g, 'a')
+    }
+    function sendResults (start, end, sortBy, sortDesc) {
+      start = (start < min) ? min : start
+      end = (end > max || end < min) ? max : end
+      const sorted = results.sort((a, b) => {
+        if (a.attributes[sortBy][0] < b.attributes[sortBy][0]) {
+          return sortDesc ? 1 : -1
+        } else if (a.attributes[sortBy][0] > b.attributes[sortBy][0]) {
+          return sortDesc ? -1 : 1
+        }
+        return 0
+      })
+      for (let i = start; i < end; i++) {
+        res.send(sorted[i])
+      }
+    }
+    let sortBy = null
+    let sortDesc = null
+    let afterCount = null
+    let targetOffset = null
+    req.controls.forEach(function (control) {
+      if (control.type === ldap.ServerSideSortingRequestControl.OID) {
+        sortBy = control.value[0].attributeType
+        sortDesc = control.value[0].reverseOrder
+      }
+      if (control.type === ldap.VirtualListViewRequestControl.OID) {
+        afterCount = control.value.afterCount
+        targetOffset = control.value.targetOffset
+      }
+    })
+    if (sortBy) {
+      if (afterCount && targetOffset) {
+        sendResults(targetOffset - 1, (targetOffset + afterCount), sortBy, sortDesc)
+      } else {
+        sendResults(min, max, sortBy, sortDesc)
+      }
+      res.end()
+      next()
+    } else {
+      next(new ldap.UnwillingToPerformError())
+    }
+  })
 
   server.search('cn=pagederr', function (req, res, next) {
     let cookie = null
@@ -735,6 +791,153 @@ tap.test('search paged', { timeout: 10000 }, function (t) {
     })
   })
 
+  t.end()
+})
+
+tap.test('search - sssvlv', { timeout: 10000 }, function (t) {
+  t.test('ssv - asc', function (t2) {
+    let preventry = null
+    const sssrcontrol = new ldap.ServerSideSortingRequestControl(
+      {
+        value: {
+          attributeType: 'o',
+          orderingRule: 'caseIgnoreOrderingMatch',
+          reverseOrder: false
+        }
+      }
+    )
+    t.context.client.search('cn=sssvlv', {}, sssrcontrol, function (err, res) {
+      t2.error(err)
+      res.on('searchEntry', function (entry) {
+        t2.ok(entry)
+        t2.ok(entry instanceof ldap.SearchEntry)
+        t2.ok(entry.attributes)
+        t2.ok(entry.attributes.length)
+        if (preventry != null) {
+          t2.ok(entry.attributes[0]._vals[0] >= preventry.attributes[0]._vals[0])
+        }
+        preventry = entry
+      })
+      res.on('error', (err) => t2.error(err))
+      res.on('end', function () {
+        t2.end()
+      })
+    })
+  })
+  t.test('ssv - desc', function (t2) {
+    let preventry = null
+    const sssrcontrol = new ldap.ServerSideSortingRequestControl(
+      {
+        value: {
+          attributeType: 'o',
+          orderingRule: 'caseIgnoreOrderingMatch',
+          reverseOrder: true
+        }
+      }
+    )
+    t.context.client.search('cn=sssvlv', {}, sssrcontrol, function (err, res) {
+      t2.error(err)
+      res.on('searchEntry', function (entry) {
+        t2.ok(entry)
+        t2.ok(entry instanceof ldap.SearchEntry)
+        t2.ok(entry.attributes)
+        t2.ok(entry.attributes.length)
+        if (preventry != null) {
+          t2.ok(entry.attributes[0]._vals[0] <= preventry.attributes[0]._vals[0])
+        }
+        preventry = entry
+      })
+      res.on('error', (err) => t2.error(err))
+      res.on('end', function () {
+        t2.end()
+      })
+    })
+  })
+
+  t.test('vlv - first page', function (t2) {
+    const sssrcontrol = new ldap.ServerSideSortingRequestControl(
+      {
+        value: {
+          attributeType: 'o',
+          orderingRule: 'caseIgnoreOrderingMatch',
+          reverseOrder: false
+        }
+      }
+    )
+    const vlvrcontrol = new ldap.VirtualListViewRequestControl(
+      {
+        value: {
+          beforeCount: 0,
+          afterCount: 9,
+          targetOffset: 1,
+          contentCount: 0
+        }
+      }
+    )
+    let count = 0
+    let preventry = null
+    t.context.client.search('cn=sssvlv', {}, [sssrcontrol, vlvrcontrol], function (err, res) {
+      t2.error(err)
+      res.on('searchEntry', function (entry) {
+        t2.ok(entry)
+        t2.ok(entry instanceof ldap.SearchEntry)
+        t2.ok(entry.attributes)
+        t2.ok(entry.attributes.length)
+        if (preventry != null) {
+          t2.ok(entry.attributes[0]._vals[0] >= preventry.attributes[0]._vals[0])
+        }
+        preventry = entry
+        count++
+      })
+      res.on('error', (err) => t2.error(err))
+      res.on('end', function (result) {
+        t2.equals(count, 10)
+        t2.end()
+      })
+    })
+  })
+  t.test('vlv - last page', function (t2) {
+    const sssrcontrol = new ldap.ServerSideSortingRequestControl(
+      {
+        value: {
+          attributeType: 'o',
+          orderingRule: 'caseIgnoreOrderingMatch',
+          reverseOrder: false
+        }
+      }
+    )
+    const vlvrcontrol = new ldap.VirtualListViewRequestControl(
+      {
+        value: {
+          beforeCount: 0,
+          afterCount: 9,
+          targetOffset: 91,
+          contentCount: 0
+        }
+      }
+    )
+    let count = 0
+    let preventry = null
+    t.context.client.search('cn=sssvlv', {}, [sssrcontrol, vlvrcontrol], function (err, res) {
+      t2.error(err)
+      res.on('searchEntry', function (entry) {
+        t2.ok(entry)
+        t2.ok(entry instanceof ldap.SearchEntry)
+        t2.ok(entry.attributes)
+        t2.ok(entry.attributes.length)
+        if (preventry != null) {
+          t2.ok(entry.attributes[0]._vals[0] >= preventry.attributes[0]._vals[0])
+        }
+        preventry = entry
+        count++
+      })
+      res.on('error', (err) => t2.error(err))
+      res.on('end', function (result) {
+        t2.equals(count, 10)
+        t2.end()
+      })
+    })
+  })
   t.end()
 })
 
