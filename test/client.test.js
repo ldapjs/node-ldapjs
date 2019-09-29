@@ -331,6 +331,64 @@ tap.afterEach((done, t) => {
   })
 })
 
+tap.test('createClient', t => {
+  t.test('requires an options object', async t => {
+    const match = /options.+required/
+    t.throws(() => ldap.createClient(), match)
+    t.throws(() => ldap.createClient([]), match)
+    t.throws(() => ldap.createClient(''), match)
+    t.throws(() => ldap.createClient(42), match)
+  })
+
+  t.test('url must be a string', async t => {
+    const match = /options\.url \(string\) required/
+    t.throws(() => ldap.createClient({ url: {} }), match)
+    t.throws(() => ldap.createClient({ url: [] }), match)
+    t.throws(() => ldap.createClient({ url: 42 }), match)
+  })
+
+  t.test('socketPath must be a string', async t => {
+    const match = /options\.socketPath must be a string/
+    t.throws(() => ldap.createClient({ socketPath: {} }), match)
+    t.throws(() => ldap.createClient({ socketPath: [] }), match)
+    t.throws(() => ldap.createClient({ socketPath: 42 }), match)
+  })
+
+  t.test('cannot supply both url and socketPath', async t => {
+    t.throws(
+      () => ldap.createClient({ url: 'foo', socketPath: 'bar' }),
+      /options\.url \^ options\.socketPath \(String\) required/
+    )
+  })
+
+  t.test('must supply at least url or socketPath', async t => {
+    t.throws(
+      () => ldap.createClient({}),
+      /options\.url \^ options\.socketPath \(String\) required/
+    )
+  })
+
+  // TODO: this test is really flaky. It would be better if we could validate
+  // the options _withouth_ having to connect to a server.
+  // t.test('attaches a child function to logger', async t => {
+  //   /* eslint-disable-next-line */
+  //   let client
+  //   const logger = Object.create(require('abstract-logging'))
+  //   const socketPath = getSock()
+  //   const server = ldap.createServer()
+  //   server.listen(socketPath, () => {})
+  //   t.tearDown(() => {
+  //     client.unbind(() => server.close())
+  //   })
+
+  //   client = ldap.createClient({ socketPath, log: logger })
+  //   t.ok(logger.child)
+  //   t.true(typeof client.log.child === 'function')
+  // })
+
+  t.end()
+})
+
 tap.test('simple bind failure', function (t) {
   t.context.client.bind(BIND_DN, uuid(), function (err, res) {
     t.ok(err)
