@@ -34,7 +34,7 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "test": "tap --no-cov",
+    "test": "tap --no-cov test/",
     "test:ci": "tap --coverage-report=lcovonly",
     "test:cov": "tap",
     "test:cov:html": "tap --coverage-report=html",
