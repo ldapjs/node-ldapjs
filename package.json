@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mcavage/node-ldapjs.git"
+    "url": "git://github.com/ldapjs/node-ldapjs.git"
   },
   "main": "lib/index.js",
   "directories": {
