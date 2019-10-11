@@ -1463,3 +1463,17 @@ tap.test('resultError handling', function (t) {
     t.fail('should not get error')
   }
 })
+
+tap.test('connection refused', function (t) {
+  const client = ldap.createClient({
+    url: 'ldap://0.0.0.0'
+  })
+
+  client.bind('cn=root', 'secret', function (err, res) {
+    t.true(err)
+    t.type(err, Error)
+    t.equals(err.code, 'ECONNREFUSED')
+    t.false(res)
+    t.end()
+  })
+})
