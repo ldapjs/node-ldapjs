@@ -40,6 +40,7 @@
     "test:cov:html": "tap --coverage-report=html",
     "test:watch": "tap -n -w --no-coverage-report",
     "test:integration": "tap --no-cov 'test-integration/**/*.test.js'",
+    "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
     "lint": "standard | snazzy",
     "lint:ci": "standard"
   },
