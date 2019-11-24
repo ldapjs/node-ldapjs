@@ -3,7 +3,7 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "2.0.0-pre.2",
+  "version": "2.0.0-pre.3",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -39,6 +39,8 @@
     "test:cov": "tap",
     "test:cov:html": "tap --coverage-report=html",
     "test:watch": "tap -n -w --no-coverage-report",
+    "test:integration": "tap --no-cov 'test-integration/**/*.test.js'",
+    "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
     "lint": "standard | snazzy",
     "lint:ci": "standard"
   },

@@ -368,6 +368,17 @@ tap.test('createClient', t => {
     )
   })
 
+  tap.test('exception from bad createClient parameter (issue #418)', t => {
+    try {
+      // This port number is totally invalid. It will cause the URL parser
+      // to throw an exception that should be caught.
+      ldap.createClient({ url: 'ldap://127.0.0.1:13891389' })
+    } catch (error) {
+      t.ok(error)
+      t.end()
+    }
+  })
+
   // TODO: this test is really flaky. It would be better if we could validate
   // the options _withouth_ having to connect to a server.
   // t.test('attaches a child function to logger', async t => {
