@@ -56,3 +56,36 @@ tap.test('whois works correctly (issue #370)', t => {
     })
   })
 })
+
+tap.test('can access large groups (issue #582)', t => {
+  const client = ldapjs.createClient({ url: baseURL })
+  client.bind('cn=admin,dc=planetexpress,dc=com ', 'GoodNewsEveryone', (err) => {
+    t.error(err)
+    const searchOpts = {
+      scope: 'sub',
+      filter: '(&(objectClass=group)(cn=large_group))'
+    }
+    client.search('ou=large_ou,dc=planetexpress,dc=com', searchOpts, (err, response) => {
+      t.error(err)
+
+      const results = []
+      response.on('searchEntry', (entry) => {
+        results.push(entry)
+      })
+      response.on('error', t.error)
+      response.on('end', (result) => {
+        t.is(result.status, 0)
+        t.is(results.length === 1, true)
+        t.ok(results[0].attributes)
+
+        const memberAttr = results[0].attributes.find(a => a.type === 'member')
+        t.ok(memberAttr)
+        t.ok(memberAttr.vals)
+        t.type(memberAttr.vals, Array)
+        t.is(memberAttr.vals.length, 2000)
+
+        client.unbind(t.end)
+      })
+    })
+  })
+})

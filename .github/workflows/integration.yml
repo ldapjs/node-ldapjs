@@ -31,9 +31,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Pull Docker image
-        run: docker pull "docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:1.0"
+        run: docker pull "docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:latest"
       - name: Start OpenLDAP service
-        run: docker run -it -d --name openldap -p 389:389 -p 636:636 docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:1.0
+        run: docker run -it -d --name openldap -p 389:389 -p 636:636 docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:latest
 
       - name: Install Packages
         run: npm install
