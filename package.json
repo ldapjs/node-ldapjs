@@ -3,7 +3,7 @@
   "name": "ldapjs",
   "homepage": "http://ldapjs.org",
   "description": "LDAP client and server APIs",
-  "version": "2.0.0-pre.3",
+  "version": "2.0.0-pre.4",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "husky": "^3.0.4",
     "snazzy": "^8.0.0",
     "standard": "^14.0.2",
-    "tap": "^14.6.1",
+    "tap": "14.10.1",
     "uuid": "^3.3.3"
   },
   "scripts": {
