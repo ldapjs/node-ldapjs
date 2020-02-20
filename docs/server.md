@@ -39,9 +39,10 @@ Known compatible loggers are:
 Set this property to reject connections when the server's connection count gets
 high.
 
-### connections (getter only)
+### connections (getter only) - DEPRECATED
 
-The number of concurrent connections on the server.
+The number of concurrent connections on the server. This property is deprecated,
+please use server.getConnections() instead.
 
 ### url
 
@@ -95,6 +96,13 @@ Start a server listening for connections on the given file descriptor.
 This file descriptor must have already had the `bind(2)` and `listen(2)` system
 calls invoked on it. Additionally, it must be set non-blocking; try
 `fcntl(fd, F_SETFL, O_NONBLOCK)`.
+
+## Inspecting server state
+
+### server.getConnections(callback)
+
+The LDAP server API mirrors the [Node.js `server.getConnections` API](https://nodejs.org/dist/latest-v12.x/docs/api/net.html#net_server_getconnections_callback). Callback
+should take two arguments err and count.
 
 # Routes
 

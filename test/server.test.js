@@ -21,6 +21,30 @@ tap.test('basic create', function (t) {
   t.end()
 })
 
+tap.test('connection count', function (t) {
+  const server = ldap.createServer()
+  t.ok(server)
+  server.listen(0, 'localhost', function () {
+    t.ok(true, 'server listening on ' + server.url)
+
+    server.getConnections(function (err, count) {
+      t.error(err)
+      t.equal(count, 0)
+
+      const client = ldap.createClient({ url: server.url })
+      client.on('connect', function () {
+        t.ok(true, 'client connected')
+        server.getConnections(function (err, count) {
+          t.error(err)
+          t.equal(count, 1)
+          client.unbind()
+          server.close(() => t.end())
+        })
+      })
+    })
+  })
+})
+
 tap.test('properties', function (t) {
   const server = ldap.createServer()
   t.equal(server.name, 'LDAPServer')
