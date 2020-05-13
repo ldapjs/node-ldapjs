@@ -703,6 +703,25 @@ tap.test('search basic', function (t) {
   })
 })
 
+tap.test('GH-602 search basic with delayed event listener binding', function (t) {
+  t.context.client.search('cn=test, ' + SUFFIX, '(objectclass=*)', function (err, res) {
+    t.error(err)
+    setTimeout(() => {
+      let gotEntry = 0
+      res.on('searchEntry', function (entry) {
+        gotEntry++
+      })
+      res.on('error', function (err) {
+        t.fail(err)
+      })
+      res.on('end', function (res) {
+        t.equal(gotEntry, 2)
+        t.end()
+      })
+    }, 100)
+  })
+})
+
 tap.test('search sizeLimit', function (t) {
   t.test('over limit', function (t2) {
     t.context.client.search('cn=sizelimit', {}, function (err, res) {
