@@ -78,7 +78,8 @@ test('toBer', function (t) {
   t.equal(ber.readSequence(), 0x30)
   t.equal(ber.readInt(), 123)
   t.equal(ber.readSequence(), 0x63)
-  t.equal(ber.readString(), 'cn=foo, o=test')
+  // Make sure we've removed spaces from between RDNs:
+  t.equal(ber.readString(), 'cn=foo,o=test')
   t.equal(ber.readEnumeration(), 1)
   t.equal(ber.readEnumeration(), 2)
   t.equal(ber.readInt(), 10)
