@@ -1,5 +1,9 @@
 # ldapjs Changelog
 
+## 2.0.0
+
+- Going foward, please see https://github.com/ldapjs/node-ldapjs/releases
+
 ## 1.0.2
 
 - Update dtrace-provider dependency
