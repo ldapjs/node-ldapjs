@@ -1,144 +1,116 @@
-// Copyright 2011 Mark Cavage, Inc.  All rights reserved.
+'use strict'
 
-var test = require('tape').test;
-
-var asn1 = require('asn1');
-
-
-///--- Globals
-
-var LessThanEqualsFilter;
-var BerReader = asn1.BerReader;
-var BerWriter = asn1.BerWriter;
-
-
-
-///--- Tests
-
-test('load library', function (t) {
-  var filters = require('../../lib/index').filters;
-  t.ok(filters);
-  LessThanEqualsFilter = filters.LessThanEqualsFilter;
-  t.ok(LessThanEqualsFilter);
-  t.end();
-});
-
+const { test } = require('tap')
+const { BerReader, BerWriter } = require('asn1')
+const { filters: { LessThanEqualsFilter } } = require('../../lib')
 
 test('Construct no args', function (t) {
-  var f = new LessThanEqualsFilter();
-  t.ok(f);
-  t.ok(!f.attribute);
-  t.ok(!f.value);
-  t.end();
-});
-
+  const f = new LessThanEqualsFilter()
+  t.ok(f)
+  t.ok(!f.attribute)
+  t.ok(!f.value)
+  t.end()
+})
 
 test('Construct args', function (t) {
-  var f = new LessThanEqualsFilter({
+  const f = new LessThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
-  });
-  t.ok(f);
-  t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'bar');
-  t.equal(f.toString(), '(foo<=bar)');
-  t.end();
-});
-
+  })
+  t.ok(f)
+  t.equal(f.attribute, 'foo')
+  t.equal(f.value, 'bar')
+  t.equal(f.toString(), '(foo<=bar)')
+  t.end()
+})
 
 test('GH-109 = escape value only in toString()', function (t) {
-  var f = new LessThanEqualsFilter({
+  const f = new LessThanEqualsFilter({
     attribute: 'foo',
     value: 'ba(r)'
-  });
-  t.ok(f);
-  t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'ba(r)');
-  t.equal(f.toString(), '(foo<=ba\\28r\\29)');
-  t.end();
-});
-
+  })
+  t.ok(f)
+  t.equal(f.attribute, 'foo')
+  t.equal(f.value, 'ba(r)')
+  t.equal(f.toString(), '(foo<=ba\\28r\\29)')
+  t.end()
+})
 
 test('match true', function (t) {
-  var f = new LessThanEqualsFilter({
+  const f = new LessThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
-  });
-  t.ok(f);
-  t.ok(f.matches({ foo: 'abc' }));
-  t.end();
-});
-
+  })
+  t.ok(f)
+  t.ok(f.matches({ foo: 'abc' }))
+  t.end()
+})
 
 test('match multiple', function (t) {
-  var f = new LessThanEqualsFilter({
+  const f = new LessThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
-  });
-  t.ok(f);
-  t.ok(f.matches({ foo: ['abc', 'beuha'] }));
-  t.end();
-});
-
+  })
+  t.ok(f)
+  t.ok(f.matches({ foo: ['abc', 'beuha'] }))
+  t.end()
+})
 
 test('match false', function (t) {
-  var f = new LessThanEqualsFilter({
+  const f = new LessThanEqualsFilter({
     attribute: 'foo',
     value: 'bar'
-  });
-  t.ok(f);
-  t.ok(!f.matches({ foo: 'baz' }));
-  t.end();
-});
-
+  })
+  t.ok(f)
+  t.ok(!f.matches({ foo: 'baz' }))
+  t.end()
+})
 
 test('parse ok', function (t) {
-  var writer = new BerWriter();
-  writer.writeString('foo');
-  writer.writeString('bar');
+  const writer = new BerWriter()
+  writer.writeString('foo')
+  writer.writeString('bar')
 
-  var f = new LessThanEqualsFilter();
-  t.ok(f);
-  t.ok(f.parse(new BerReader(writer.buffer)));
-  t.ok(f.matches({ foo: 'bar' }));
-  t.end();
-});
-
+  const f = new LessThanEqualsFilter()
+  t.ok(f)
+  t.ok(f.parse(new BerReader(writer.buffer)))
+  t.ok(f.matches({ foo: 'bar' }))
+  t.end()
+})
 
 test('parse bad', function (t) {
-  var writer = new BerWriter();
-  writer.writeString('foo');
-  writer.writeInt(20);
+  const writer = new BerWriter()
+  writer.writeString('foo')
+  writer.writeInt(20)
 
-  var f = new LessThanEqualsFilter();
-  t.ok(f);
+  const f = new LessThanEqualsFilter()
+  t.ok(f)
   try {
-    f.parse(new BerReader(writer.buffer));
-    t.fail('Should have thrown InvalidAsn1Error');
+    f.parse(new BerReader(writer.buffer))
+    t.fail('Should have thrown InvalidAsn1Error')
   } catch (e) {
-    t.equal(e.name, 'InvalidAsn1Error');
+    t.equal(e.name, 'InvalidAsn1Error')
   }
-  t.end();
-});
-
+  t.end()
+})
 
 test('GH-109 = to ber uses plain values', function (t) {
-  var f = new LessThanEqualsFilter({
+  let f = new LessThanEqualsFilter({
     attribute: 'foo',
     value: 'ba(r)'
-  });
-  t.ok(f);
-  var writer = new BerWriter();
-  f.toBer(writer);
+  })
+  t.ok(f)
+  const writer = new BerWriter()
+  f.toBer(writer)
 
-  f = new LessThanEqualsFilter();
-  t.ok(f);
+  f = new LessThanEqualsFilter()
+  t.ok(f)
 
-  var reader = new BerReader(writer.buffer);
-  reader.readSequence();
-  t.ok(f.parse(reader));
+  const reader = new BerReader(writer.buffer)
+  reader.readSequence()
+  t.ok(f.parse(reader))
 
-  t.equal(f.attribute, 'foo');
-  t.equal(f.value, 'ba(r)');
-  t.end();
-});
+  t.equal(f.attribute, 'foo')
+  t.equal(f.value, 'ba(r)')
+  t.end()
+})

@@ -1,0 +1,6 @@
+esm: false
+jsx: false
+ts: false
+
+files:
+  - 'test/**/*.test.js'

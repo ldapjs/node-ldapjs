@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  openldap:
+    image: docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:latest
+    ports:
+      - 389:389
+      - 636:636

@@ -1,0 +1,41 @@
+name: 'Integration Tests'
+
+# Notes:
+#  https://github.community/t5/GitHub-Actions/Github-Actions-services-not-reachable/m-p/30739/highlight/true#M538
+
+on:
+  pull_request:
+    branches:
+      - master
+      - next
+
+jobs:
+  baseline:
+    name: Baseline Tests
+    runs-on: ubuntu-latest
+
+    # services:
+    #   openldap:
+    #     image: docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:1.0
+    #     ports:
+    #       - 389:389
+    #       - 636:636
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+
+      # Hack way to start service since GitHub doesn't integrate with its own services
+      - name: Docker login
+        run: docker login docker.pkg.github.com -u ${GITHUB_ACTOR} -p ${GITHUB_TOKEN}
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Pull Docker image
+        run: docker pull "docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:latest"
+      - name: Start OpenLDAP service
+        run: docker run -it -d --name openldap -p 389:389 -p 636:636 docker.pkg.github.com/ldapjs/docker-test-openldap/openldap:latest
+
+      - name: Install Packages
+        run: npm install
+      - name: Run Tests
+        run: npm run test:integration

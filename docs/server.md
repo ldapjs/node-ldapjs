@@ -16,9 +16,21 @@ The code to create a new server looks like:
 
 The full list of options is:
 
-||log||You can optionally pass in a bunyan instance the client will use to acquire a logger.||
+||log||You can optionally pass in a Bunyan compatible logger instance the client will use to acquire a child logger.||
 ||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.||
 ||key||A PEM-encoded private key that corresponds to _certificate_ for SSL.||
+
+### Note On Logger
+
+The passed in logger is expected to conform to the Log4j standard API.
+Internally, [abstract-logging](https://www.npmjs.com/packages/abstract-logging) is
+used to implement the interface. As a result, no log messages will be generated
+unless an external logger is supplied.
+
+Known compatible loggers are:
+
++ [Bunyan](https://www.npmjs.com/package/bunyan)
++ [Pino](https://www.npmjs.com/package/pino)
 
 ## Properties on the server object
 
@@ -27,9 +39,10 @@ The full list of options is:
 Set this property to reject connections when the server's connection count gets
 high.
 
-### connections (getter only)
+### connections (getter only) - DEPRECATED
 
-The number of concurrent connections on the server.
+The number of concurrent connections on the server. This property is deprecated,
+please use server.getConnections() instead.
 
 ### url
 
@@ -53,7 +66,7 @@ available.
 Example:
 
      server.listen(389, '127.0.0.1', function() {
-       console.log(LDAP server listening at: ' + server.url);
+       console.log('LDAP server listening at: ' + server.url);
      });
 
 
@@ -83,6 +96,13 @@ Start a server listening for connections on the given file descriptor.
 This file descriptor must have already had the `bind(2)` and `listen(2)` system
 calls invoked on it. Additionally, it must be set non-blocking; try
 `fcntl(fd, F_SETFL, O_NONBLOCK)`.
+
+## Inspecting server state
+
+### server.getConnections(callback)
+
+The LDAP server API mirrors the [Node.js `server.getConnections` API](https://nodejs.org/dist/latest-v12.x/docs/api/net.html#net_server_getconnections_callback). Callback
+should take two arguments err and count.
 
 # Routes
 

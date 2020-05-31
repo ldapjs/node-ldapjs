@@ -26,18 +26,39 @@ client is:
 |---------------|-----------------------------------------------------------|
 |url            |A valid LDAP URL (proto/host/port only)                    |
 |socketPath     |Socket path if using AF\_UNIX sockets                      |
-|log            |Bunyan logger instance (Default: built-in instance)        |
+|log            |A compatible logger instance (Default: no-op logger)       |
 |timeout        |Milliseconds client should let operations live for before timing out (Default: Infinity)|
 |connectTimeout |Milliseconds client should wait before timing out on TCP connections (Default: OS default)|
 |tlsOptions     |Additional options passed to TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
 |idleTimeout    |Milliseconds after last activity before client emits idle event|
 |strictDN       |Force strict DN parsing for client methods (Default is true)|
+|reconnect      |Try to reconnect when the connection gets lost (Default is false)|
+
+### Note On Logger
+
+A passed in logger is expected to conform to the [Bunyan](https://www.npmjs.com/package/bunyan)
+API. Specifically, the logger is expected to have a `child()` method. If a logger
+is supplied that does not have such a method, then a shim version is added
+that merely returns the passed in logger.
+
+Known compatible loggers are:
+
++ [Bunyan](https://www.npmjs.com/package/bunyan)
++ [Pino](https://www.npmjs.com/package/pino)
 
 ## Connection management
 
 As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
-down from underneath you is can be difficult to deal with.  Several mechanisms
+down from underneath you can be difficult to deal with. Several mechanisms
 have been provided to mitigate this trouble.
+
+### Reconnect
+
+You can provide a Boolean option indicating if a reconnect should be tried. For
+more sophisticated control, you can provide an Object with the properties
+`initialDelay` (default: `100`), `maxDelay` (default: `10000`) and
+`failAfter` (default: `Infinity`).
+After the reconnect you maybe need to [bind](#bind) again.
 
 
 ## Common patterns
@@ -156,9 +177,11 @@ A `Change` object maps to the LDAP protocol of a modify change, and requires you
 to set the `operation` and `modification`.  The `operation` is a string, and
 must be one of:
 
-||replace||Replaces the attribute referenced in `modification`.  If the modification has no values, it is equivalent to a delete.||
-||add||Adds the attribute value(s) referenced in `modification`.  The attribute may or may not already exist.||
-||delete||Deletes the attribute (and all values) referenced in `modification`.||
+| Operation | Description |
+|-----------|-------------|
+| replace   | Replaces the attribute referenced in `modification`.  If the modification has no values, it is equivalent to a delete. |
+| add       | Adds the attribute value(s) referenced in `modification`.  The attribute may or may not already exist. |
+| delete    | Deletes the attribute (and all values) referenced in `modification`. |
 
 `modification` is just a plain old JS object with the values you want.
 
@@ -374,6 +397,13 @@ Example:
 `unbind(callback)`
 
 Performs an unbind operation against the LDAP server.
+
+Note that unbind operation is not an opposite operation
+for bind. Unbinding results in disconnecting the client
+regardless of whether a bind operation was performed.
+
+The `callback` argument is optional as unbind does
+not have a response.
 
 Example:
 

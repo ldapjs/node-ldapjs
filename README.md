@@ -1,9 +1,7 @@
 # LDAPjs
 
-[!['Build status'][travis_image_url]][travis_page_url]
-
-[travis_image_url]: https://api.travis-ci.org/joyent/node-ldapjs.svg
-[travis_page_url]: https://travis-ci.org/joyent/node-ldapjs
+[![Build Status](https://github.com/ldapjs/node-ldapjs/workflows/.github/workflows/main.yml/badge.svg)]
+[![Coverage Status](https://coveralls.io/repos/github/ldapjs/node-ldapjs/badge.svg)]
 
 LDAPjs makes the LDAP protocol a first class citizen in Node.js.
 
@@ -45,10 +43,12 @@ client on your system:
 
     npm install ldapjs
 
+DTrace support is included in ldapjs. To enable it, `npm install dtrace-provider`.
+
 ## License
 
 MIT.
 
 ## Bugs
 
-See <https://github.com/mcavage/node-ldapjs/issues>.
+See <https://github.com/ldapjs/node-ldapjs/issues>.

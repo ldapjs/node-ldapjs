@@ -289,7 +289,7 @@ with ldapjs.
       var entry = req.toObject().attributes;
 
       if (entry.objectclass.indexOf('unixUser') === -1)
-        return next(new ldap.ConstraintViolation('entry must be a unixUser'));
+        return next(new ldap.ConstraintViolationError('entry must be a unixUser'));
 
       var opts = ['-m'];
       if (entry.description) {

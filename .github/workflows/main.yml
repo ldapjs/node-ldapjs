@@ -1,0 +1,51 @@
+name: 'Lint And Test'
+
+on:
+  pull_request:
+    branches:
+      - master
+      - next
+
+jobs:
+  lint:
+    name: Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - name: Install Packages
+        run: npm install
+      - name: Lint Code
+        run: npm run lint:ci
+
+  run_tests:
+    name: Unit Tests
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        node:
+          - 10.13.0
+          - 10.x
+          - 12.x
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install Packages
+        run: npm install
+      - name: Run Tests
+        run: npm run test:ci
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
