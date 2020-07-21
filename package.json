@@ -32,7 +32,7 @@
     "snazzy": "^8.0.0",
     "standard": "^14.0.2",
     "tap": "14.10.1",
-    "uuid": "^3.3.3"
+    "uuid": "^8.2.0"
   },
   "scripts": {
     "test": "tap --no-cov",
