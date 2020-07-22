@@ -2,7 +2,11 @@
 
 const os = require('os')
 const path = require('path')
-const uuid = require('uuid')
+const crypto = require('crypto')
+
+function uuid () {
+  return crypto.randomBytes(16).toString('hex')
+}
 
 function getSock () {
   if (process.platform === 'win32') {
@@ -13,5 +17,6 @@ function getSock () {
 }
 
 module.exports = {
-  getSock
+  getSock,
+  uuid
 }
