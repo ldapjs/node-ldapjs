@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "get-port": "^5.1.1",
-    "husky": "^3.0.4",
+    "husky": "^4.2.5",
     "snazzy": "^8.0.0",
     "standard": "^14.0.2",
     "tap": "14.10.1",
