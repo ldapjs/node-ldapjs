@@ -1,8 +1,7 @@
 'use strict'
 
 const tap = require('tap')
-const uuid = require('uuid')
-const { getSock } = require('./utils')
+const { getSock, uuid } = require('./utils')
 const ldap = require('../lib')
 
 function search (t, options, callback) {

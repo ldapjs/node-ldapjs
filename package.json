@@ -31,8 +31,7 @@
     "husky": "^4.2.5",
     "snazzy": "^8.0.0",
     "standard": "^14.0.2",
-    "tap": "14.10.1",
-    "uuid": "^3.3.3"
+    "tap": "14.10.1"
   },
   "scripts": {
     "test": "tap --no-cov",
