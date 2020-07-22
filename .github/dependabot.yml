@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    versioning-strategy: increase-if-necessary
+    # versioning-strategy: increase-if-necessary
     directory: "/"
     schedule:
       interval: "weekly"
