@@ -682,7 +682,7 @@ tap.test('search basic', function (t) {
     res.on('searchEntry', function (entry) {
       t.ok(entry)
       t.ok(entry instanceof ldap.SearchEntry)
-      t.equal(entry.dn.toString(), 'cn=test, ' + SUFFIX)
+      t.equal(entry.dn.toString(), 'cn=test,' + SUFFIX)
       t.ok(entry.attributes)
       t.ok(entry.attributes.length)
       t.equal(entry.attributes[0].type, 'cn')
@@ -1118,7 +1118,7 @@ tap.test('GH-21 binary attributes', function (t) {
     res.on('searchEntry', function (entry) {
       t.ok(entry)
       t.ok(entry instanceof ldap.SearchEntry)
-      t.equal(entry.dn.toString(), 'cn=bin, ' + SUFFIX)
+      t.equal(entry.dn.toString(), 'cn=bin,' + SUFFIX)
       t.ok(entry.attributes)
       t.ok(entry.attributes.length)
       t.equal(entry.attributes[0].type, 'foo;binary')
@@ -1159,7 +1159,7 @@ tap.test('GH-23 case insensitive attribute filtering', function (t) {
     res.on('searchEntry', function (entry) {
       t.ok(entry)
       t.ok(entry instanceof ldap.SearchEntry)
-      t.equal(entry.dn.toString(), 'cn=test, ' + SUFFIX)
+      t.equal(entry.dn.toString(), 'cn=test,' + SUFFIX)
       t.ok(entry.attributes)
       t.ok(entry.attributes.length)
       t.equal(entry.attributes[0].type, 'cn')
@@ -1191,7 +1191,7 @@ tap.test('GH-24 attribute selection of *', function (t) {
     res.on('searchEntry', function (entry) {
       t.ok(entry)
       t.ok(entry instanceof ldap.SearchEntry)
-      t.equal(entry.dn.toString(), 'cn=test, ' + SUFFIX)
+      t.equal(entry.dn.toString(), 'cn=test,' + SUFFIX)
       t.ok(entry.attributes)
       t.ok(entry.attributes.length)
       t.equal(entry.attributes[0].type, 'cn')
