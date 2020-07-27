@@ -3,10 +3,9 @@
 const util = require('util')
 const assert = require('assert')
 const tap = require('tap')
-const uuid = require('uuid')
 const vasync = require('vasync')
 const getPort = require('get-port')
-const { getSock } = require('./utils')
+const { getSock, uuid } = require('./utils')
 const ldap = require('../lib')
 const { Attribute, Change } = ldap
 
