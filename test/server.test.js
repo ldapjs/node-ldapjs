@@ -107,8 +107,8 @@ tap.test('route order', function (t) {
   const server = ldap.createServer()
   const sock = t.context.sock
   const dnShort = SUFFIX
-  const dnMed = 'dc=sub, ' + SUFFIX
-  const dnLong = 'dc=long, dc=sub, ' + SUFFIX
+  const dnMed = 'dc=sub,' + SUFFIX
+  const dnLong = 'dc=long,dc=sub,' + SUFFIX
 
   // Mount routes out of order
   server.search(dnMed, generateHandler(dnMed))

@@ -74,7 +74,7 @@ test('toBer', function (t) {
   t.equal(ber.readSequence(), 0x30)
   t.equal(ber.readInt(), 123)
   t.equal(ber.readSequence(), 0x64)
-  t.equal(ber.readString(), 'cn=foo, o=test')
+  t.equal(ber.readString(), 'cn=foo,o=test')
   t.ok(ber.readSequence())
 
   t.ok(ber.readSequence())
