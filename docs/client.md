@@ -386,7 +386,9 @@ Example:
       ca: [fs.readFileSync('mycacert.pem')]
     };
 
-    client.starttls(opts, function(err, res) {
+    var controls = client.controls;
+
+    client.starttls(opts, controls, function(err, res) {
       assert.ifError(err);
 
       // Client communication now TLS protected
