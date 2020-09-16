@@ -14,7 +14,7 @@ The code to create a new client looks like:
 
     var ldap = require('ldapjs');
     var client = ldap.createClient({
-      url: 'ldap://127.0.0.1:1389'
+      url: 'ldap://127.0.0.1:1389,127.0.0.2:1389'
     });
 
 You can use `ldap://` or `ldaps://`; the latter would connect over SSL (note
@@ -24,7 +24,7 @@ client is:
 
 |Attribute      |Description                                                |
 |---------------|-----------------------------------------------------------|
-|url            |A valid LDAP URL (proto/host/port only)                    |
+|url            |A valid LDAP URL(s) (proto/host(s)/port(s)                 |
 |socketPath     |Socket path if using AF\_UNIX sockets                      |
 |log            |A compatible logger instance (Default: no-op logger)       |
 |timeout        |Milliseconds client should let operations live for before timing out (Default: Infinity)|
