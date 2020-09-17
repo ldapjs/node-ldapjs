@@ -24,7 +24,7 @@ client is:
 
 |Attribute      |Description                                                |
 |---------------|-----------------------------------------------------------|
-|url            |A valid LDAP URL(s) (proto/host(s)/port(s)                 |
+|url            |A string or array of valid LDAP URL(s) (proto/host/port)   |
 |socketPath     |Socket path if using AF\_UNIX sockets                      |
 |log            |A compatible logger instance (Default: no-op logger)       |
 |timeout        |Milliseconds client should let operations live for before timing out (Default: Infinity)|

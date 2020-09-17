@@ -388,18 +388,7 @@ tap.test('createClient', t => {
         connectTimeout: 1
       })
 
-      t.equal(client.servers.length, 2)
-    })
-  })
-
-  t.test('url string is correctly parsed and assigned', async t => {
-    getPort().then(function (unusedPortNumber) {
-      const client = ldap.createClient({
-        url: `ldap://0.0.0.0:${unusedPortNumber},0.0.0.1:${unusedPortNumber}`,
-        connectTimeout: 1
-      })
-
-      t.equal(client.servers.length, 2)
+      t.equal(client.urls.length, 2)
     })
   })
 
