@@ -14,7 +14,7 @@ The code to create a new client looks like:
 
     var ldap = require('ldapjs');
     var client = ldap.createClient({
-      url: 'ldap://127.0.0.1:1389,127.0.0.2:1389'
+      url: ['ldap://127.0.0.1:1389', 'ldap://127.0.0.2:1389']
     });
 
 You can use `ldap://` or `ldaps://`; the latter would connect over SSL (note
