@@ -34,6 +34,13 @@ client is:
 |strictDN       |Force strict DN parsing for client methods (Default is true)|
 |reconnect      |Try to reconnect when the connection gets lost (Default is false)|
 
+### url
+This parameter takes a single connection string or an array of connection strings
+as an input. In case an array is provided, the client tries to connect to the
+servers in given order. To achieve random server strategy (e.g. to distribute
+the load among the servers), please shuffle the array before passing it as an
+argument.
+
 ### Note On Logger
 
 A passed in logger is expected to conform to the [Bunyan](https://www.npmjs.com/package/bunyan)
