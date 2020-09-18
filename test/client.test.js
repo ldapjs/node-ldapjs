@@ -382,8 +382,8 @@ tap.test('createClient', t => {
     getPort().then(function (unusedPortNumber) {
       const client = ldap.createClient({
         url: [
-          `ldap://0.0.0.0:${unusedPortNumber}`,
-          `ldap://0.0.0.1:${unusedPortNumber}`
+          `ldap://127.0.0.1:${unusedPortNumber}`,
+          `ldap://127.0.0.2:${unusedPortNumber}`
         ],
         connectTimeout: 1
       })
