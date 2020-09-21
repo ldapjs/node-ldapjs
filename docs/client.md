@@ -14,7 +14,7 @@ The code to create a new client looks like:
 
     var ldap = require('ldapjs');
     var client = ldap.createClient({
-      url: 'ldap://127.0.0.1:1389'
+      url: ['ldap://127.0.0.1:1389', 'ldap://127.0.0.2:1389']
     });
 
 You can use `ldap://` or `ldaps://`; the latter would connect over SSL (note
@@ -24,7 +24,7 @@ client is:
 
 |Attribute      |Description                                                |
 |---------------|-----------------------------------------------------------|
-|url            |A valid LDAP URL (proto/host/port only)                    |
+|url            |A string or array of valid LDAP URL(s) (proto/host/port)   |
 |socketPath     |Socket path if using AF\_UNIX sockets                      |
 |log            |A compatible logger instance (Default: no-op logger)       |
 |timeout        |Milliseconds client should let operations live for before timing out (Default: Infinity)|
@@ -33,6 +33,13 @@ client is:
 |idleTimeout    |Milliseconds after last activity before client emits idle event|
 |strictDN       |Force strict DN parsing for client methods (Default is true)|
 |reconnect      |Try to reconnect when the connection gets lost (Default is false)|
+
+### url
+This parameter takes a single connection string or an array of connection strings
+as an input. In case an array is provided, the client tries to connect to the
+servers in given order. To achieve random server strategy (e.g. to distribute
+the load among the servers), please shuffle the array before passing it as an
+argument.
 
 ### Note On Logger
 

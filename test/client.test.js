@@ -340,10 +340,9 @@ tap.test('createClient', t => {
     t.throws(() => ldap.createClient(42), match)
   })
 
-  t.test('url must be a string', async t => {
-    const match = /options\.url \(string\) required/
+  t.test('url must be a string or array', async t => {
+    const match = /options\.url \(string\|array\) required/
     t.throws(() => ldap.createClient({ url: {} }), match)
-    t.throws(() => ldap.createClient({ url: [] }), match)
     t.throws(() => ldap.createClient({ url: 42 }), match)
   })
 
@@ -377,6 +376,20 @@ tap.test('createClient', t => {
       t.ok(error)
       t.end()
     }
+  })
+
+  t.test('url array is correctly assigned', async t => {
+    getPort().then(function (unusedPortNumber) {
+      const client = ldap.createClient({
+        url: [
+          `ldap://127.0.0.1:${unusedPortNumber}`,
+          `ldap://127.0.0.2:${unusedPortNumber}`
+        ],
+        connectTimeout: 1
+      })
+
+      t.equal(client.urls.length, 2)
+    })
   })
 
   // TODO: this test is really flaky. It would be better if we could validate
