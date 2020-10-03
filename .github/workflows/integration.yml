@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.1.2
 
       # Hack way to start service since GitHub doesn't integrate with its own services
       - name: Docker login
