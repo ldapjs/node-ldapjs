@@ -131,7 +131,7 @@ Example:
     });
 
 # del
-`del(dn, controls, callbak)`
+`del(dn, controls, callback)`
 
 
 Deletes an entry from the LDAP server.
