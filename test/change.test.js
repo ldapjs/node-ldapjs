@@ -31,9 +31,9 @@ test('new with args', function (t) {
 })
 
 test('new with args and buffer', function (t) {
-  var img = fs.readFileSync(path.join(__dirname, '/imgs/test.jpg'))
+  const img = fs.readFileSync(path.join(__dirname, '/imgs/test.jpg'))
 
-  var change = new Change({
+  const change = new Change({
     operation: 'add',
     modification: {
       thumbnailPhoto: img

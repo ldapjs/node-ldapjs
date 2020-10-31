@@ -35,7 +35,7 @@ tap.beforeEach((done, t) => {
   })
 
   server.search(suffix, function (req, res, next) {
-    var entry = {
+    const entry = {
       dn: 'cn=foo, ' + suffix,
       attributes: {
         objectclass: ['person', 'top'],

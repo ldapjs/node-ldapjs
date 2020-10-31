@@ -1,13 +1,13 @@
 // Copyright 2011 Mark Cavage, Inc.  All rights reserved.
 
-var test = require('tap').test
+const test = require('tap').test
 
-var asn1 = require('asn1')
+const asn1 = require('asn1')
 
-var BerReader = asn1.BerReader
-var BerWriter = asn1.BerWriter
-var getControl
-var PersistentSearchControl
+const BerReader = asn1.BerReader
+const BerWriter = asn1.BerWriter
+let getControl
+let PersistentSearchControl
 
 /// --- Tests
 
@@ -25,7 +25,7 @@ test('new no args', function (t) {
 })
 
 test('new with args', function (t) {
-  var c = new PersistentSearchControl({
+  const c = new PersistentSearchControl({
     type: '2.16.840.1.113730.3.4.3',
     criticality: true,
     value: {
@@ -42,10 +42,10 @@ test('new with args', function (t) {
   t.equal(c.value.changesOnly, false)
   t.equal(c.value.returnECs, false)
 
-  var writer = new BerWriter()
+  const writer = new BerWriter()
   c.toBer(writer)
-  var reader = new BerReader(writer.buffer)
-  var psc = getControl(reader)
+  const reader = new BerReader(writer.buffer)
+  const psc = getControl(reader)
   t.ok(psc)
   t.equal(psc.type, '2.16.840.1.113730.3.4.3')
   t.ok(psc.criticality)
@@ -57,14 +57,14 @@ test('new with args', function (t) {
 })
 
 test('getControl with args', function (t) {
-  var buf = Buffer.from([
+  const buf = Buffer.from([
     0x30, 0x26, 0x04, 0x17, 0x32, 0x2e, 0x31, 0x36, 0x2e, 0x38, 0x34, 0x30,
     0x2e, 0x31, 0x2e, 0x31, 0x31, 0x33, 0x37, 0x33, 0x30, 0x2e, 0x33, 0x2e,
     0x34, 0x2e, 0x33, 0x04, 0x0b, 0x30, 0x09, 0x02, 0x01, 0x0f, 0x01, 0x01,
     0xff, 0x01, 0x01, 0xff])
 
-  var ber = new BerReader(buf)
-  var psc = getControl(ber)
+  const ber = new BerReader(buf)
+  const psc = getControl(ber)
   t.ok(psc)
   t.equal(psc.type, '2.16.840.1.113730.3.4.3')
   t.equal(psc.criticality, false)
@@ -75,7 +75,7 @@ test('getControl with args', function (t) {
 })
 
 test('tober', function (t) {
-  var psc = new PersistentSearchControl({
+  const psc = new PersistentSearchControl({
     type: '2.16.840.1.113730.3.4.3',
     criticality: true,
     value: {
@@ -85,10 +85,10 @@ test('tober', function (t) {
     }
   })
 
-  var ber = new BerWriter()
+  const ber = new BerWriter()
   psc.toBer(ber)
 
-  var c = getControl(new BerReader(ber.buffer))
+  const c = getControl(new BerReader(ber.buffer))
   t.ok(c)
   t.equal(c.type, '2.16.840.1.113730.3.4.3')
   t.ok(c.criticality)
