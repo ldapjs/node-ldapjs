@@ -96,7 +96,7 @@ tap.beforeEach((done, t) => {
         }
       }))
     } else {
-      var e = res.createSearchEntry({
+      const e = res.createSearchEntry({
         objectName: req.dn,
         attributes: {
           cn: ['unit', 'test'],
@@ -1100,7 +1100,7 @@ tap.test('search empty attribute', function (t) {
     t.ok(res)
     let gotEntry = 0
     res.on('searchEntry', function (entry) {
-      var obj = entry.toObject()
+      const obj = entry.toObject()
       t.equal('dc=empty', obj.dn)
       t.ok(obj.member)
       t.equal(obj.member.length, 0)
@@ -1142,7 +1142,7 @@ tap.test('GH-21 binary attributes', function (t) {
       t.ok(entry.attributes[1].type, 'gb18030')
       t.equal(entry.attributes[1].buffers.length, 1)
       t.equal(expect2.length, entry.attributes[1].buffers[0].length)
-      for (var i = 0; i < expect2.length; i++) { t.equal(expect2[i], entry.attributes[1].buffers[0][i]) }
+      for (let i = 0; i < expect2.length; i++) { t.equal(expect2[i], entry.attributes[1].buffers[0][i]) }
 
       t.ok(entry.object)
       gotEntry++
@@ -1240,7 +1240,7 @@ tap.test('idle timeout', function (t) {
       t.error(err)
     })
     res.on('end', function () {
-      var late = setTimeout(function () {
+      const late = setTimeout(function () {
         t.fail('too late')
       }, 500)
       // It's ok to go idle now
@@ -1358,7 +1358,7 @@ tap.test('abort reconnect', function (t) {
     socketPath: 'an invalid path',
     reconnect: true
   })
-  var retryCount = 0
+  let retryCount = 0
   abortClient.on('connectError', function () {
     ++retryCount
   })
@@ -1531,7 +1531,7 @@ tap.test('connection timeout', function (t) {
       timeout: 1
     })
 
-    var done = false
+    let done = false
 
     setTimeout(function () {
       if (!done) {

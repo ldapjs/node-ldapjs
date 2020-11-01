@@ -1,10 +1,10 @@
-var ldap = require('../lib/index')
+const ldap = require('../lib/index')
 
 /// --- Shared handlers
 
 function authorize (req, res, next) {
   /* Any user may search after bind, only cn=root has full power */
-  var isSearch = (req instanceof ldap.SearchRequest)
+  const isSearch = (req instanceof ldap.SearchRequest)
   if (!req.connection.ldap.bindDN.equals('cn=root') && !isSearch) { return next(new ldap.InsufficientAccessRightsError()) }
 
   return next()
@@ -12,9 +12,9 @@ function authorize (req, res, next) {
 
 /// --- Globals
 
-var SUFFIX = 'o=smartdc'
-var db = {}
-var server = ldap.createServer()
+const SUFFIX = 'o=smartdc'
+const db = {}
+const server = ldap.createServer()
 
 server.bind('cn=root', function (req, res, next) {
   if (req.dn.toString() !== 'cn=root' || req.credentials !== 'secret') { return next(new ldap.InvalidCredentialsError()) }
@@ -24,7 +24,7 @@ server.bind('cn=root', function (req, res, next) {
 })
 
 server.add(SUFFIX, authorize, function (req, res, next) {
-  var dn = req.dn.toString()
+  const dn = req.dn.toString()
 
   if (db[dn]) { return next(new ldap.EntryAlreadyExistsError(dn)) }
 
@@ -34,7 +34,7 @@ server.add(SUFFIX, authorize, function (req, res, next) {
 })
 
 server.bind(SUFFIX, function (req, res, next) {
-  var dn = req.dn.toString()
+  const dn = req.dn.toString()
   if (!db[dn]) { return next(new ldap.NoSuchObjectError(dn)) }
 
   if (!db[dn].userpassword) { return next(new ldap.NoSuchAttributeError('userPassword')) }
@@ -46,14 +46,14 @@ server.bind(SUFFIX, function (req, res, next) {
 })
 
 server.compare(SUFFIX, authorize, function (req, res, next) {
-  var dn = req.dn.toString()
+  const dn = req.dn.toString()
   if (!db[dn]) { return next(new ldap.NoSuchObjectError(dn)) }
 
   if (!db[dn][req.attribute]) { return next(new ldap.NoSuchAttributeError(req.attribute)) }
 
-  var matches = false
-  var vals = db[dn][req.attribute]
-  for (var i = 0; i < vals.length; i++) {
+  let matches = false
+  const vals = db[dn][req.attribute]
+  for (let i = 0; i < vals.length; i++) {
     if (vals[i] === req.value) {
       matches = true
       break
@@ -65,7 +65,7 @@ server.compare(SUFFIX, authorize, function (req, res, next) {
 })
 
 server.del(SUFFIX, authorize, function (req, res, next) {
-  var dn = req.dn.toString()
+  const dn = req.dn.toString()
   if (!db[dn]) { return next(new ldap.NoSuchObjectError(dn)) }
 
   delete db[dn]
@@ -75,14 +75,14 @@ server.del(SUFFIX, authorize, function (req, res, next) {
 })
 
 server.modify(SUFFIX, authorize, function (req, res, next) {
-  var dn = req.dn.toString()
+  const dn = req.dn.toString()
   if (!req.changes.length) { return next(new ldap.ProtocolError('changes required')) }
   if (!db[dn]) { return next(new ldap.NoSuchObjectError(dn)) }
 
-  var entry = db[dn]
+  const entry = db[dn]
 
   let mod
-  for (var i = 0; i < req.changes.length; i++) {
+  for (let i = 0; i < req.changes.length; i++) {
     mod = req.changes[i].modification
     switch (req.changes[i].operation) {
       case 'replace':
@@ -121,10 +121,10 @@ server.modify(SUFFIX, authorize, function (req, res, next) {
 })
 
 server.search(SUFFIX, authorize, function (req, res, next) {
-  var dn = req.dn.toString()
+  const dn = req.dn.toString()
   if (!db[dn]) { return next(new ldap.NoSuchObjectError(dn)) }
 
-  var scopeCheck
+  let scopeCheck
 
   switch (req.scope) {
     case 'base':
@@ -142,7 +142,7 @@ server.search(SUFFIX, authorize, function (req, res, next) {
       scopeCheck = function (k) {
         if (req.dn.equals(k)) { return true }
 
-        var parent = ldap.parseDN(k).parent()
+        const parent = ldap.parseDN(k).parent()
         return (parent ? parent.equals(req.dn) : false)
       }
       break
