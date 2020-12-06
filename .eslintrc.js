@@ -8,7 +8,7 @@ module.exports = {
     'standard'
   ],
   rules: {
-    'no-shadow': 'warn',
+    'no-shadow': 'error',
     'no-unused-vars': 'warn'
   }
 }
