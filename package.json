@@ -44,12 +44,12 @@
     "test:watch": "tap -n -w --no-coverage-report",
     "test:integration": "tap --no-cov 'test-integration/**/*.test.js'",
     "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
-    "lint": "eslint .",
-    "lint:ci": "npm run lint"
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint ."
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run test"
+      "pre-commit": "npm run lint:ci && npm run test"
     }
   }
 }
