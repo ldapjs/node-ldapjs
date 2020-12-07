@@ -27,10 +27,13 @@
     "verror": "^1.8.1"
   },
   "devDependencies": {
+    "eslint": "^7.14.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
     "get-port": "^5.1.1",
     "husky": "^4.2.5",
-    "snazzy": "^9.0.0",
-    "standard": "^16.0.0",
     "tap": "14.11.0"
   },
   "scripts": {
@@ -41,12 +44,12 @@
     "test:watch": "tap -n -w --no-coverage-report",
     "test:integration": "tap --no-cov 'test-integration/**/*.test.js'",
     "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
-    "lint": "standard | snazzy",
-    "lint:ci": "standard"
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint ."
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run test"
+      "pre-commit": "npm run lint:ci && npm run test"
     }
   }
 }

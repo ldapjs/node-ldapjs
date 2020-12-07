@@ -34,7 +34,7 @@ tap.beforeEach((done, t) => {
     return next()
   })
 
-  server.search(suffix, function (req, res, next) {
+  server.search(suffix, function (req, res) {
     const entry = {
       dn: 'cn=foo, ' + suffix,
       attributes: {

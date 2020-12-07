@@ -121,7 +121,7 @@ tap.test('route order', function (t) {
       vasync.forEachParallel({
         func: runSearch,
         inputs: [dnShort, dnMed, dnLong]
-      }, function (err, results) {
+      }, function (err) {
         t.error(err)
         client.unbind()
         server.close(() => t.end())
@@ -175,7 +175,7 @@ tap.test('route absent', function (t) {
           })
         }
       ]
-    }, function (err, result) {
+    }, function (err) {
       t.notOk(err)
       server.close(() => t.end())
     })

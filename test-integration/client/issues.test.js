@@ -32,7 +32,7 @@ tap.test('modifyDN with long name (issue #480)', t => {
     client.modifyDN(
       `cn=${longStr},ou=people,dc=planetexpress,dc=com`,
       targetDN,
-      (err, res) => {
+      (err) => {
         t.error(err)
         client.unbind(t.end)
       }
