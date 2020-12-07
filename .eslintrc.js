@@ -9,6 +9,9 @@ module.exports = {
   ],
   rules: {
     'no-shadow': 'error',
-    'no-unused-vars': 'warn'
+    'no-unused-vars': ['error', {
+      argsIgnorePattern: '^_',
+      caughtErrorsIgnorePattern: '^_'
+    }]
   }
 }

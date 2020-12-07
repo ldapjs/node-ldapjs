@@ -79,7 +79,7 @@ tap.beforeEach((done, t) => {
     }, 250)
   })
 
-  server.search('dc=timeout', function (req, res, next) {
+  server.search('dc=timeout', function () {
     // Cause the client to timeout by not sending a response.
   })
 
@@ -721,13 +721,13 @@ tap.test('GH-602 search basic with delayed event listener binding', function (t)
     t.error(err)
     setTimeout(() => {
       let gotEntry = 0
-      res.on('searchEntry', function (entry) {
+      res.on('searchEntry', function () {
         gotEntry++
       })
       res.on('error', function (err) {
         t.fail(err)
       })
-      res.on('end', function (res) {
+      res.on('end', function () {
         t.equal(gotEntry, 2)
         t.end()
       })
@@ -751,7 +751,7 @@ tap.test('search sizeLimit', function (t) {
     t.context.client.search('cn=sizelimit', { sizeLimit: limit }, function (err, res) {
       t2.error(err)
       let count = 0
-      res.on('searchEntry', function (entry) {
+      res.on('searchEntry', function () {
         count++
       })
       res.on('end', function () {
@@ -991,7 +991,7 @@ tap.test('search - sssvlv', { timeout: 10000 }, function (t) {
         count++
       })
       res.on('error', (err) => t2.error(err))
-      res.on('end', function (result) {
+      res.on('end', function () {
         t2.equals(count, 10)
         t2.end()
       })
@@ -1033,7 +1033,7 @@ tap.test('search - sssvlv', { timeout: 10000 }, function (t) {
         count++
       })
       res.on('error', (err) => t2.error(err))
-      res.on('end', function (result) {
+      res.on('end', function () {
         t2.equals(count, 10)
         t2.end()
       })
@@ -1048,7 +1048,7 @@ tap.test('search referral', function (t) {
     t.ok(res)
     let gotEntry = 0
     let gotReferral = false
-    res.on('searchEntry', function (entry) {
+    res.on('searchEntry', function () {
       gotEntry++
     })
     res.on('searchReference', function (referral) {
@@ -1261,7 +1261,7 @@ tap.test('setup action', function (t) {
     socketPath: t.context.socketPath
   })
   setupClient.on('setup', function (clt, cb) {
-    clt.bind(BIND_DN, BIND_PW, function (err, res) {
+    clt.bind(BIND_DN, BIND_PW, function (err) {
       t.error(err)
       cb(err)
     })
@@ -1283,7 +1283,7 @@ tap.test('setup reconnect', function (t) {
     reconnect: true
   })
   rClient.on('setup', function (clt, cb) {
-    clt.bind(BIND_DN, BIND_PW, function (err, res) {
+    clt.bind(BIND_DN, BIND_PW, function (err) {
       t.error(err)
       cb(err)
     })
@@ -1402,7 +1402,7 @@ tap.test('reconnect on server close', function (t) {
     reconnect: true
   })
   clt.on('setup', function (sclt, cb) {
-    sclt.bind(BIND_DN, BIND_PW, function (err, res) {
+    sclt.bind(BIND_DN, BIND_PW, function (err) {
       t.error(err)
       cb(err)
     })
@@ -1426,7 +1426,7 @@ tap.test('no auto-reconnect on unbind', function (t) {
     reconnect: true
   })
   clt.on('setup', function (sclt, cb) {
-    sclt.bind(BIND_DN, BIND_PW, function (err, res) {
+    sclt.bind(BIND_DN, BIND_PW, function (err) {
       t.error(err)
       cb(err)
     })
