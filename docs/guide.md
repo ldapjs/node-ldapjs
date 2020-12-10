@@ -403,7 +403,7 @@ the following code in as another handler (you'll need a
       if (!req.dn.rdns[0].attrs.cn)
         return next(new ldap.ConstraintViolationError('cn required'));
 
-      if (req.users[req.dn.rdns[0].attrs.cn])
+      if (req.users[req.dn.rdns[0].attrs.cn.value])
         return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
 
       var entry = req.toObject().attributes;
@@ -490,7 +490,7 @@ As before, here's a breakdown of the code:
       if (!req.dn.rdns[0].attrs.cn)
         return next(new ldap.ConstraintViolationError('cn required'));
 
-      if (req.users[req.dn.rdns[0].attrs.cn])
+      if (req.users[req.dn.rdns[0].attrs.cn.value])
         return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
 
       var entry = req.toObject().attributes;
@@ -532,13 +532,13 @@ RFC, so appending, removing, or replacing a single attribute is pretty natural.
 Go ahead and add the following code into your source file:
 
     server.modify('ou=users, o=myhost', pre, function(req, res, next) {
-      if (!req.dn.rdns[0].attrs.cn || !req.users[req.dn.rdns[0].attrs.cn])
+      if (!req.dn.rdns[0].attrs.cn || !req.users[req.dn.rdns[0].attrs.cn.value])
         return next(new ldap.NoSuchObjectError(req.dn.toString()));
 
       if (!req.changes.length)
         return next(new ldap.ProtocolError('changes required'));
 
-      var user = req.users[req.dn.rdns[0].attrs.cn].attributes;
+      var user = req.users[req.dn.rdns[0].attrs.cn.value].attributes;
       var mod;
 
       for (var i = 0; i < req.changes.length; i++) {
@@ -594,10 +594,10 @@ Delete is pretty straightforward. The client gives you a dn to delete, and you
 delete it :).  Add the following code into your server:
 
     server.del('ou=users, o=myhost', pre, function(req, res, next) {
-      if (!req.dn.rdns[0].attrs.cn || !req.users[req.dn.rdns[0].attrs.cn])
+      if (!req.dn.rdns[0].attrs.cn || !req.users[req.dn.rdns[0].attrs.cn.value])
         return next(new ldap.NoSuchObjectError(req.dn.toString()));
 
-      var userdel = spawn('userdel', ['-f', req.dn.rdns[0].cn]);
+      var userdel = spawn('userdel', ['-f', req.dn.rdns[0].attrs.cn.value]);
 
       var messages = [];
       userdel.stdout.on('data', function(data) {
