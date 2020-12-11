@@ -538,7 +538,7 @@ Go ahead and add the following code into your source file:
       if (!req.changes.length)
         return next(new ldap.ProtocolError('changes required'));
 
-      var user = req.users[req.dn.rdns[0].cn].attributes;
+      var user = req.users[req.dn.rdns[0].attrs.cn.value].attributes;
       var mod;
 
       for (var i = 0; i < req.changes.length; i++) {
@@ -597,7 +597,7 @@ delete it :).  Add the following code into your server:
       if (!req.dn.rdns[0].cn || !req.users[req.dn.rdns[0].cn])
         return next(new ldap.NoSuchObjectError(req.dn.toString()));
 
-      var userdel = spawn('userdel', ['-f', req.dn.rdns[0].cn]);
+      var userdel = spawn('userdel', ['-f', req.dn.rdns[0].cn.value]);
 
       var messages = [];
       userdel.stdout.on('data', function(data) {
