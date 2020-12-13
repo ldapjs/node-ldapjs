@@ -3,7 +3,7 @@
 <head>
     <title>%(title)s</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="%(mediaroot)s/css/restdown.css">
+    <link rel="stylesheet" type="text/css" href="media/css/style.css">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
@@ -30,3 +30,5 @@
 </span>
 %(toc_html)s
 </div>
+
+<div id="content">

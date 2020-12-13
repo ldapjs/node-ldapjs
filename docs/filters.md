@@ -4,8 +4,12 @@ title: Filters API | ldapjs
 
 # ldapjs Filters API
 
+<div class="intro">
+
 This document covers the ldapjs filters API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](guide.html) first.
+
+</div>
 
 LDAP search filters are really the backbone of LDAP search operations, and
 ldapjs tries to get you in "easy" with them if your dataset is small, and also
@@ -277,4 +281,3 @@ key matching `attribute` and a value exactly matching `value`.
 
     f.matches({cn: 'foo'});  => true
     f.matches({cn: 'bar'});  => false
-

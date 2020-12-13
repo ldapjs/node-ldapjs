@@ -4,8 +4,12 @@ title: Errors API | ldapjs
 
 # ldapjs Errors API
 
+<div class="intro">
+
 This document covers the ldapjs errors API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](guide.html) first.
+
+</div>
 
 All errors in the ldapjs framework extend from an abstract error type called
 `LDAPError`. In addition to the properties listed below, all errors will have

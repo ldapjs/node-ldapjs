@@ -1,12 +1,15 @@
 ---
 title: Server API | ldapjs
-markdown2extras: wiki-tables
 ---
 
 # ldapjs Server API
 
+<div class="intro">
+
 This document covers the ldapjs server API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](guide.html) first.
+
+</div>
 
 # Create a server
 

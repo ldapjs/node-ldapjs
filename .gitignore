@@ -75,3 +75,6 @@ xcuserdata
 *.pem
 *.env.json
 *.env
+
+# built docs
+docs/dist
