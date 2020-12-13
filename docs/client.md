@@ -300,7 +300,7 @@ Now our filter is actually three LDAP filters.  We have an `and` filter (single
 amp `&`), an `equality` filter `(the l=Seattle)`, and a `substring` filter.
 Substrings are wildcard filters. They use `*` as the wildcard. You can put more
 than one wildcard for a given string. For example you could do `(email=*@*bar.com)`
-to match any email of @bar.com or its subdomains like "example@foo.bar.com".
+to match any email of @bar.com or its subdomains like `"example@foo.bar.com"`.
 
 Now, let's say we also want to set our filter to include a
 specification that either the employeeType *not* be a manager nor a secretary:
