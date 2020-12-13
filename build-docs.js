@@ -71,7 +71,7 @@ function createHTML (header, footer, text) {
 
 async function createDocs () {
   const docs = path.join(__dirname, 'docs')
-  const dist = path.join(docs, 'dist')
+  const dist = path.join(__dirname, 'public')
 
   await fs.rmdir(dist, { recursive: true })
   await fs.mkdir(dist)

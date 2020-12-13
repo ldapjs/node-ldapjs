@@ -77,4 +77,4 @@ xcuserdata
 *.env
 
 # built docs
-docs/dist
+public
