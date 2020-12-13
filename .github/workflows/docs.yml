@@ -1,0 +1,23 @@
+name: 'Update Docs'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docs:
+    name: Update Docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - name: Install Packages
+        run: npm install
+      - name: Build Docs
+        run: npm run docs
+      - name: Deploy 🚢
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/dist
