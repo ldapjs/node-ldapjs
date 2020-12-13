@@ -72,12 +72,13 @@ function createHTML (header, footer, text) {
 async function createDocs () {
   const docs = path.resolve(__dirname, '..', 'docs')
   const dist = path.resolve(__dirname, '..', 'public')
+  const branding = path.join(docs, 'branding')
 
   await fs.rmdir(dist, { recursive: true })
   await fs.mkdir(dist)
 
-  const header = await fs.readFile(path.join(docs, 'branding', 'header.html.in'), { encoding: 'utf8' })
-  const footer = await fs.readFile(path.join(docs, 'branding', 'footer.html.in'), { encoding: 'utf8' })
+  const header = await fs.readFile(path.join(branding, 'header.html.in'), { encoding: 'utf8' })
+  const footer = await fs.readFile(path.join(branding, 'footer.html.in'), { encoding: 'utf8' })
   const files = await fs.readdir(docs)
   for (const file of files) {
     if (!file.endsWith('.md')) {
@@ -90,12 +91,13 @@ async function createDocs () {
   }
 
   const dest = path.join(dist, 'media')
-  const src = path.join(docs, 'branding', 'media')
+  const src = path.join(branding, 'media')
   await fs.mkdir(dest)
   await fs.mkdir(path.join(dest, 'css'))
   await fs.mkdir(path.join(dest, 'img'))
   await fs.copyFile(path.join(src, 'css', 'style.css'), path.join(dest, 'css', 'style.css'))
   await fs.copyFile(path.join(src, 'img', 'logo.svg'), path.join(dest, 'img', 'logo.svg'))
+  await fs.copyFile(path.join(branding, 'CNAME'), path.join(dist, 'CNAME'))
 }
 
 createDocs().catch(ex => {
