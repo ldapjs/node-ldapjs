@@ -32,8 +32,10 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
+    "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
     "husky": "^4.2.5",
+    "marked": "^1.2.6",
     "tap": "14.11.0"
   },
   "scripts": {
@@ -45,7 +47,8 @@
     "test:integration": "tap --no-cov 'test-integration/**/*.test.js'",
     "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
     "lint": "eslint . --fix",
-    "lint:ci": "eslint ."
+    "lint:ci": "eslint .",
+    "docs": "node scripts/build-docs.js"
   },
   "husky": {
     "hooks": {

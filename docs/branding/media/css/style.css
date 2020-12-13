@@ -1,219 +1,66 @@
-/* Trent Mick's blog's CSS. Based heavily (at least initially) on
- * <http://html5boilerplate.com/> and on <http://lessframework.com/>.
- */
 
-/* ---- reset
- * html5doctor.com Reset Stylesheet (Eric Meyer's Reset Reloaded + HTML5 baseline)
- * v1.4 2009-07-27 | Authors: Eric Meyer & Richard Clark
- * html5doctor.com/html-5-reset-stylesheet/
- */
-html, body, div, span, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-abbr, address, cite, code,
-del, dfn, em, img, ins, kbd, q, samp,
-small, strong, sub, sup, var,
-b, i,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, figure, footer, header,
-hgroup, menu, nav, section,
-time, mark, audio, video {
-  margin:0;
-  padding:0;
-  border:0;
-  outline:0;
-  font-size:100%;
-  vertical-align:baseline;
-  background:transparent;
-}
+/* ---- general styles */
 
-article, aside, figure, footer, header,
-hgroup, nav, section { display:block; }
-
-nav ul { list-style:none; }
-
-blockquote, q { quotes:none; }
-
-blockquote:before, blockquote:after,
-q:before, q:after { content:''; content:none; }
-
-a { margin:0; padding:0; font-size:100%; vertical-align:baseline; background:transparent; }
-ins { background-color:#ff9; color:#000; text-decoration:none; }
-mark { background-color:#ff9; color:#000; font-style:italic; font-weight:bold; }
-del { text-decoration: line-through; }
-abbr[title], dfn[title] { border-bottom:1px dotted #000; cursor:help; }
-sub { vertical-align: sub; }
-sup { vertical-align: super; }
-
-/* tables still need cellspacing="0" in the markup */
-table { border-collapse:collapse; border-spacing:0; }
-
-input, select { vertical-align:middle; }
-
-
-
-/* ---- 24px vertical rhythm
- * <http://webtypography.net/Rhythm_and_Proportion/Vertical_Motion/2.2.2/>
- * All tags except 'pre' because 24px line-height is way too much, want 18px.
- * Tough.
- */
 body {
-  line-height: 24px;
-  font-family: helvetica, arial, freesans, clean, sans-serif;
-  font-size: 16px;
+  font: 13px "Lucida Grande", "Lucida Sans Unicode", arial, sans-serif;
+  line-height: 1.53846; /* 20px */
+  color: #4a3f2d;
 }
-h1,h2,h3,h4,h5,h6 {
-  font-family: Georgia,serif;
-  font-weight: bold;
-  /* http://www.aestheticallyloyal.com/public/optimize-legibility/ */
-  text-rendering: optimizeLegibility;
+
+:focus {
+  outline: 0;
 }
-h1 {
-  font-size: 28px;
-  line-height: 48px;
-  padding: 24px 0 24px 0;
+
+h1,h2,h3 {
+  font-weight:normal;
 }
-h2 {
-  font-size: 21px;
-  line-height: 24px;
-  padding: 24px 0 24px 0;
+
+h3{
+  margin-bottom:0;
 }
-h3 {
-  font-size: 16px;
-  line-height: 24px;
-  padding: 24px 0 0 0;
+
+ul, li {
+  margin:0px;
+  padding:0px;
 }
-h4 {
-  font-size: 14px;
-  line-height: 24px;
-  padding: 24px 0 0 0;
+
+ul {
+  margin-left:40px;
 }
-h5 {
-  color: #666;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 24px 0 0 0;
+
+ul > li {
+  list-style:disc;
+  list-style-position:inside;
+  margin:10px 0px;
 }
-h6 {
-  color: #666;
-  font-size: 12px;
-  line-height: 24px;
-  padding: 0;
-}
+
 hr {
-  padding-bottom: 24px;
-  margin: 24px 0;
-  height: 0;
-  border: none;
-  text-align: center;
-  color: #333;
-}
-hr:after {
-  content: "\2767";
-}
-p + p {
-  padding-top: 24px;
-}
-dl {
-  margin: 24px 0;
-}
-dt {
-  font-weight: bold;
-  margin-top: 24px;
-}
-dd {
-  margin: 0 0 0 48px;
-}
-
-
-
-/* ---- layout */
-
-body {
-  margin: 12px;
-}
-#wrapper {
-  margin: 0 auto;
-  max-width: 700px;
-  position: relative;
-}
-#main {
-  min-height: 300px;
-}
-#fadeout {
-  z-index: 50;
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  height: 210px;
-  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 255)), to(rgba(255, 255, 255, 0)));
-  background: -moz-linear-gradient(top, rgba(255, 255, 255, 255), rgba(255, 255, 255, 0));
-}
-#header {
-  position: fixed;
-  z-index: 100;
-  padding: 48px 0 24px 0;
-  top: 0;
-  left: auto;
-  right: auto;
-  width: 100%;
-  background: white;
-}
-#content {
-  position: relative;
-  top: 150px;
-  overflow: auto;
-  padding-bottom: 200px;
-}
-#footer {
-  position: relative;
-  padding-top: 60px;
-}
-
-/* ---- base styles */
-
-blockquote {
-  font-family: Georgia,serif;
-  font-size: 18px;
-  color: #555;
-  margin: 24px 15% 24px 15%;
-  margin: 24px 10% 24px 10%;
-}
-blockquote cite:before {
-  content: "\2014 ";
-}
-blockquote p.hangquotes, blockquote.hangquotes {
-  text-indent: -0.5em;
+  border:none;
+  width:98%;
+  margin-left:-10px;
+  border-top:1px solid #CCCCCC;
+  border-bottom:1px solid #FFFFFF;
 }
 
 code,
 pre {
-  font-family: Consolas, Monaco, "Lucida Console", "Courier New", monospace;
-  font-size: 12px;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
+  border:1px solid #CCCCCC;
+  background:#F2F0EE;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+  white-space:pre-wrap;
 }
 code {
   padding: 0 0.2em;
 }
 pre {
-  font-size: 80%;
-  line-height: 18px;
-  padding: 5px;
-  margin: 18px 0;
-
-  /* "overflow:auto" does NOT yield scrollbars in mobile browsers. iPhone
-   * *does* support two-finger scrolling inside the pre-block, but that
-   * is undiscoverable. Let's pre-wrap.
-   */
-  white-space: pre;
-  white-space: -moz-pre-wrap;
-  white-space: -hp-pre-wrap;
-  white-space: -o-pre-wrap;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  margin: 1em 0;
+  padding: .75em;
+  overflow: auto;
+  padding:10px 1.2em;
+  margin-top:0;
+  margin-bottom:20px;
 }
 pre code  {
   border: medium none;
@@ -222,68 +69,20 @@ pre code  {
 a code {
   text-decoration: underline;
 }
-h1 + pre,
-h2 + pre,
-h3 + pre,
-h4 + pre,
-h5 + pre,
-h6 + pre {
-  margin-top: 0;
+
+a {
+  color:#FD6512;
+  text-decoration:none;
 }
 
-table {
-  margin: 24px 0;
-}
-th,
-td {
-  border: solid #aaa;
-  border-width: 1px 0;
-  line-height: 23px;
-  padding: 0 12px;
-  text-align: left;
-}
-th {
-  border-collapse: separate;
-}
-tbody tr:nth-child(odd) {
-  background-color: #f6f6f6;
+h4 {
+  font-size: 85%;
+  margin: 0;
+  padding: 0;
+  line-height: 1em;
+  display: inline;
 }
 
-ol, ul {
-  padding: 12px 0;
-  margin: 0 0 0 24px;
-}
-ol ol, ul ul, ul ol, ol ul {
-  margin-left: 24px;
-}
-ol { list-style-type: decimal; }
-ol ol { list-style-type: lower-alpha; }
-ol ol ol { list-style-type: upper-roman; }
-ol ol ol ol { list-style-type: lower-roman; }
-ul { list-style-type: circle; }
-ul ul { list-style-type: disc; }
-ul ul ul { list-style-type: circle; }
-
-:link { color: hsl(206, 100%, 23%); }
-:visited { color: hsl(240, 20%, 50%); }
-:link:hover, :visited:hover { color: hsl(206, 100%, 38%); }
-
-
-/* ---- larger screens */
-
-@media only screen and (min-width: 481px) {
-  pre {
-    overflow: auto;
-    white-space: pre;
-    word-wrap: normal;
-  }
-}
-
-@media only screen and (min-width: 700px) {
-  ol, ul {
-    margin: 0;
-  }
-}
 
 
 /* ---- custom classes */
@@ -299,108 +98,228 @@ pre.shell code::before {
   display: inline;
 }
 
-.copy {
-  font-size: 90%;
-  text-align: center;
-  color: #777;
+
+/* ---- header and sidebar */
+
+#header {
+  background:#C3BDB3;
+  background:#1C313C;
+  height:66px;
+  left:0px;
+  position:absolute;
+  top:0px;
+  width:100%;
+  z-index:1;
+  font-size:0.7em;
 }
 
-/* ----- top header */
-a#homelink:link {
-  color: #008000;
-  text-decoration: none;
-}
-a#homelink:visited {
-  color: #008000;
-  text-decoration: none;
-}
-a#homelink:active {
-  color: #008000;
-  text-decoration: none;
-}
-a#homelink:hover {
-  color: #008000;
-  text-decoration: none;
-}
-#logo {
-  font-family: Georgia,serif;
-  font-weight: bold;
-  font-size: 60px;
-  top: 55px;
-}
-#apibox,
-#tocbox {
-  position: relative;
-}
-#tocbox {
-  margin-left: 24px;
-}
-.navbutton {
-  border: 1px solid #ccc;
-  position: relative;
-  display: inline-block;
-  width: 120px;
-  text-align: center;
-  top: -7px;
-  font-size: 70%;
-  font-weight: bold;
+#header h1 {
+  width: 424px;
+  height: 35px;
+  display:block;
+  background: url(../img/logo.svg) no-repeat;
+  line-height:2.1em;
+  padding:0;
+  padding-left:140px;
+  margin-top:18px;
+  margin-left:20px;
+  color:white;
   text-transform: uppercase;
-  text-decoration: none;
-  color: black;
 }
-.navbutton:hover {
-  cursor: pointer;
-  background-color: #f3f3f3;
+
+#sidebar {
+  background-color:#EDEBEA;
+  bottom:0px;
+  left:0px;
+  overflow:auto;
+  padding:20px 0px 0px 15px;
+  position:absolute;
+  top:66px;
+  width:265px;
+  z-index:1;
 }
-.popup {
-  border: 1px solid #ccc;
-  padding: 5px 10px;
-  background-color: white;
-  font-size: 80%;
-  line-height: 1.6em;
-  position: absolute;
-  top: 16px;
-  left: 0px;
-  width: 200px;
+
+#content {
+  top:64px;
+  bottom:0px;
+  right:0px;
+  left:290px;
+  padding:20px 30px 400px;
+  position:absolute;
+  overflow:auto;
+  z-index:0;
 }
-.popup a {
-  text-decoration: none;
+
+#sidebar .vertical_divider {
+  background-color:#FFFFFF;
+  bottom:0px;
+  position:absolute;
+  top:0px;
+  right:0px;
+  width:1px;
 }
-.popup a:hover {
-  text-decoration: underline;
+
+#sidebar h1 {
+  font-size:1.2em;
+  padding:0px;
+  margin-top:15px;
+  margin-bottom:3px;
 }
-.popup ul {
-  margin: 0;
-  padding: 0px;
-  list-style-type: none;
+
+#sidebar ul {
+  margin:3px 0 10px 0;
 }
-.popup ul ul {
-  margin-left: 24px;
+
+#sidebar ul ul {
+  margin:3px 0 5px 10px;
 }
-#githubfork {
-  position: fixed;
-  top: 0;
-  right: 0px;
+
+#sidebar li {
+  margin:0;
+  padding:0;
+  font-size:0.9em;
 }
-#indextagline {
-  font-size: 24px;
-  font-style: italic;
-  text-align: center;
-  color: green;
+
+#sidebar li,
+#sidebar li a {
+  color:#5C5954;
+  list-style:none;
+  padding:1px 0px 1px 2px;
 }
-a#indextaglink:link {
-  color: #008000;
-  text-decoration: none;
+
+#sidebar li span.verb {
+  color:#aaa;
+  padding:2px 3px 0px;
+  width:30px;
+  display:block;
+  float:left;
+  font-size:9px;
+  font-family:verdana;
+  -moz-border-radius:3px;
+  -webkit-border-radius:3px;
+  margin-left:0px;
+  margin-right:5px;
 }
-a#indextaglink:visited {
-  color: #008000;
-  text-decoration: none;
+
+#sidebar li.current {
+  background-repeat: no-repeat;
+  background-position:right;
 }
-a#indextaglink:active {
-  color: #008000;
-  text-decoration: none;
+
+
+/* ---- intro */
+
+.intro {
+  color:#29231A;
+  padding: 22px 25px;
+  background: #EDEBEA;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  margin-bottom:40px;
 }
-a#indextaglink:hover {
-  color: #008000;
-  text-decoration: none;
+.intro pre.base {
+  background:#444;
+  color:#29231A;
+  color:#fff;
+  border-color:#fff;
+  font-size:1.5em;
+}
+.intro h1 {
+  color: #1C313C;
+}
+.intro h3 {
+  margin: 5px 0px 3px;
+  font-size: 100%;
+  font-weight: bold;
+}
+.intro ul {
+  list-style-type:disc;
+  padding-left:20px;
+  margin-left:0;
+}
+.intro ul li{
+  margin:0;
+}
+.intro p {
+  padding-left:20px;
+  margin: 5px 0px 3px;
+}
+
+
+
+h2 {
+  overflow: auto;
+  margin-top: 60px;
+  border-top: 2px solid #979592;
+  z-index: 3;
+}
+h1 + h2 {
+  margin-top: 0px;
+}
+
+h2.fixed {
+  position:fixed;
+  margin-top: 0;
+  border-top:none;
+  right:45px;
+  top:66px;
+}
+
+h2 span {
+  background: #979592;
+  float:right;
+  color:#fff;
+  margin:0;
+  margin-left:3px;
+  padding:0.3em 0.7em;
+  font-size: 0.55em;
+  word-spacing: 0.8em;  /* separate verb from path */
+  color:#fff;
+}
+
+
+
+
+/*---- print media */
+
+@media print {
+  body { background:white; color:black; margin:0; }
+  #sidebar {
+    display: none;
+  }
+  #content {
+    position: relative;
+    padding: 5px;
+    left: 0px;
+    top: 0px;
+  }
+  h1, h2, h4 {
+    page-break-after: avoid;
+  }
+  pre {
+    page-break-inside: avoid;
+  }
+}
+
+/* tables still need cellspacing="0" in the markup */
+table {
+  border-collapse:collapse; border-spacing:0;
+  margin: 20px 0;
+}
+th,
+td {
+  border: solid #aaa;
+  border-width: 1px 0;
+  line-height: 23px;
+  padding: 0 12px;
+  text-align: left;
+  vertical-align: text-bottom;
+}
+th {
+  border-collapse: separate;
+}
+tbody tr:nth-child(odd) {
+  background-color: #f2f0ee;
 }

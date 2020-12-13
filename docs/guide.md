@@ -1,9 +1,10 @@
 ---
 title: LDAP Guide | ldapjs
-markdown2extras: tables
 ---
 
 # LDAP Guide
+
+<div class="intro">
 
 This guide was written assuming that you (1) don't know anything about ldapjs,
 and perhaps more importantly (2) know little, if anything about LDAP.  If you're
@@ -13,6 +14,8 @@ password."
 
 By the end of this guide, we'll have a simple LDAP server that accomplishes a
 "real" task.
+
+</div>
 
 # What exactly is LDAP?
 

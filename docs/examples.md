@@ -4,8 +4,12 @@ title: Examples | ldapjs
 
 # ldapjs Examples
 
+<div class="intro">
+
 This page contains a (hopefully) growing list of sample code to get you started
 with ldapjs.
+
+</div>
 
 # In-memory server
 

@@ -1,6 +1,5 @@
 ---
 title: ldapjs
-markdown2extras: tables
 ---
 
 <div id="indextagline">
@@ -9,10 +8,14 @@ Reimagining <a href="http://tools.ietf.org/html/rfc4510" id="indextaglink">LDAP<
 
 # Overview
 
+<div class="intro">
+
 ldapjs is a pure JavaScript, from-scratch framework for implementing
 [LDAP](http://tools.ietf.org/html/rfc4510) clients and servers in
 [Node.js](http://nodejs.org).  It is intended for developers used to interacting
 with HTTP services in node and [restify](http://restify.com).
+
+</div>
 
     var ldap = require('ldapjs');
 
@@ -86,5 +89,3 @@ Specifically:
 * Extensible matching
 
 There are a few others, but those are the "big" ones.
-
-

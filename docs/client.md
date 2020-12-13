@@ -1,12 +1,15 @@
 ---
 title: Client API | ldapjs
-markdown2extras: tables
 ---
 
 # ldapjs Client API
 
+<div class="intro">
+
 This document covers the ldapjs client API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](guide.html) first.
+
+</div>
 
 # Create a client
 

@@ -4,8 +4,12 @@ title: DN API | ldapjs
 
 # ldapjs DN API
 
+<div class="intro">
+
 This document covers the ldapjs DN API and assumes that you are familiar
 with LDAP. If you're not, read the [guide](guide.html) first.
+
+</div>
 
 DNs are LDAP distinguished names, and are composed of a set of RDNs (relative
 distinguished names).  [RFC2253](http://www.ietf.org/rfc/rfc2253.txt) has the
