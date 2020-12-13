@@ -17,6 +17,12 @@ jobs:
       - name: Build Docs
         run: npm run docs
       - name: Deploy 🚢
-        uses: peaceiris/actions-gh-pages@v3
+        uses: cpina/github-action-push-to-another-repository@master
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source-directory: 'public'
+          destination-github-username: 'ldapjs'
+          destination-repository-name: 'ldapjs.github.io'
+          user-email: 'bot@ldapjs.org'
+          target-branch: 'gh-pages'
