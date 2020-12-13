@@ -70,8 +70,8 @@ function createHTML (header, footer, text) {
 }
 
 async function createDocs () {
-  const docs = path.join(__dirname, 'docs')
-  const dist = path.join(__dirname, 'public')
+  const docs = path.resolve(__dirname, '..', 'docs')
+  const dist = path.resolve(__dirname, '..', 'public')
 
   await fs.rmdir(dist, { recursive: true })
   await fs.mkdir(dist)
@@ -98,4 +98,7 @@ async function createDocs () {
   await fs.copyFile(path.join(src, 'img', 'logo.svg'), path.join(dest, 'img', 'logo.svg'))
 }
 
-createDocs()
+createDocs().catch(ex => {
+  console.error(ex)
+  process.exit(1)
+})

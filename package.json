@@ -48,7 +48,7 @@
     "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
-    "docs": "node build-docs.js"
+    "docs": "node scripts/build-docs.js"
   },
   "husky": {
     "hooks": {
