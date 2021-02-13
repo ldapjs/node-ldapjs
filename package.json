@@ -34,7 +34,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
-    "husky": "^4.2.5",
+    "husky": "^5.0.9",
     "marked": "^1.2.6",
     "tap": "14.11.0"
   },
