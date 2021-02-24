@@ -16,7 +16,7 @@ with LDAP. If you're not, read the [guide](guide.html) first.
 The code to create a new server looks like:
 
 ```js
-    const server = ldap.createServer();
+const server = ldap.createServer();
 ```
 
 The full list of options is:
@@ -71,10 +71,9 @@ available.
 Example:
 
 ```js
-     server.listen(389, '127.0.0.1', function() {
-       console.log('LDAP server listening at: ' + server.url);
-     });
-
+ server.listen(389, '127.0.0.1', function() {
+   console.log('LDAP server listening at: ' + server.url);
+ });
 ```
 
 ### Port and Host
