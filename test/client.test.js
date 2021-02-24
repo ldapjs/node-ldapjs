@@ -367,7 +367,7 @@ tap.test('createClient', t => {
     )
   })
 
-  tap.test('exception from bad createClient parameter (issue #418)', t => {
+  t.test('exception from bad createClient parameter (issue #418)', t => {
     try {
       // This port number is totally invalid. It will cause the URL parser
       // to throw an exception that should be caught.
@@ -387,6 +387,9 @@ tap.test('createClient', t => {
         ],
         connectTimeout: 1
       })
+      client.on('connectTimeout', () => {})
+      client.on('connectError', () => {})
+      client.on('connectRefused', () => {})
 
       t.equal(client.urls.length, 2)
     })
@@ -1513,6 +1516,8 @@ tap.test('connection refused', function (t) {
       url: `ldap://0.0.0.0:${unusedPortNumber}`
     })
 
+    client.on('connectRefused', () => {})
+
     client.bind('cn=root', 'secret', function (err, res) {
       t.true(err)
       t.type(err, Error)
@@ -1531,6 +1536,8 @@ tap.test('connection timeout', function (t) {
       timeout: 1
     })
 
+    client.on('connectTimeout', () => {})
+
     let done = false
 
     setTimeout(function () {
@@ -1548,4 +1555,98 @@ tap.test('connection timeout', function (t) {
       t.end()
     })
   })
+})
+
+tap.only('emitError', function (t) {
+  t.test('connectTimeout', function (t) {
+    getPort().then(function (unusedPortNumber) {
+      const client = ldap.createClient({
+        url: `ldap://example.org:${unusedPortNumber}`,
+        connectTimeout: 1,
+        timeout: 1
+      })
+
+      const timeout = setTimeout(function () {
+        throw new Error('LDAPJS waited for the server for too long')
+      }, 2000)
+
+      client.on('error', (err) => {
+        t.fail(err)
+      })
+      client.on('connectTimeout', (err) => {
+        t.true(err)
+        t.type(err, Error)
+        t.equals(err.message, 'connection timeout')
+        clearTimeout(timeout)
+        t.end()
+      })
+
+      client.bind('cn=root', 'secret', () => {})
+    })
+  })
+
+  t.test('connectTimeout to error', function (t) {
+    getPort().then(function (unusedPortNumber) {
+      const client = ldap.createClient({
+        url: `ldap://example.org:${unusedPortNumber}`,
+        connectTimeout: 1,
+        timeout: 1
+      })
+
+      const timeout = setTimeout(function () {
+        throw new Error('LDAPJS waited for the server for too long')
+      }, 2000)
+
+      client.on('error', (err) => {
+        t.true(err)
+        t.type(err, Error)
+        t.equals(err.message, 'connectTimeout: connection timeout')
+        clearTimeout(timeout)
+        t.end()
+      })
+
+      client.bind('cn=root', 'secret', () => {})
+    })
+  })
+
+  t.test('connectRefused', function (t) {
+    getPort().then(function (unusedPortNumber) {
+      const client = ldap.createClient({
+        url: `ldap://0.0.0.0:${unusedPortNumber}`
+      })
+
+      client.on('error', (err) => {
+        t.fail(err)
+      })
+      client.on('connectRefused', (err) => {
+        t.true(err)
+        t.type(err, Error)
+        t.equals(err.message, `connect ECONNREFUSED 0.0.0.0:${unusedPortNumber}`)
+        t.equals(err.code, 'ECONNREFUSED')
+        t.end()
+      })
+
+      client.bind('cn=root', 'secret', () => {})
+    })
+  })
+
+  t.test('connectRefused to error', function (t) {
+    getPort().then(function (unusedPortNumber) {
+      const client = ldap.createClient({
+        url: `ldap://0.0.0.0:${unusedPortNumber}`
+      })
+
+      client.on('error', (err) => {
+        t.true(err)
+        t.type(err, Error)
+        t.equals(err.message, `connectRefused: connect ECONNREFUSED 0.0.0.0:${unusedPortNumber}`)
+        t.equals(err.code, 'ECONNREFUSED')
+        t.end()
+      })
+
+      client.bind('cn=root', 'secret', () => {})
+    })
+  })
+
+  t.end()
 })
