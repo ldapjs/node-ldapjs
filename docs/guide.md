@@ -43,7 +43,7 @@ keyid=foo
 
 Let's say we wanted to look at the record cn=john:
 
-```sh
+```shell
 dn: cn=john, ou=users, o=example
 cn: john
 sn: smith
@@ -114,7 +114,7 @@ If you don't already have node.js and npm, clearly you need those, so follow
 the steps at [nodejs.org](http://nodejs.org) and [npmjs.org](http://npmjs.org),
 respectively.  After that, run:
 
-```sh
+```shell
 $ npm install ldapjs
 ```
 
@@ -139,7 +139,7 @@ server.listen(1389, () => {
 And run that.  Doing anything will give you errors (LDAP "No Such Object")
 since we haven't added any support in yet, but go ahead and try it anyway:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -b "o=myhost" objectclass=*
 ```
 
@@ -205,7 +205,7 @@ add another handler in later you won't get bit by it not being invoked.
 
 Blah blah, let's try running the ldap client again, first with a bad password:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -D cn=root -w foo -b "o=myhost" objectclass=*
 
 ldap_bind: Invalid credentials (49)
@@ -215,7 +215,7 @@ ldap_bind: Invalid credentials (49)
 
 And again with the correct one:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" objectclass=*
 
 No such object (32)
@@ -252,7 +252,7 @@ oriented, so we check that the connection remote user was indeed our `cn=root`
 We said we wanted to allow LDAP operations over /etc/passwd, so let's detour
 for a moment to explain an /etc/passwd record.
 
-```sh
+```shell
 jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8910,(234)555-0044,email:/home/jsmith:/bin/sh
 ```
 
@@ -331,7 +331,7 @@ server.search('o=myhost', pre, (req, res, next) => {
 
 And try running:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" cn=root
 dn: cn=root, ou=users, o=myhost
 cn: root
@@ -345,7 +345,7 @@ objectclass: unixUser
 
 Sweet! Try this out too:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" objectclass=*
 ...
 ```
@@ -357,7 +357,7 @@ What all did we do here?  A lot.  Let's break this down...
 
 Let's start with looking at what you even asked for:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" cn=root
 ```
 
@@ -420,7 +420,7 @@ shell set to `/bin/false` and whose name starts with `p` (I'm doing this
 on Ubuntu).  Then, let's say we only care about their login name and primary
 group id.  We'd do this:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -D cn=root -w secret -LLL -b "o=myhost" "(&(shell=/bin/false)(cn=p*))" cn gid
 dn: cn=proxy, ou=users, o=myhost
 cn: proxy
@@ -502,7 +502,7 @@ Then, you'll need to be root to have this running, so start your server with
 `sudo` (or be root, whatever).  Now, go ahead and create a file called
 `user.ldif` with the following contents:
 
-```sh
+```shell
 dn: cn=ldapjs, ou=users, o=myhost
 objectClass: unixUser
 cn: ldapjs
@@ -512,14 +512,14 @@ description: Created via ldapadd
 
 Now go ahead and invoke with:
 
-```sh
+```shell
 $ ldapadd -H ldap://localhost:1389 -x -D cn=root -w secret -f ./user.ldif
 adding new entry "cn=ldapjs, ou=users, o=myhost"
 ```
 
 Let's confirm he got added with an ldapsearch:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -LLL -x -D cn=root -w secret -b "ou=users, o=myhost" cn=ldapjs
 dn: cn=ldapjs, ou=users, o=myhost
 cn: ldapjs
@@ -626,7 +626,7 @@ is the 'standard' LDAP attribute for passwords; if you think it's easier to use
 command (which lets you change a user's password over stdin).  Next, go ahead
 and create a `passwd.ldif` file:
 
-```sh
+```shell
 dn: cn=ldapjs, ou=users, o=myhost
 changetype: modify
 replace: userPassword
@@ -636,7 +636,7 @@ userPassword: secret
 
 And then run the OpenLDAP CLI:
 
-```sh
+```shell
 $ ldapmodify -H ldap://localhost:1389 -x -D cn=root -w secret -f ./passwd.ldif
 ```
 
@@ -679,7 +679,7 @@ server.del('ou=users, o=myhost', pre, (req, res, next) => {
 
 And then run the following command:
 
-```sh
+```shell
 $ ldapdelete -H ldap://localhost:1389 -x -D cn=root -w secret "cn=ldapjs, ou=users, o=myhost"
 ```
 

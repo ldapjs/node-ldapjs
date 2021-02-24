@@ -44,7 +44,7 @@ server.listen(1389, () => {
 
 Try hitting that with:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:1389 -x -b o=example objectclass=*
 ```
 
@@ -59,7 +59,7 @@ that you can build LDAP over anything you want, not just traditional databases.
 
 # Getting started
 
-```sh
+```shell
 $ npm install ldapjs
 ```
 

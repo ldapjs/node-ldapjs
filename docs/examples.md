@@ -546,7 +546,7 @@ db.query("SELECT c.*,u.username,u.password " +
 
 To test out this example, try:
 
-```sh
+```shell
 $ ldapsearch -H ldap://localhost:389 -x -D cn=demo,dc=example,dc=com \
   -w demo -b "dc=example,dc=com" objectclass=*
 ```

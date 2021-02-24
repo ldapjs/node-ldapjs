@@ -2,14 +2,15 @@ const fs = require('fs/promises')
 const path = require('path')
 const marked = require('marked')
 const fm = require('front-matter')
-const { highlight, highlightAuto } = require('highlight.js')
+const { highlight } = require('highlight.js')
 
 marked.use({
   highlight: (code, lang) => {
-    if (!lang) {
-      return highlightAuto(code).value
+    if (lang) {
+      return highlight(lang, code).value
     }
-    return highlight(lang, code).value
+
+    return code
   }
 })
 
@@ -102,10 +103,14 @@ async function createDocs () {
 
   const dest = path.join(dist, 'media')
   const src = path.join(branding, 'media')
+  const highlightjsStyles = path.resolve(__dirname, '..', 'node_modules', 'highlight.js', 'styles')
   await fs.mkdir(dest)
   await fs.mkdir(path.join(dest, 'css'))
+  await fs.mkdir(path.join(dest, 'js'))
   await fs.mkdir(path.join(dest, 'img'))
   await fs.copyFile(path.join(src, 'css', 'style.css'), path.join(dest, 'css', 'style.css'))
+  await fs.copyFile(path.join(highlightjsStyles, 'default.css'), path.join(dest, 'css', 'highlight.css'))
+  await fs.copyFile(path.join(src, 'js', 'script.js'), path.join(dest, 'js', 'script.js'))
   await fs.copyFile(path.join(src, 'img', 'logo.svg'), path.join(dest, 'img', 'logo.svg'))
   await fs.copyFile(path.join(branding, 'CNAME'), path.join(dist, 'CNAME'))
 }
