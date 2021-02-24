@@ -2,6 +2,16 @@ const fs = require('fs/promises')
 const path = require('path')
 const marked = require('marked')
 const fm = require('front-matter')
+const { highlight, highlightAuto } = require('highlight.js')
+
+marked.use({
+  highlight: (code, lang) => {
+    if (!lang) {
+      return highlightAuto(code).value
+    }
+    return highlight(lang, code).value
+  }
+})
 
 function tocHTML (toc) {
   let html = '<ul>\n'
