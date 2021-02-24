@@ -15,7 +15,9 @@ with LDAP. If you're not, read the [guide](guide.html) first.
 
 The code to create a new server looks like:
 
-    var server = ldap.createServer();
+```js
+    const server = ldap.createServer();
+```
 
 The full list of options is:
 
@@ -68,10 +70,12 @@ available.
 
 Example:
 
+```js
      server.listen(389, '127.0.0.1', function() {
        console.log('LDAP server listening at: ' + server.url);
      });
 
+```
 
 ### Port and Host
 `listen(port, [host], [callback])`
@@ -115,14 +119,16 @@ paradigm of programming.  Essentially every method is of the form
 handlers together by calling `next()` and ordering your functions in the
 definition of the route.  For example:
 
-    function authorize(req, res, next) {
-      if (!req.connection.ldap.bindDN.equals('cn=root'))
-        return next(new ldap.InsufficientAccessRightsError());
+```js
+function authorize(req, res, next) {
+  if (!req.connection.ldap.bindDN.equals('cn=root'))
+    return next(new ldap.InsufficientAccessRightsError());
 
-      return next();
-    }
+  return next();
+}
 
-    server.search('o=example', authorize, function(req, res, next) { ... });
+server.search('o=example', authorize, function(req, res, next) { ... });
+```
 
 Note that ldapjs is also slightly different, since it's often going to be backed
 to a DB-like entity, in that it also has an API where you can pass in a
@@ -134,23 +140,25 @@ complete implementation of the LDAP protocol over
 [Riak](https://github.com/basho/riak).  Getting an LDAP server up with riak
 looks like:
 
-    var ldap = require('ldapjs');
-    var ldapRiak = require('ldapjs-riak');
+```js
+const ldap = require('ldapjs');
+const ldapRiak = require('ldapjs-riak');
 
-    var server = ldap.createServer();
-    var backend = ldapRiak.createBackend({
-      "host": "localhost",
-      "port": 8098,
-      "bucket": "example",
-      "indexes": ["l", "cn"],
-      "uniqueIndexes": ["uid"],
-      "numConnections": 5
-    });
+const server = ldap.createServer();
+const backend = ldapRiak.createBackend({
+  "host": "localhost",
+  "port": 8098,
+  "bucket": "example",
+  "indexes": ["l", "cn"],
+  "uniqueIndexes": ["uid"],
+  "numConnections": 5
+});
 
-    server.add("o=example",
-               backend,
-               backend.add());
-    ...
+server.add("o=example",
+           backend,
+           backend.add());
+...
+```
 
 The first parameter to an ldapjs route is always the point in the
 tree to mount the handler chain at.  The second argument is _optionally_ a
@@ -163,10 +171,12 @@ operation requires specific methods/fields on the request/response
 objects.  However, there is a `.use()` method availabe, similar to
 that on express/connect, allowing you to chain up "middleware":
 
-    server.use(function(req, res, next) {
-      console.log('hello world');
-      return next();
-    });
+```js
+server.use(function(req, res, next) {
+  console.log('hello world');
+  return next();
+});
+```
 
 ## Common Request Elements
 
@@ -210,11 +220,13 @@ the paradigm is something defined like CONSTRAINT\_VIOLATION in the RFC would be
 `ConstraintViolationError` in ldapjs.  Upon calling `next(new LDAPError())`,
 ldapjs will _stop_ calling your handler chain.  For example:
 
-    server.search('o=example',
-      function(req, res, next) { return next(); },
-      function(req, res, next) { return next(new ldap.OperationsError()); },
-      function(req, res, next) { res.end(); }
-    );
+```js
+server.search('o=example',
+  (req, res, next) => { return next(); },
+  (req, res, next) => { return next(new ldap.OperationsError()); },
+  (req, res, next) => { res.end(); }
+);
+```
 
 In the code snipped above, the third handler would never get invoked.
 
@@ -222,11 +234,13 @@ In the code snipped above, the third handler would never get invoked.
 
 Adds a mount in the tree to perform LDAP binds with. Example:
 
-    server.bind('ou=people, o=example', function(req, res, next) {
-      console.log('bind DN: ' + req.dn.toString());
-      console.log('bind PW: ' + req.credentials);
-      res.end();
-    });
+```js
+server.bind('ou=people, o=example', (req, res, next) => {
+  console.log('bind DN: ' + req.dn.toString());
+  console.log('bind PW: ' + req.credentials);
+  res.end();
+});
+```
 
 ## BindRequest
 
@@ -259,11 +273,13 @@ No extra methods above an `LDAPResult` API call.
 
 Adds a mount in the tree to perform LDAP adds with.
 
-    server.add('ou=people, o=example', function(req, res, next) {
-      console.log('DN: ' + req.dn.toString());
-      console.log('Entry attributes: ' + req.toObject().attributes);
-      res.end();
-    });
+```js
+server.add('ou=people, o=example', (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('Entry attributes: ' + req.toObject().attributes);
+  res.end();
+});
+```
 
 ## AddRequest
 
@@ -287,14 +303,16 @@ a standard JavaScript object.
 This operation will return a plain JavaScript object from the request that looks
 like:
 
-    {
-      dn: 'cn=foo, o=example',  // string, not DN object
-      attributes: {
-        cn: ['foo'],
-        sn: ['bar'],
-        objectclass: ['person', 'top']
-      }
-    }
+```js
+{
+  dn: 'cn=foo, o=example',  // string, not DN object
+  attributes: {
+    cn: ['foo'],
+    sn: ['bar'],
+    objectclass: ['person', 'top']
+  }
+}
+```
 
 ## AddResponse
 
@@ -304,12 +322,14 @@ No extra methods above an `LDAPResult` API call.
 
 Adds a handler for the LDAP search operation.
 
-    server.search('o=example', function(req, res, next) {
-      console.log('base object: ' + req.dn.toString());
-      console.log('scope: ' + req.scope);
-      console.log('filter: ' + req.filter.toString());
-      res.end();
-    });
+```js
+server.search('o=example', (req, res, next) => {
+  console.log('base object: ' + req.dn.toString());
+  console.log('scope: ' + req.scope);
+  console.log('filter: ' + req.filter.toString());
+  res.end();
+});
+```
 
 ## SearchRequest
 
@@ -367,34 +387,38 @@ explicitly pass in a `SearchEntry` object, and can instead just send a plain
 JavaScript object that matches the format used from `AddRequest.toObject()`.
 
 
-    server.search('o=example', function(req, res, next) {
-      var obj = {
-        dn: 'o=example',
-        attributes: {
-          objectclass: ['top', 'organization'],
-          o: ['example']
-        }
-      };
+```js
+server.search('o=example', (req, res, next) => {
+  const obj = {
+    dn: 'o=example',
+    attributes: {
+      objectclass: ['top', 'organization'],
+      o: ['example']
+    }
+  };
 
-      if (req.filter.matches(obj))
-        res.send(obj)
+  if (req.filter.matches(obj))
+    res.send(obj)
 
-      res.end();
-    });
+  res.end();
+});
+```
 
 # modify
 
 Allows you to handle an LDAP modify operation.
 
-    server.modify('o=example', function(req, res, next) {
-      console.log('DN: ' + req.dn.toString());
-      console.log('changes:');
-      req.changes.forEach(function(c) {
-        console.log('  operation: ' + c.operation);
-        console.log('  modification: ' + c.modification.toString());
-      });
-      res.end();
-    });
+```js
+server.modify('o=example', (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('changes:');
+  for (const c of req.changes) {
+    console.log('  operation: ' + c.operation);
+    console.log('  modification: ' + c.modification.toString());
+  }
+  res.end();
+});
+```
 
 ## ModifyRequest
 
@@ -431,10 +455,12 @@ No extra methods above an `LDAPResult` API call.
 
 Allows you to handle an LDAP delete operation.
 
-    server.del('o=example', function(req, res, next) {
-      console.log('DN: ' + req.dn.toString());
-      res.end();
-    });
+```js
+server.del('o=example', (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  res.end();
+});
+```
 
 ## DeleteRequest
 
@@ -451,12 +477,14 @@ No extra methods above an `LDAPResult` API call.
 
 Allows you to handle an LDAP compare operation.
 
-    server.compare('o=example', function(req, res, next) {
-      console.log('DN: ' + req.dn.toString());
-      console.log('attribute name: ' + req.attribute);
-      console.log('attribute value: ' + req.value);
-      res.end(req.value === 'foo');
-    });
+```js
+server.compare('o=example', (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('attribute name: ' + req.attribute);
+  console.log('attribute value: ' + req.value);
+  res.end(req.value === 'foo');
+});
+```
 
 ## CompareRequest
 
@@ -483,15 +511,17 @@ that, there are no extra methods above an `LDAPResult` API call.
 
 Allows you to handle an LDAP modifyDN operation.
 
-    server.modifyDN('o=example', function(req, res, next) {
-      console.log('DN: ' + req.dn.toString());
-      console.log('new RDN: ' + req.newRdn.toString());
-      console.log('deleteOldRDN: ' + req.deleteOldRdn);
-      console.log('new superior: ' +
-        (req.newSuperior ? req.newSuperior.toString() : ''));
+```js
+server.modifyDN('o=example', (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('new RDN: ' + req.newRdn.toString());
+  console.log('deleteOldRDN: ' + req.deleteOldRdn);
+  console.log('new superior: ' +
+    (req.newSuperior ? req.newSuperior.toString() : ''));
 
-      res.end();
-    });
+  res.end();
+});
+```
 
 ## ModifyDNRequest
 
@@ -525,14 +555,16 @@ OID, but ldapjs makes no such restrictions; it just needs to be a string.
 Unlike the other operations, extended operations don't map to any location in
 the tree, so routing here will be exact match, as opposed to subtree.
 
-    // LDAP whoami
-    server.exop('1.3.6.1.4.1.4203.1.11.3', function(req, res, next) {
-      console.log('name: ' + req.name);
-      console.log('value: ' + req.value);
-      res.value = 'u:xxyyz@EXAMPLE.NET';
-      res.end();
-      return next();
-    });
+```js
+// LDAP whoami
+server.exop('1.3.6.1.4.1.4203.1.11.3', (req, res, next) => {
+  console.log('name: ' + req.name);
+  console.log('value: ' + req.value);
+  res.value = 'u:xxyyz@EXAMPLE.NET';
+  res.end();
+  return next();
+});
+```
 
 ## ExtendedRequest
 
@@ -563,9 +595,11 @@ and cleans up any internals (in ldapjs core).  You can override this handler
 if you need to clean up any items in your backend, or perform any other cleanup
 tasks you need to.
 
-    server.unbind(function(req, res, next) {
-      res.end();
-    });
+```js
+server.unbind((req, res, next) => {
+  res.end();
+});
+```
 
 Note that the LDAP unbind operation actually doesn't send any response (by
 definition in the RFC), so the UnbindResponse is really just a stub that

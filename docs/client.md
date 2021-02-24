@@ -15,14 +15,17 @@ with LDAP. If you're not, read the [guide](guide.html) first.
 
 The code to create a new client looks like:
 
-    var ldap = require('ldapjs');
-    var client = ldap.createClient({
-      url: ['ldap://127.0.0.1:1389', 'ldap://127.0.0.2:1389']
-    });
+```js
+const ldap = require('ldapjs');
 
-    client.on('error', (err) => {
-      // handle connection error
-    })
+const client = ldap.createClient({
+  url: ['ldap://127.0.0.1:1389', 'ldap://127.0.0.2:1389']
+});
+
+client.on('error', (err) => {
+  // handle connection error
+})
+```
 
 You can use `ldap://` or `ldaps://`; the latter would connect over SSL (note
 that this will not use the LDAP TLS extended operation, but literally an SSL
@@ -104,9 +107,6 @@ Almost every operation has the callback form of `function(err, res)` where err
 will be an instance of an `LDAPError` (you can use `instanceof` to switch).
 You probably won't need to check the `res` parameter, but it's there if you do.
 
-
-
-
 # bind
 `bind(dn, password, controls, callback)`
 
@@ -118,9 +118,11 @@ of `Control` objects. You probably don't need them though...
 
 Example:
 
-    client.bind('cn=root', 'secret', function(err) {
-      assert.ifError(err);
-    });
+```js
+client.bind('cn=root', 'secret', (err) => {
+  assert.ifError(err);
+});
+```
 
 # add
 `add(dn, entry, controls, callback)`
@@ -132,15 +134,17 @@ controls are optional.
 
 Example:
 
-    var entry = {
-      cn: 'foo',
-      sn: 'bar',
-      email: ['foo@bar.com', 'foo1@bar.com'],
-      objectclass: 'fooPerson'
-    };
-    client.add('cn=foo, o=example', entry, function(err) {
-      assert.ifError(err);
-    });
+```js
+const entry = {
+  cn: 'foo',
+  sn: 'bar',
+  email: ['foo@bar.com', 'foo1@bar.com'],
+  objectclass: 'fooPerson'
+};
+client.add('cn=foo, o=example', entry, (err) => {
+  assert.ifError(err);
+});
+```
 
 # compare
 `compare(dn, attribute, value, controls, callback)`
@@ -150,11 +154,13 @@ the entry referenced by dn.
 
 Example:
 
-    client.compare('cn=foo, o=example', 'sn', 'bar', function(err, matched) {
-      assert.ifError(err);
+```js
+client.compare('cn=foo, o=example', 'sn', 'bar', (err, matched) => {
+  assert.ifError(err);
 
-      console.log('matched: ' + matched);
-    });
+  console.log('matched: ' + matched);
+});
+```
 
 # del
 `del(dn, controls, callback)`
@@ -164,9 +170,11 @@ Deletes an entry from the LDAP server.
 
 Example:
 
-    client.del('cn=foo, o=example', function(err) {
-      assert.ifError(err);
-    });
+```js
+client.del('cn=foo, o=example', (err) => {
+  assert.ifError(err);
+});
+```
 
 # exop
 `exop(name, value, controls, callback)`
@@ -178,11 +186,13 @@ should be.
 
 Example (performs an LDAP 'whois' extended op):
 
-    client.exop('1.3.6.1.4.1.4203.1.11.3', function(err, value, res) {
-      assert.ifError(err);
+```js
+client.exop('1.3.6.1.4.1.4203.1.11.3', (err, value, res) => {
+  assert.ifError(err);
 
-      console.log('whois: ' + value);
-    });
+  console.log('whois: ' + value);
+});
+```
 
 # modify
 `modify(name, changes, controls, callback)`
@@ -193,16 +203,18 @@ pass in a single `Change` or an array of `Change` objects.
 
 Example:
 
-    var change = new ldap.Change({
-      operation: 'add',
-      modification: {
-        pets: ['cat', 'dog']
-      }
-    });
+```js
+const change = new ldap.Change({
+  operation: 'add',
+  modification: {
+    pets: ['cat', 'dog']
+  }
+});
 
-    client.modify('cn=foo, o=example', change, function(err) {
-      assert.ifError(err);
-    });
+client.modify('cn=foo, o=example', change, (err) => {
+  assert.ifError(err);
+});
+```
 
 ## Change
 
@@ -232,9 +244,11 @@ as opposed to just renaming the leaf).
 
 Example:
 
-    client.modifyDN('cn=foo, o=example', 'cn=bar', function(err) {
-      assert.ifError(err);
-    });
+```js
+client.modifyDN('cn=foo, o=example', 'cn=bar', (err) => {
+  assert.ifError(err);
+});
+```
 
 # search
 `search(base, options, controls, callback)`
@@ -274,28 +288,30 @@ the code matching.
 
 Example:
 
-    var opts = {
-      filter: '(&(l=Seattle)(email=*@foo.com))',
-      scope: 'sub',
-      attributes: ['dn', 'sn', 'cn']
-    };
+```js
+const opts = {
+  filter: '(&(l=Seattle)(email=*@foo.com))',
+  scope: 'sub',
+  attributes: ['dn', 'sn', 'cn']
+};
 
-    client.search('o=example', opts, function(err, res) {
-      assert.ifError(err);
+client.search('o=example', opts, (err, res) => {
+  assert.ifError(err);
 
-      res.on('searchEntry', function(entry) {
-        console.log('entry: ' + JSON.stringify(entry.object));
-      });
-      res.on('searchReference', function(referral) {
-        console.log('referral: ' + referral.uris.join());
-      });
-      res.on('error', function(err) {
-        console.error('error: ' + err.message);
-      });
-      res.on('end', function(result) {
-        console.log('status: ' + result.status);
-      });
-    });
+  res.on('searchEntry', (entry) => {
+    console.log('entry: ' + JSON.stringify(entry.object));
+  });
+  res.on('searchReference', (referral) => {
+    console.log('referral: ' + referral.uris.join());
+  });
+  res.on('error', (err) => {
+    console.error('error: ' + err.message);
+  });
+  res.on('end', (result) => {
+    console.log('status: ' + result.status);
+  });
+});
+```
 
 ## Filter Strings
 
@@ -310,14 +326,18 @@ in prefix notation.  For example, let's start simple, and build up a complicated
 filter.  The most basic filter is equality, so let's assume you want to search
 for an attribute `email` with a value of `foo@bar.com`.  The syntax would be:
 
-    (email=foo@bar.com)
+```
+(email=foo@bar.com)
+```
 
 ldapjs requires all filters to be surrounded by '()' blocks. Ok, that was easy.
 Let's now assume that you want to find all records where the email is actually
 just anything in the "@bar.com" domain and the location attribute is set to
 Seattle:
 
-    (&(email=*@bar.com)(l=Seattle))
+```
+(&(email=*@bar.com)(l=Seattle))
+```
 
 Now our filter is actually three LDAP filters.  We have an `and` filter (single
 amp `&`), an `equality` filter `(the l=Seattle)`, and a `substring` filter.
@@ -328,7 +348,9 @@ to match any email of @bar.com or its subdomains like `"example@foo.bar.com"`.
 Now, let's say we also want to set our filter to include a
 specification that either the employeeType *not* be a manager nor a secretary:
 
-    (&(email=*@bar.com)(l=Seattle)(!(|(employeeType=manager)(employeeType=secretary))))
+```
+(&(email=*@bar.com)(l=Seattle)(!(|(employeeType=manager)(employeeType=secretary))))
+```
 
 The `not` character is represented as a `!`, the `or` as a single pipe `|`.
 It gets a little bit complicated, but it's actually quite powerful, and lets you
@@ -343,27 +365,29 @@ While callers could choose to do this manually via the `controls` parameter to
 most simple way to use the paging automation is to set the `paged` option to
 true when performing a search:
 
-    var opts = {
-      filter: '(objectclass=commonobject)',
-      scope: 'sub',
-      paged: true,
-      sizeLimit: 200
-    };
-    client.search('o=largedir', opts, function(err, res) {
-      assert.ifError(err);
-      res.on('searchEntry', function(entry) {
-        // do per-entry processing
-      });
-      res.on('page', function(result) {
-        console.log('page end');
-      });
-      res.on('error', function(resErr) {
-        assert.ifError(resErr);
-      });
-      res.on('end', function(result) {
-        console.log('done ');
-      });
-    });
+```js
+const opts = {
+  filter: '(objectclass=commonobject)',
+  scope: 'sub',
+  paged: true,
+  sizeLimit: 200
+};
+client.search('o=largedir', opts, (err, res) => {
+  assert.ifError(err);
+  res.on('searchEntry', (entry) => {
+    // do per-entry processing
+  });
+  res.on('page', (result) => {
+    console.log('page end');
+  });
+  res.on('error', (resErr) => {
+    assert.ifError(resErr);
+  });
+  res.on('end', (result) => {
+    console.log('done ');
+  });
+});
+```
 
 This will enable paging with a default page size of 199 (`sizeLimit` - 1) and
 will output all of the resulting objects via the `searchEntry` event.  At the
@@ -381,32 +405,34 @@ client will wait to request the next page until that callback is executed.
 
 Here is an example where both of those parameters are used:
 
-    var queue = new MyWorkQueue(someSlowWorkFunction);
-    var opts = {
-      filter: '(objectclass=commonobject)',
-      scope: 'sub',
-      paged: {
-        pageSize: 250,
-        pagePause: true
-      },
-    };
-    client.search('o=largerdir', opts, function(err, res) {
-      assert.ifError(err);
-      res.on('searchEntry', function(entry) {
-        // Submit incoming objects to queue
-        queue.push(entry);
-      });
-      res.on('page', function(result, cb) {
-        // Allow the queue to flush before fetching next page
-        queue.cbWhenFlushed(cb);
-      });
-      res.on('error', function(resErr) {
-        assert.ifError(resErr);
-      });
-      res.on('end', function(result) {
-        console.log('done');
-      });
-    });
+```js
+const queue = new MyWorkQueue(someSlowWorkFunction);
+const opts = {
+  filter: '(objectclass=commonobject)',
+  scope: 'sub',
+  paged: {
+    pageSize: 250,
+    pagePause: true
+  },
+};
+client.search('o=largerdir', opts, (err, res) => {
+  assert.ifError(err);
+  res.on('searchEntry', (entry) => {
+    // Submit incoming objects to queue
+    queue.push(entry);
+  });
+  res.on('page', (result, cb) => {
+    // Allow the queue to flush before fetching next page
+    queue.cbWhenFlushed(cb);
+  });
+  res.on('error', (resErr) => {
+    assert.ifError(resErr);
+  });
+  res.on('end', (result) => {
+    console.log('done');
+  });
+});
+```
 
 # starttls
 `starttls(options, controls, callback)`
@@ -415,15 +441,17 @@ Attempt to secure existing LDAP connection via STARTTLS.
 
 Example:
 
-    var opts = {
-      ca: [fs.readFileSync('mycacert.pem')]
-    };
+```js
+const opts = {
+  ca: [fs.readFileSync('mycacert.pem')]
+};
 
-    client.starttls(opts, function(err, res) {
-      assert.ifError(err);
+client.starttls(opts, (err, res) => {
+  assert.ifError(err);
 
-      // Client communication now TLS protected
-    });
+  // Client communication now TLS protected
+});
+```
 
 
 # unbind
@@ -440,6 +468,8 @@ not have a response.
 
 Example:
 
-    client.unbind(function(err) {
-      assert.ifError(err);
-    });
+```js
+client.unbind((err) => {
+  assert.ifError(err);
+});
+```

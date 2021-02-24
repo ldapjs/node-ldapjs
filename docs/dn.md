@@ -26,10 +26,12 @@ The `parseDN` API converts a string representation of a DN into an ldapjs DN
 object; in most cases this will be handled for you under the covers of the
 ldapjs framework, but if you need it, it's there.
 
-    var parseDN = require('ldapjs').parseDN;
+```js
+const parseDN = require('ldapjs').parseDN;
 
-    var dn = parseDN('cn=foo+sn=bar, ou=people, o=example');
-    console.log(dn.toString());
+const dn = parseDN('cn=foo+sn=bar, ou=people, o=example');
+console.log(dn.toString());
+```
 
 # DN
 
@@ -41,40 +43,46 @@ APIs are setup to give you a DN object.
 Returns a boolean indicating whether 'this' is a child of the passed in dn. The
 `dn` argument can be either a string or a DN.
 
-    server.add('o=example', function(req, res, next) {
-      if (req.dn.childOf('ou=people, o=example')) {
-        ...
-      } else {
-        ...
-      }
-    });
+```js
+server.add('o=example', (req, res, next) => {
+  if (req.dn.childOf('ou=people, o=example')) {
+    ...
+  } else {
+    ...
+  }
+});
+```
 
 ## parentOf(dn)
 
 The inverse of `childOf`; returns a boolean on whether or not `this` is a parent
 of the passed in dn.  Like `childOf`, can take either a string or a DN.
 
-    server.add('o=example', function(req, res, next) {
-      var dn = parseDN('ou=people, o=example');
-      if (dn.parentOf(req.dn)) {
-        ...
-      } else {
-        ...
-      }
-    });
+```js
+server.add('o=example', (req, res, next) => {
+  const dn = parseDN('ou=people, o=example');
+  if (dn.parentOf(req.dn)) {
+    ...
+  } else {
+    ...
+  }
+});
+```
 
 ## equals(dn)
 
 Returns a boolean indicating whether `this` is equivalent to the passed in `dn`
 argument. `dn` can be a string or a DN.
 
-    server.add('o=example', function(req, res, next) {
-      if (req.dn.equals('cn=foo, ou=people, o=example')) {
-        ...
-      } else {
-        ...
-      }
-    });
+```js
+server.add('o=example', (req, res, next) => {
+  if (req.dn.equals('cn=foo, ou=people, o=example')) {
+    ...
+  } else {
+    ...
+  }
+});
+```
 
 ## parent()
 
@@ -112,6 +120,8 @@ It accepts the same parameters as `format`.
 
 Returns the string representation of `this`.
 
-    server.add('o=example', function(req, res, next) {
-      console.log(req.dn.toString());
-    });
+```js
+server.add('o=example', (req, res, next) => {
+  console.log(req.dn.toString());
+});
+```

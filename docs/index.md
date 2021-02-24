@@ -17,32 +17,36 @@ with HTTP services in node and [restify](http://restify.com).
 
 </div>
 
-    var ldap = require('ldapjs');
+```js
+const ldap = require('ldapjs');
 
-    var server = ldap.createServer();
+const server = ldap.createServer();
 
-    server.search('o=example', function(req, res, next) {
-      var obj = {
-        dn: req.dn.toString(),
-        attributes: {
-          objectclass: ['organization', 'top'],
-          o: 'example'
-        }
-      };
+server.search('o=example', (req, res, next) => {
+  const obj = {
+    dn: req.dn.toString(),
+    attributes: {
+      objectclass: ['organization', 'top'],
+      o: 'example'
+    }
+  };
 
-      if (req.filter.matches(obj.attributes))
-        res.send(obj);
+  if (req.filter.matches(obj.attributes))
+    res.send(obj);
 
-      res.end();
-    });
+  res.end();
+});
 
-    server.listen(1389, function() {
-      console.log('LDAP server listening at %s', server.url);
-    });
+server.listen(1389, () => {
+  console.log('LDAP server listening at %s', server.url);
+});
+```
 
 Try hitting that with:
 
-    $ ldapsearch -H ldap://localhost:1389 -x -b o=example objectclass=*
+```sh
+$ ldapsearch -H ldap://localhost:1389 -x -b o=example objectclass=*
+```
 
 # Features
 
@@ -55,7 +59,9 @@ that you can build LDAP over anything you want, not just traditional databases.
 
 # Getting started
 
-    $ npm install ldapjs
+```sh
+$ npm install ldapjs
+```
 
 If you're new to LDAP, check out the [guide](guide.html).  Otherwise, the
 API documentation is:
