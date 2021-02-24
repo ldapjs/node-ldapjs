@@ -20,6 +20,10 @@ The code to create a new client looks like:
       url: ['ldap://127.0.0.1:1389', 'ldap://127.0.0.2:1389']
     });
 
+    client.on('error', (err) => {
+      // handle connection error
+    })
+
 You can use `ldap://` or `ldaps://`; the latter would connect over SSL (note
 that this will not use the LDAP TLS extended operation, but literally an SSL
 connection to port 636, as in LDAP v2). The full set of options to create a
@@ -70,6 +74,25 @@ more sophisticated control, you can provide an Object with the properties
 `failAfter` (default: `Infinity`).
 After the reconnect you maybe need to [bind](#bind) again.
 
+## Client events
+
+The client is an `EventEmitter` and can emit the following events:
+
+|Event          |Description                                               |
+|---------------|----------------------------------------------------------|
+|error          |General error                                             |
+|connectRefused |Server refused connection. Most likely bad authentication |
+|connectTimeout |Server timeout                                            |
+|connectError   |Socket connection error                                   |
+|setupError     |Setup error after successful connection                   |
+|socketTimeout  |Socket timeout                                            |
+|resultError    |Search result error                                       |
+|timeout        |Search result timeout                                     |
+|destroy        |After client is disconnected                              |
+|end            |Socket end event                                          |
+|close          |Socket closed                                             |
+|connect        |Client connected                                          |
+|idle           |Idle timeout reached                                      |
 
 ## Common patterns
 
