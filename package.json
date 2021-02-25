@@ -27,13 +27,14 @@
     "verror": "^1.8.1"
   },
   "devDependencies": {
-    "eslint": "^7.14.0",
+    "eslint": "^7.20.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-promise": "^4.3.1",
     "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
+    "highlight.js": "^10.6.0",
     "husky": "^4.2.5",
     "marked": "^2.0.0",
     "tap": "14.11.0"

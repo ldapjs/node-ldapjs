@@ -17,21 +17,23 @@ a `stack` property correctly set.
 
 In general, you'll be using the errors in ldapjs like:
 
-    var ldap = require('ldapjs');
+```js
+const ldap = require('ldapjs');
 
-    var db = {};
+const db = {};
 
-    server.add('o=example', function(req, res, next) {
-      var parent = req.dn.parent();
-      if (parent) {
-        if (!db[parent.toString()])
-          return next(new ldap.NoSuchObjectError(parent.toString()));
-      }
-      if (db[req.dn.toString()])
-        return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
+server.add('o=example', (req, res, next) => {
+  const parent = req.dn.parent();
+  if (parent) {
+    if (!db[parent.toString()])
+      return next(new ldap.NoSuchObjectError(parent.toString()));
+  }
+  if (db[req.dn.toString()])
+    return next(new ldap.EntryAlreadyExistsError(req.dn.toString()));
 
-      ...
-    });
+  ...
+});
+```
 
 I.e., if you just pass them into the `next()` handler, ldapjs will automatically
 return the appropriate LDAP error message, and stop the handler chain.
