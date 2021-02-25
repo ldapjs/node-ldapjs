@@ -66,56 +66,60 @@ function markdownTOC (markdown) {
   }
 }
 
-function createHTML (header, footer, text) {
+function createHTML (template, text) {
   const { attributes, body } = fm(text)
-  for (const prop in attributes) {
-    header = header.replace(new RegExp(`%\\(${prop}\\)s`, 'ig'), attributes[prop])
-    footer = footer.replace(new RegExp(`%\\(${prop}\\)s`, 'ig'), attributes[prop])
-  }
 
   const { toc, html } = markdownTOC(body)
+  attributes.toc_html = toc
+  attributes.content = html
 
-  header = header.replace(/%\(toc_html\)s/ig, toc)
+  for (const prop in attributes) {
+    template = template.replace(new RegExp(`%\\(${prop}\\)s`, 'ig'), attributes[prop])
+  }
 
-  return header + html + footer
+  return template
+}
+
+async function copyRecursive (src, dest) {
+  const stats = await fs.stat(src)
+  const isDirectory = stats.isDirectory()
+  if (isDirectory) {
+    await fs.mkdir(dest)
+    const files = await fs.readdir(src)
+    for (const file of files) {
+      await copyRecursive(path.join(src, file), path.join(dest, file))
+    }
+  } else {
+    await fs.copyFile(src, dest)
+  }
 }
 
 async function createDocs () {
   const docs = path.resolve(__dirname, '..', 'docs')
   const dist = path.resolve(__dirname, '..', 'public')
   const branding = path.join(docs, 'branding')
+  const src = path.join(branding, 'public')
 
   await fs.rmdir(dist, { recursive: true })
-  await fs.mkdir(dist)
+  await copyRecursive(src, dist)
 
-  const header = await fs.readFile(path.join(branding, 'header.html.in'), { encoding: 'utf8' })
-  const footer = await fs.readFile(path.join(branding, 'footer.html.in'), { encoding: 'utf8' })
+  const highlightjsStyles = path.resolve(__dirname, '..', 'node_modules', 'highlight.js', 'styles')
+  await fs.copyFile(path.join(highlightjsStyles, 'default.css'), path.join(dist, 'media', 'css', 'highlight.css'))
+
+  const template = await fs.readFile(path.join(branding, 'template.html'), { encoding: 'utf8' })
   const files = await fs.readdir(docs)
   for (const file of files) {
     if (!file.endsWith('.md')) {
       continue
     }
     const text = await fs.readFile(path.join(docs, file), { encoding: 'utf8' })
-    const html = createHTML(header, footer, text)
+    const html = createHTML(template, text)
 
     await fs.writeFile(path.join(dist, file.replace(/md$/, 'html')), html)
   }
-
-  const dest = path.join(dist, 'media')
-  const src = path.join(branding, 'media')
-  const highlightjsStyles = path.resolve(__dirname, '..', 'node_modules', 'highlight.js', 'styles')
-  await fs.mkdir(dest)
-  await fs.mkdir(path.join(dest, 'css'))
-  await fs.mkdir(path.join(dest, 'js'))
-  await fs.mkdir(path.join(dest, 'img'))
-  await fs.copyFile(path.join(src, 'css', 'style.css'), path.join(dest, 'css', 'style.css'))
-  await fs.copyFile(path.join(highlightjsStyles, 'default.css'), path.join(dest, 'css', 'highlight.css'))
-  await fs.copyFile(path.join(src, 'js', 'script.js'), path.join(dest, 'js', 'script.js'))
-  await fs.copyFile(path.join(src, 'img', 'logo.svg'), path.join(dest, 'img', 'logo.svg'))
-  await fs.copyFile(path.join(branding, 'CNAME'), path.join(dist, 'CNAME'))
 }
 
 createDocs().catch(ex => {
   console.error(ex)
-  process.exit(1)
+  process.exitCode = 1
 })

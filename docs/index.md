@@ -79,9 +79,7 @@ API documentation is:
 # More information
 
 - License:[MIT](http://opensource.org/licenses/mit-license.php)
-- Code: [mcavage/node-ldapjs](https://github.com/mcavage/node-ldapjs)
-- node.js version: >=0.8
-- Twitter: [@pfmooney](http://twitter.com/pfmooney)
+- Code: [ldapjs/node-ldapjs](https://github.com/ldapjs/node-ldapjs)
 
 # What's not in the box?
 

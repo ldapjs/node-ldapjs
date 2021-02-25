@@ -7,7 +7,7 @@ body {
   color: #4a3f2d;
 }
 
-:focus {
+:focus:not(:focus-visible) {
   outline: 0;
 }
 
@@ -83,22 +83,6 @@ h4 {
   display: inline;
 }
 
-
-
-/* ---- custom classes */
-
-pre.shell,
-pre.shell code {
-  background:#444;
-  color:#fff;
-  border-width:0px;
-}
-pre.shell code::before {
-  content: '$ ';
-  display: inline;
-}
-
-
 /* ---- header and sidebar */
 
 #header {
@@ -150,15 +134,6 @@ pre.shell code::before {
   z-index:0;
 }
 
-#sidebar .vertical_divider {
-  background-color:#FFFFFF;
-  bottom:0px;
-  position:absolute;
-  top:0px;
-  right:0px;
-  width:1px;
-}
-
 #sidebar h1 {
   font-size:1.2em;
   padding:0px;
@@ -187,25 +162,6 @@ pre.shell code::before {
   padding:1px 0px 1px 2px;
 }
 
-#sidebar li span.verb {
-  color:#aaa;
-  padding:2px 3px 0px;
-  width:30px;
-  display:block;
-  float:left;
-  font-size:9px;
-  font-family:verdana;
-  -moz-border-radius:3px;
-  -webkit-border-radius:3px;
-  margin-left:0px;
-  margin-right:5px;
-}
-
-#sidebar li.current {
-  background-repeat: no-repeat;
-  background-position:right;
-}
-
 
 /* ---- intro */
 
@@ -218,13 +174,6 @@ pre.shell code::before {
   -o-border-radius: 5px;
   border-radius: 5px;
   margin-bottom:40px;
-}
-.intro pre.base {
-  background:#444;
-  color:#29231A;
-  color:#fff;
-  border-color:#fff;
-  font-size:1.5em;
 }
 .intro h1 {
   color: #1C313C;
@@ -257,14 +206,6 @@ h2 {
 }
 h1 + h2 {
   margin-top: 0px;
-}
-
-h2.fixed {
-  position:fixed;
-  margin-top: 0;
-  border-top:none;
-  right:45px;
-  top:66px;
 }
 
 h2 span {
