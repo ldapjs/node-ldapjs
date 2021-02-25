@@ -91,7 +91,7 @@ Want to run schema-less in ldapjs, or wire it up with some mongoose models? No
 problem.  Want to back it to redis? Should be able to get some basics up in a
 day or two.
 
-Basically, the ldapjs philospohy is to deal with the "muck" of LDAP, and then
+Basically, the ldapjs philosophy is to deal with the "muck" of LDAP, and then
 get out of the way so you can just use the "good parts."
 
 # Ok, cool. Learn me some LDAP!
