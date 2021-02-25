@@ -56,7 +56,7 @@ syntactically invalid string).
 
 The equality filter is used to check exact matching of attribute/value
 assertions.  This object will have an `attribute` and `value` property, and the
-`name` proerty will be `equal`.
+`name` property will be `equal`.
 
 The string syntax for an equality filter is `(attr=value)`.
 
@@ -295,7 +295,7 @@ f.matches({cn: 'foo'});  => false
 
 The approximate filter is used to check "approximate" matching of
 attribute/value assertions.  This object will have an `attribute` and
-`value` property, and the `name` proerty will be `approx`.
+`value` property, and the `name` property will be `approx`.
 
 As a side point, this is a useless filter. It's really only here if you have
 some whacky client that's sending this.  It just does an exact match (which
