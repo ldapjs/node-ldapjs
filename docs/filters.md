@@ -34,13 +34,17 @@ Parses an [RFC2254](http://www.ietf.org/rfc/rfc2254.txt) filter string into an
 ldapjs object(s).  If the filter is "complex", it will be a "tree" of objects.
 For example:
 
-    var parseFilter = require('ldapjs').parseFilter;
+```js
+const parseFilter = require('ldapjs').parseFilter;
 
-    var f = parseFilter('(objectclass=*)');
+const f = parseFilter('(objectclass=*)');
+```
 
 Is a "simple" filter, and would just return a `PresenceFilter` object. However,
 
-    var f = parseFilter('(&(employeeType=manager)(l=Seattle))');
+```js
+const f = parseFilter('(&(employeeType=manager)(l=Seattle))');
+```
 
 Would return an `AndFilter`, which would have a `filters` array of two
 `EqualityFilter` objects.
@@ -59,13 +63,15 @@ The string syntax for an equality filter is `(attr=value)`.
 The `matches()` method will return true IFF the passed in object has a
 key matching `attribute` and a value matching `value`.
 
-    var f = new EqualityFilter({
-      attribute: 'cn',
-      value: 'foo'
-    });
+```js
+const f = new EqualityFilter({
+  attribute: 'cn',
+  value: 'foo'
+});
 
-    f.matches({cn: 'foo'});  => true
-    f.matches({cn: 'bar'});  => false
+f.matches({cn: 'foo'});  => true
+f.matches({cn: 'bar'});  => false
+```
 
 Equality matching uses "strict" type JavaScript comparison, and by default
 everything in ldapjs (and LDAP) is a UTF-8 string.  If you want comparison
@@ -83,12 +89,14 @@ The string syntax for a presence filter is `(attr=*)`.
 The `matches()` method will return true IFF the passed in object has a
 key matching `attribute`.
 
-    var f = new PresenceFilter({
-      attribute: 'cn'
-    });
+```js
+const f = new PresenceFilter({
+  attribute: 'cn'
+});
 
-    f.matches({cn: 'foo'});  => true
-    f.matches({sn: 'foo'});  => false
+f.matches({cn: 'foo'});  => true
+f.matches({sn: 'foo'});  => false
+```
 
 # SubstringFilter
 
@@ -102,24 +110,28 @@ optional. The `name` property will be `substring`.
 The string syntax for a presence filter is `(attr=foo*bar*cat*dog)`, which would
 map to:
 
-    {
-      initial: 'foo',
-      any: ['bar', 'cat'],
-      final: 'dog'
-    }
+```js
+{
+  initial: 'foo',
+  any: ['bar', 'cat'],
+  final: 'dog'
+}
+```
 
 The `matches()` method will return true IFF the passed in object has a
 key matching `attribute` and the "regex" matches the value
 
-    var f = new SubstringFilter({
-      attribute: 'cn',
-      initial: 'foo',
-      any: ['bar'],
-      final: 'baz'
-    });
+```js
+const f = new SubstringFilter({
+  attribute: 'cn',
+  initial: 'foo',
+  any: ['bar'],
+  final: 'baz'
+});
 
-    f.matches({cn: 'foobigbardogbaz'});  => true
-    f.matches({sn: 'fobigbardogbaz'});  => false
+f.matches({cn: 'foobigbardogbaz'});  => true
+f.matches({sn: 'fobigbardogbaz'});  => false
+```
 
 # GreaterThanEqualsFilter
 
@@ -135,18 +147,22 @@ property and the `name` property will be `ge`.
 
 The string syntax for a ge filter is:
 
-    (cn>=foo)
+```
+(cn>=foo)
+```
 
 The `matches()` method will return true IFF the passed in object has a
 key matching `attribute` and the value is `>=` this filter's `value`.
 
-    var f = new GreaterThanEqualsFilter({
-      attribute: 'cn',
-      value: 'foo',
-    });
+```js
+const f = new GreaterThanEqualsFilter({
+  attribute: 'cn',
+  value: 'foo',
+});
 
-    f.matches({cn: 'foobar'});  => true
-    f.matches({cn: 'abc'});  => false
+f.matches({cn: 'foobar'});  => true
+f.matches({cn: 'abc'});  => false
+```
 
 # LessThanEqualsFilter
 
@@ -159,7 +175,9 @@ Note that the ldapjs schema middleware will do this.
 
 The string syntax for a le filter is:
 
-    (cn<=foo)
+```
+(cn<=foo)
+```
 
 The LessThanEqualsFilter will have an `attribute` property, a `value`
 property and the `name` property will be `le`.
@@ -167,13 +185,15 @@ property and the `name` property will be `le`.
 The `matches()` method will return true IFF the passed in object has a
 key matching `attribute` and the value is `<=` this filter's `value`.
 
-    var f = new LessThanEqualsFilter({
-      attribute: 'cn',
-      value: 'foo',
-    });
+```js
+const f = new LessThanEqualsFilter({
+  attribute: 'cn',
+  value: 'foo',
+});
 
-    f.matches({cn: 'abc'});  => true
-    f.matches({cn: 'foobar'});  => false
+f.matches({cn: 'abc'});  => true
+f.matches({cn: 'foobar'});  => false
+```
 
 # AndFilter
 
@@ -184,26 +204,30 @@ object will have a `filters` property which is an array of `Filter` objects. The
 The string syntax for an and filter is (assuming below we're and'ing two
 equality filters):
 
-    (&(cn=foo)(sn=bar))
+```
+(&(cn=foo)(sn=bar))
+```
 
 The `matches()` method will return true IFF the passed in object matches all
 the filters in the `filters` array.
 
-    var f = new AndFilter({
-      filters: [
-        new EqualityFilter({
-          attribute: 'cn',
-          value: 'foo'
-        }),
-        new EqualityFilter({
-          attribute: 'sn',
-          value: 'bar'
-        })
-      ]
-    });
+```js
+const f = new AndFilter({
+  filters: [
+    new EqualityFilter({
+      attribute: 'cn',
+      value: 'foo'
+    }),
+    new EqualityFilter({
+      attribute: 'sn',
+      value: 'bar'
+    })
+  ]
+});
 
-    f.matches({cn: 'foo', sn: 'bar'});  => true
-    f.matches({cn: 'foo', sn: 'baz'});  => false
+f.matches({cn: 'foo', sn: 'bar'});  => true
+f.matches({cn: 'foo', sn: 'baz'});  => false
+```
 
 # OrFilter
 
@@ -214,26 +238,30 @@ object will have a `filters` property which is an array of `Filter` objects. The
 The string syntax for an or filter is (assuming below we're or'ing two
 equality filters):
 
-    (|(cn=foo)(sn=bar))
+```
+(|(cn=foo)(sn=bar))
+```
 
 The `matches()` method will return true IFF the passed in object matches *any*
 of the filters in the `filters` array.
 
-    var f = new OrFilter({
-      filters: [
-        new EqualityFilter({
-          attribute: 'cn',
-          value: 'foo'
-        }),
-        new EqualityFilter({
-          attribute: 'sn',
-          value: 'bar'
-        })
-      ]
-    });
+```js
+const f = new OrFilter({
+  filters: [
+    new EqualityFilter({
+      attribute: 'cn',
+      value: 'foo'
+    }),
+    new EqualityFilter({
+      attribute: 'sn',
+      value: 'bar'
+    })
+  ]
+});
 
-    f.matches({cn: 'foo', sn: 'baz'});  => true
-    f.matches({cn: 'bar', sn: 'baz'});  => false
+f.matches({cn: 'foo', sn: 'baz'});  => true
+f.matches({cn: 'bar', sn: 'baz'});  => false
+```
 
 # NotFilter
 
@@ -244,20 +272,24 @@ The `name` property will be `not`.
 The string syntax for a not filter is (assuming below we're not'ing an
 equality filter):
 
-    (!(cn=foo))
+```
+(!(cn=foo))
+```
 
 The `matches()` method will return true IFF the passed in object does not match
 the filter in the `filter` property.
 
-    var f = new NotFilter({
-      filter: new EqualityFilter({
-          attribute: 'cn',
-          value: 'foo'
-        })
-    });
+```js
+const f = new NotFilter({
+  filter: new EqualityFilter({
+      attribute: 'cn',
+      value: 'foo'
+    })
+});
 
-    f.matches({cn: 'bar'});  => true
-    f.matches({cn: 'foo'});  => false
+f.matches({cn: 'bar'});  => true
+f.matches({cn: 'foo'});  => false
+```
 
 # ApproximateFilter
 
@@ -274,10 +306,12 @@ The string syntax for an equality filter is `(attr~=value)`.
 The `matches()` method will return true IFF the passed in object has a
 key matching `attribute` and a value exactly matching `value`.
 
-    var f = new ApproximateFilter({
-      attribute: 'cn',
-      value: 'foo'
-    });
+```js
+const f = new ApproximateFilter({
+  attribute: 'cn',
+  value: 'foo'
+});
 
-    f.matches({cn: 'foo'});  => true
-    f.matches({cn: 'bar'});  => false
+f.matches({cn: 'foo'});  => true
+f.matches({cn: 'bar'});  => false
+```
