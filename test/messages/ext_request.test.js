@@ -17,9 +17,9 @@ test('new with args', function (t) {
   t.ok(req)
   t.equal(req.requestName, '1.2.3.4')
   t.equal(req.requestValue, 'test')
-  t.is(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
   t.equal(req.value, 'test')
-  t.is(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
   t.end()
 })
 
@@ -31,9 +31,9 @@ test('new with buffer args', function (t) {
   t.ok(req)
   t.equal(req.requestName, '1.2.3.4')
   t.equal(req.requestValue, req.requestValueBuffer)
-  t.is(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
   t.equal(req.value, req.valueBuffer)
-  t.is(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
   t.end()
 })
 
@@ -46,9 +46,9 @@ test('new no args set args', function (t) {
 
   req.value = 'test'
   t.equal(req.requestValue, 'test')
-  t.is(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
   t.equal(req.value, 'test')
-  t.is(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
 
   t.end()
 })
@@ -62,9 +62,9 @@ test('new no args set args buffer', function (t) {
 
   req.value = Buffer.from('test', 'utf8')
   t.equal(req.requestValue, req.requestValueBuffer)
-  t.is(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
   t.equal(req.value, req.valueBuffer)
-  t.is(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
 
   t.end()
 })
@@ -78,9 +78,9 @@ test('parse', function (t) {
   t.ok(req._parse(new BerReader(ber.buffer)))
   t.equal(req.requestName, '1.2.3.4')
   t.equal(req.requestValue, 'test')
-  t.is(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.requestValueBuffer, Buffer.from('test', 'utf8')), 0)
   t.equal(req.value, 'test')
-  t.is(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
+  t.equal(Buffer.compare(req.valueBuffer, Buffer.from('test', 'utf8')), 0)
   t.end()
 })
 

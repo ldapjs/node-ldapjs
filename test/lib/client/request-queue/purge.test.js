@@ -9,8 +9,8 @@ test('flushes the queue with timeout errors', async t => {
     flush (func) {
       func('a', 'b', 'c', (err) => {
         t.ok(err)
-        t.is(err.name, 'TimeoutError')
-        t.is(err.message, 'request queue timeout')
+        t.equal(err.name, 'TimeoutError')
+        t.equal(err.message, 'request queue timeout')
       })
     }
   }

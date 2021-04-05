@@ -22,7 +22,7 @@ test('new with args', function (t) {
   t.equal(c.type, '1.2.840.113556.1.4.319')
   t.ok(c.criticality)
   t.equal(c.value.size, 1000)
-  t.is(Buffer.compare(c.value.cookie, Buffer.from([1, 2, 3])), 0)
+  t.equal(Buffer.compare(c.value.cookie, Buffer.from([1, 2, 3])), 0)
 
   const writer = new BerWriter()
   c.toBer(writer)
@@ -32,7 +32,7 @@ test('new with args', function (t) {
   t.equal(psc.type, '1.2.840.113556.1.4.319')
   t.ok(psc.criticality)
   t.equal(psc.value.size, 1000)
-  t.is(Buffer.compare(psc.value.cookie, Buffer.from([1, 2, 3])), 0)
+  t.equal(Buffer.compare(psc.value.cookie, Buffer.from([1, 2, 3])), 0)
 
   t.end()
 })
@@ -55,7 +55,7 @@ test('tober', function (t) {
   t.equal(c.type, '1.2.840.113556.1.4.319')
   t.ok(c.criticality)
   t.equal(c.value.size, 20)
-  t.is(Buffer.compare(c.value.cookie, Buffer.alloc(0)), 0)
+  t.equal(Buffer.compare(c.value.cookie, Buffer.alloc(0)), 0)
 
   t.end()
 })

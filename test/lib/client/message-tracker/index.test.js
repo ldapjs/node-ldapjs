@@ -76,13 +76,13 @@ tap.test('options', t => {
 tap.test('.pending', t => {
   t.test('returns 0 for no messages', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
-    t.is(tracker.pending, 0)
+    t.equal(tracker.pending, 0)
   })
 
   t.test('returns 1 for 1 message', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     tracker.track({}, () => {})
-    t.is(tracker.pending, 1)
+    t.equal(tracker.pending, 1)
   })
 
   t.end()
@@ -92,14 +92,14 @@ tap.test('#abandon', t => {
   t.test('returns false if message does not exist', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     const result = tracker.abandon(1)
-    t.is(result, false)
+    t.equal(result, false)
   })
 
   t.test('returns true if message is abandoned', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     tracker.track({}, {})
     const result = tracker.abandon(1)
-    t.is(result, true)
+    t.equal(result, true)
   })
 
   t.end()
@@ -110,7 +110,7 @@ tap.test('#fetch', t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     tracker.track({}, handler)
     const fetched = tracker.fetch(1)
-    t.is(fetched, handler)
+    t.equal(fetched, handler)
 
     function handler () {}
   })
@@ -121,7 +121,7 @@ tap.test('#fetch', t => {
     tracker.track({ abandon: 'message' }, () => {})
     tracker.abandon(1)
     const fetched = tracker.fetch(1)
-    t.is(fetched, handler)
+    t.equal(fetched, handler)
 
     function handler () {}
   })
@@ -129,7 +129,7 @@ tap.test('#fetch', t => {
   t.test('returns null when message does not exist', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     const fetched = tracker.fetch(1)
-    t.is(fetched, null)
+    t.equal(fetched, null)
   })
 
   t.end()
@@ -146,13 +146,13 @@ tap.test('#purge', t => {
 
     function cb (msgID, handler) {
       if (count === 0) {
-        t.is(msgID, 1)
-        t.is(handler, handler1)
+        t.equal(msgID, 1)
+        t.equal(handler, handler1)
         count += 1
         return
       }
-      t.is(msgID, 2)
-      t.is(handler, handler2)
+      t.equal(msgID, 2)
+      t.equal(handler, handler2)
     }
 
     function handler1 () {}
@@ -167,7 +167,7 @@ tap.test('#remove', t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     tracker.track({}, () => {})
     tracker.remove(1)
-    t.is(tracker.pending, 0)
+    t.equal(tracker.pending, 0)
   })
 
   // Not a great test. It exercises the desired code path, but we probably
@@ -178,7 +178,7 @@ tap.test('#remove', t => {
     tracker.track({ abandon: 'message' }, () => {})
     tracker.abandon(1)
     tracker.remove(1)
-    t.is(tracker.pending, 1)
+    t.equal(tracker.pending, 1)
   })
 
   t.end()
@@ -190,9 +190,9 @@ tap.test('#track', t => {
     const msg = {}
     tracker.track(msg, handler)
 
-    t.deepEqual(msg, { messageID: 1 })
+    t.same(msg, { messageID: 1 })
     const cb = tracker.fetch(1)
-    t.is(cb, handler)
+    t.equal(cb, handler)
 
     function handler () {}
   })

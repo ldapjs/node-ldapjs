@@ -1,6 +1,4 @@
-esm: false
-jsx: false
-ts: false
+check-coverage: false
 
 files:
   - 'test/**/*.test.js'

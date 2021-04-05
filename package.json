@@ -37,7 +37,7 @@
     "highlight.js": "^10.6.0",
     "husky": "^4.2.5",
     "marked": "^2.0.0",
-    "tap": "14.11.0"
+    "tap": "15.0.1"
   },
   "scripts": {
     "test": "tap --no-cov",

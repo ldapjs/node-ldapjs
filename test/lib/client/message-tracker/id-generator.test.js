@@ -7,15 +7,15 @@ const idGeneratorFactory = require('../../../../lib/client/message-tracker/id-ge
 test('starts at 0', async t => {
   const nextID = idGeneratorFactory()
   const currentID = nextID()
-  t.is(currentID, 1)
+  t.equal(currentID, 1)
 })
 
 test('handles wrapping around', async t => {
   const nextID = idGeneratorFactory(MAX_MSGID - 2)
 
   let currentID = nextID()
-  t.is(currentID, MAX_MSGID - 1)
+  t.equal(currentID, MAX_MSGID - 1)
 
   currentID = nextID()
-  t.is(currentID, 1)
+  t.equal(currentID, 1)
 })
