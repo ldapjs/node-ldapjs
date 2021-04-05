@@ -171,15 +171,15 @@ test('format persists across clone', function (t) {
   const OUT = 'UID="user", CN=foo+SN=bar, DC=test, DC=com'
   _dn.setFormat({ keepQuote: true, upperName: true })
   const clone = _dn.clone()
-  t.equals(_dn.toString(), OUT)
-  t.equals(clone.toString(), OUT)
+  t.equal(_dn.toString(), OUT)
+  t.equal(clone.toString(), OUT)
   t.end()
 })
 
 test('initialization', function (t) {
   const dn1 = new dn.DN()
   t.ok(dn1)
-  t.equals(dn1.toString(), '')
+  t.equal(dn1.toString(), '')
   t.ok(dn1.isEmpty(), 'DN with no initializer defaults to null DN')
 
   const data = [
@@ -188,7 +188,7 @@ test('initialization', function (t) {
   ]
   const dn2 = new dn.DN(data)
   t.ok(dn2)
-  t.equals(dn2.toString(), 'foo=bar, o=base')
+  t.equal(dn2.toString(), 'foo=bar, o=base')
   t.ok(!dn2.isEmpty())
 
   t.end()

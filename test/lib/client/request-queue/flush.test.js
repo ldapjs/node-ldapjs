@@ -17,7 +17,7 @@ test('clears timer', async t => {
     }
   }
   flush.call(q)
-  t.is(q._timer, null)
+  t.equal(q._timer, null)
 })
 
 test('invokes callback with parameters', async t => {
@@ -40,12 +40,12 @@ test('invokes callback with parameters', async t => {
     }
   }
   flush.call(q, (message, expect, emitter, cb) => {
-    t.is(message, 'foo')
-    t.is(expect, 'bar')
-    t.is(emitter, 'baz')
-    t.is(cb, theCB)
+    t.equal(message, 'foo')
+    t.equal(expect, 'bar')
+    t.equal(emitter, 'baz')
+    t.equal(cb, theCB)
   })
-  t.is(q._timer, null)
+  t.equal(q._timer, null)
 
   function theCB () {}
 })

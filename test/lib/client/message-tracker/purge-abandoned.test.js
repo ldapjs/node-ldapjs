@@ -10,11 +10,11 @@ test('clears queue if only one message present', async t => {
   abandoned.set(1, { age: 2, cb })
 
   purgeAbandoned(2, abandoned)
-  t.is(abandoned.size, 0)
+  t.equal(abandoned.size, 0)
 
   function cb (err) {
-    t.is(err.name, 'AbandonedError')
-    t.is(err.message, 'client request abandoned')
+    t.equal(err.name, 'AbandonedError')
+    t.equal(err.message, 'client request abandoned')
   }
 })
 
@@ -25,11 +25,11 @@ test('clears queue if multiple messages present', async t => {
   abandoned.set(2, { age: 3, cb })
 
   purgeAbandoned(4, abandoned)
-  t.is(abandoned.size, 0)
+  t.equal(abandoned.size, 0)
 
   function cb (err) {
-    t.is(err.name, 'AbandonedError')
-    t.is(err.message, 'client request abandoned')
+    t.equal(err.name, 'AbandonedError')
+    t.equal(err.message, 'client request abandoned')
   }
 })
 
@@ -42,11 +42,11 @@ test('message id has wrappred around', async t => {
   // that is triggering the purge was the "first" message in the new sequence
   // of message identifiers.
   purgeAbandoned(1, abandoned)
-  t.is(abandoned.size, 0)
+  t.equal(abandoned.size, 0)
 
   function cb (err) {
-    t.is(err.name, 'AbandonedError')
-    t.is(err.message, 'client request abandoned')
+    t.equal(err.name, 'AbandonedError')
+    t.equal(err.message, 'client request abandoned')
   }
 })
 
@@ -56,7 +56,7 @@ test('does not clear if window not met', async t => {
   abandoned.set(1, { age: 2, cb })
 
   purgeAbandoned(1, abandoned)
-  t.is(abandoned.size, 1)
+  t.equal(abandoned.size, 1)
 
   function cb () {
     t.fail('should not be invoked')

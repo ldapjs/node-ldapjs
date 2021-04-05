@@ -75,7 +75,7 @@ tap.test('listen on static port', function (t) {
   server.listen(SERVER_PORT, '127.0.0.1', function () {
     const addr = server.address()
     t.equal(addr.port, parseInt(SERVER_PORT, 10))
-    t.equals(server.url, `ldap://127.0.0.1:${SERVER_PORT}`)
+    t.equal(server.url, `ldap://127.0.0.1:${SERVER_PORT}`)
     server.close(() => t.end())
   })
 })

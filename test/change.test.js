@@ -154,11 +154,11 @@ test('apply - replace', function (t) {
 
   // plain
   res = Change.apply(single, { cn: ['old'] })
-  t.deepEqual(res.cn, ['new'])
+  t.same(res.cn, ['new'])
 
   // multiple
   res = Change.apply(single, { cn: ['old', 'also'] })
-  t.deepEqual(res.cn, ['new'])
+  t.same(res.cn, ['new'])
 
   // empty
   res = Change.apply(empty, { cn: ['existing'] })
@@ -167,7 +167,7 @@ test('apply - replace', function (t) {
 
   // absent
   res = Change.apply(single, { dn: ['otherjunk'] })
-  t.deepEqual(res.cn, ['new'])
+  t.same(res.cn, ['new'])
 
   // scalar formatting "success"
   res = Change.apply(single, { cn: 'old' }, true)
@@ -175,7 +175,7 @@ test('apply - replace', function (t) {
 
   // scalar formatting "failure"
   res = Change.apply(twin, { cn: 'old' }, true)
-  t.deepEqual(res.cn, ['new', 'two'])
+  t.same(res.cn, ['new', 'two'])
 
   t.end()
 })
@@ -192,15 +192,15 @@ test('apply - add', function (t) {
 
   // plain
   res = Change.apply(single, { cn: ['old'] })
-  t.deepEqual(res.cn, ['old', 'new'])
+  t.same(res.cn, ['old', 'new'])
 
   // multiple
   res = Change.apply(single, { cn: ['old', 'also'] })
-  t.deepEqual(res.cn, ['old', 'also', 'new'])
+  t.same(res.cn, ['old', 'also', 'new'])
 
   // absent
   res = Change.apply(single, { dn: ['otherjunk'] })
-  t.deepEqual(res.cn, ['new'])
+  t.same(res.cn, ['new'])
 
   // scalar formatting "success"
   res = Change.apply(single, { }, true)
@@ -208,11 +208,11 @@ test('apply - add', function (t) {
 
   // scalar formatting "failure"
   res = Change.apply(single, { cn: 'old' }, true)
-  t.deepEqual(res.cn, ['old', 'new'])
+  t.same(res.cn, ['old', 'new'])
 
   // duplicate add
   res = Change.apply(single, { cn: 'new' })
-  t.deepEqual(res.cn, ['new'])
+  t.same(res.cn, ['new'])
 
   t.end()
 })
@@ -229,7 +229,7 @@ test('apply - delete', function (t) {
 
   // plain
   res = Change.apply(single, { cn: ['old', 'new'] })
-  t.deepEqual(res.cn, ['new'])
+  t.same(res.cn, ['new'])
 
   // empty
   res = Change.apply(single, { cn: ['old'] })
@@ -242,7 +242,7 @@ test('apply - delete', function (t) {
 
   // scalar formatting "failure"
   res = Change.apply(single, { cn: ['old', 'several', 'items'] }, true)
-  t.deepEqual(res.cn, ['several', 'items'])
+  t.same(res.cn, ['several', 'items'])
 
   // absent
   res = Change.apply(single, { dn: ['otherjunk'] })

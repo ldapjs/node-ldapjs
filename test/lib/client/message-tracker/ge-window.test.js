@@ -8,40 +8,40 @@ test('comp > (ref in upper window) => true', async t => {
   const ref = Math.floor(MAX_MSGID / 2) + 10
   const comp = ref + 10
   const result = geWindow(ref, comp)
-  t.is(result, true)
+  t.equal(result, true)
 })
 
 test('comp < (ref in upper window) => false', async t => {
   const ref = Math.floor(MAX_MSGID / 2) + 10
   const comp = ref - 5
   const result = geWindow(ref, comp)
-  t.is(result, false)
+  t.equal(result, false)
 })
 
 test('comp > (ref in lower window) => true', async t => {
   const ref = Math.floor(MAX_MSGID / 2) - 10
   const comp = ref + 20
   const result = geWindow(ref, comp)
-  t.is(result, true)
+  t.equal(result, true)
 })
 
 test('comp < (ref in lower window) => false', async t => {
   const ref = Math.floor(MAX_MSGID / 2) - 10
   const comp = ref - 5
   const result = geWindow(ref, comp)
-  t.is(result, false)
+  t.equal(result, false)
 })
 
 test('(max === MAX_MSGID) && (comp > ref) => true', async t => {
   const ref = MAX_MSGID - Math.floor(MAX_MSGID / 2)
   const comp = ref + 1
   const result = geWindow(ref, comp)
-  t.is(result, true)
+  t.equal(result, true)
 })
 
 test('(max === MAX_MSGID) && (comp < ref) => false', async t => {
   const ref = MAX_MSGID - Math.floor(MAX_MSGID / 2)
   const comp = ref - 1
   const result = geWindow(ref, comp)
-  t.is(result, false)
+  t.equal(result, false)
 })

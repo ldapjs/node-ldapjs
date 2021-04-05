@@ -408,13 +408,13 @@ tap.test('createClient', t => {
   //   const socketPath = getSock()
   //   const server = ldap.createServer()
   //   server.listen(socketPath, () => {})
-  //   t.tearDown(() => {
+  //   t.teardown(() => {
   //     client.unbind(() => server.close())
   //   })
 
   //   client = ldap.createClient({ socketPath, log: logger })
   //   t.ok(logger.child)
-  //   t.true(typeof client.log.child === 'function')
+  //   t.ok(typeof client.log.child === 'function')
   // })
 
   t.end()
@@ -788,7 +788,7 @@ tap.test('search paged', { timeout: 10000 }, function (t) {
         t2.end()
       })
 
-      t2.tearDown(() => {
+      t2.teardown(() => {
         res.removeListener('searchEntry', entryListener)
         res.removeListener('page', pageListener)
       })
@@ -999,7 +999,7 @@ tap.test('search - sssvlv', { timeout: 10000 }, function (t) {
       })
       res.on('error', (err) => t2.error(err))
       res.on('end', function () {
-        t2.equals(count, 10)
+        t2.equal(count, 10)
         t2.end()
       })
     })
@@ -1041,7 +1041,7 @@ tap.test('search - sssvlv', { timeout: 10000 }, function (t) {
       })
       res.on('error', (err) => t2.error(err))
       res.on('end', function () {
-        t2.equals(count, 10)
+        t2.equal(count, 10)
         t2.end()
       })
     })
@@ -1523,10 +1523,10 @@ tap.test('connection refused', function (t) {
     client.on('connectRefused', () => {})
 
     client.bind('cn=root', 'secret', function (err, res) {
-      t.true(err)
+      t.ok(err)
       t.type(err, Error)
-      t.equals(err.code, 'ECONNREFUSED')
-      t.false(res)
+      t.equal(err.code, 'ECONNREFUSED')
+      t.notOk(res)
       t.end()
     })
   })
@@ -1551,11 +1551,11 @@ tap.test('connection timeout', function (t) {
     }, 2000)
 
     client.bind('cn=root', 'secret', function (err, res) {
-      t.true(err)
+      t.ok(err)
       t.type(err, Error)
-      t.equals(err.message, 'connection timeout')
+      t.equal(err.message, 'connection timeout')
       done = true
-      t.false(res)
+      t.notOk(res)
       t.end()
     })
   })
@@ -1578,9 +1578,9 @@ tap.only('emitError', function (t) {
         t.fail(err)
       })
       client.on('connectTimeout', (err) => {
-        t.true(err)
+        t.ok(err)
         t.type(err, Error)
-        t.equals(err.message, 'connection timeout')
+        t.equal(err.message, 'connection timeout')
         clearTimeout(timeout)
         t.end()
       })
@@ -1602,9 +1602,9 @@ tap.only('emitError', function (t) {
       }, 2000)
 
       client.on('error', (err) => {
-        t.true(err)
+        t.ok(err)
         t.type(err, Error)
-        t.equals(err.message, 'connectTimeout: connection timeout')
+        t.equal(err.message, 'connectTimeout: connection timeout')
         clearTimeout(timeout)
         t.end()
       })
@@ -1623,10 +1623,10 @@ tap.only('emitError', function (t) {
         t.fail(err)
       })
       client.on('connectRefused', (err) => {
-        t.true(err)
+        t.ok(err)
         t.type(err, Error)
-        t.equals(err.message, `connect ECONNREFUSED 0.0.0.0:${unusedPortNumber}`)
-        t.equals(err.code, 'ECONNREFUSED')
+        t.equal(err.message, `connect ECONNREFUSED 0.0.0.0:${unusedPortNumber}`)
+        t.equal(err.code, 'ECONNREFUSED')
         t.end()
       })
 
@@ -1641,10 +1641,10 @@ tap.only('emitError', function (t) {
       })
 
       client.on('error', (err) => {
-        t.true(err)
+        t.ok(err)
         t.type(err, Error)
-        t.equals(err.message, `connectRefused: connect ECONNREFUSED 0.0.0.0:${unusedPortNumber}`)
-        t.equals(err.code, 'ECONNREFUSED')
+        t.equal(err.message, `connectRefused: connect ECONNREFUSED 0.0.0.0:${unusedPortNumber}`)
+        t.equal(err.code, 'ECONNREFUSED')
         t.end()
       })
 

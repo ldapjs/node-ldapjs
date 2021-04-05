@@ -14,7 +14,7 @@ function search (t, options, callback) {
       found = true
     })
     res.on('end', function () {
-      t.true(found)
+      t.ok(found)
       if (callback) return callback()
       return t.end()
     })
