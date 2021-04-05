@@ -8,11 +8,10 @@ const ldap = require('../lib')
 const SERVER_PORT = process.env.SERVER_PORT || 1389
 const SUFFIX = 'dc=test'
 
-tap.beforeEach(function (done, t) {
+tap.beforeEach(function (t) {
   // We do not need a `.afterEach` to clean up the sock files because that
   // is done when the server is destroyed.
   t.context.sock = getSock()
-  done()
 })
 
 tap.test('basic create', function (t) {

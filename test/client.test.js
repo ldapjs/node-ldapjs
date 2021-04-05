@@ -14,320 +14,324 @@ const LDAP_CONNECT_TIMEOUT = process.env.LDAP_CONNECT_TIMEOUT || 0
 const BIND_DN = 'cn=root'
 const BIND_PW = 'secret'
 
-tap.beforeEach((done, t) => {
-  t.context.socketPath = getSock()
-  t.context.server = ldap.createServer()
+tap.beforeEach((t) => {
+  return new Promise(resolve => {
+    t.context.socketPath = getSock()
+    t.context.server = ldap.createServer()
 
-  const server = t.context.server
-  server.bind(BIND_DN, function (req, res, next) {
-    if (req.credentials !== BIND_PW) { return next(new ldap.InvalidCredentialsError('Invalid password')) }
+    const server = t.context.server
+    server.bind(BIND_DN, function (req, res, next) {
+      if (req.credentials !== BIND_PW) { return next(new ldap.InvalidCredentialsError('Invalid password')) }
 
-    res.end()
-    return next()
-  })
-
-  server.add(SUFFIX, function (req, res, next) {
-    res.end()
-    return next()
-  })
-
-  server.compare(SUFFIX, function (req, res, next) {
-    res.end(req.value === 'test')
-    return next()
-  })
-
-  server.del(SUFFIX, function (req, res, next) {
-    res.end()
-    return next()
-  })
-
-  // LDAP whoami
-  server.exop('1.3.6.1.4.1.4203.1.11.3', function (req, res, next) {
-    res.value = 'u:xxyyz@EXAMPLE.NET'
-    res.end()
-    return next()
-  })
-
-  server.modify(SUFFIX, function (req, res, next) {
-    res.end()
-    return next()
-  })
-
-  server.modifyDN(SUFFIX, function (req, res, next) {
-    res.end()
-    return next()
-  })
-
-  server.modifyDN('cn=issue-480', function (req, res, next) {
-    assert(req.newRdn.toString().length > 132)
-    res.end()
-    return next()
-  })
-
-  server.search('dc=slow', function (req, res, next) {
-    res.send({
-      dn: 'dc=slow',
-      attributes: {
-        you: 'wish',
-        this: 'was',
-        faster: '.'
-      }
-    })
-    setTimeout(function () {
       res.end()
-      next()
-    }, 250)
-  })
+      return next()
+    })
 
-  server.search('dc=timeout', function () {
-    // Cause the client to timeout by not sending a response.
-  })
+    server.add(SUFFIX, function (req, res, next) {
+      res.end()
+      return next()
+    })
 
-  server.search(SUFFIX, function (req, res, next) {
-    if (req.dn.equals('cn=ref,' + SUFFIX)) {
-      res.send(res.createSearchReference('ldap://localhost'))
-    } else if (req.dn.equals('cn=bin,' + SUFFIX)) {
-      res.send(res.createSearchEntry({
-        objectName: req.dn,
-        attributes: {
-          'foo;binary': 'wr0gKyDCvCA9IMK+',
-          gb18030: Buffer.from([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]),
-          objectclass: 'binary'
-        }
-      }))
-    } else {
-      const e = res.createSearchEntry({
-        objectName: req.dn,
-        attributes: {
-          cn: ['unit', 'test'],
-          SN: 'testy'
-        }
-      })
-      res.send(e)
-      res.send(e)
-    }
+    server.compare(SUFFIX, function (req, res, next) {
+      res.end(req.value === 'test')
+      return next()
+    })
 
-    res.end()
-    return next()
-  })
+    server.del(SUFFIX, function (req, res, next) {
+      res.end()
+      return next()
+    })
 
-  server.search('cn=sizelimit', function (req, res, next) {
-    const sizeLimit = 200
-    for (let i = 0; i < 1000; i++) {
-      if (req.sizeLimit > 0 && i >= req.sizeLimit) {
-        break
-      } else if (i > sizeLimit) {
-        res.end(ldap.LDAP_SIZE_LIMIT_EXCEEDED)
-        return next()
-      }
+    // LDAP whoami
+    server.exop('1.3.6.1.4.1.4203.1.11.3', function (req, res, next) {
+      res.value = 'u:xxyyz@EXAMPLE.NET'
+      res.end()
+      return next()
+    })
+
+    server.modify(SUFFIX, function (req, res, next) {
+      res.end()
+      return next()
+    })
+
+    server.modifyDN(SUFFIX, function (req, res, next) {
+      res.end()
+      return next()
+    })
+
+    server.modifyDN('cn=issue-480', function (req, res, next) {
+      assert(req.newRdn.toString().length > 132)
+      res.end()
+      return next()
+    })
+
+    server.search('dc=slow', function (req, res, next) {
       res.send({
-        dn: util.format('o=%d, cn=sizelimit', i),
+        dn: 'dc=slow',
         attributes: {
-          o: [i],
-          objectclass: ['pagedResult']
+          you: 'wish',
+          this: 'was',
+          faster: '.'
         }
       })
-    }
-    res.end()
-    return next()
-  })
+      setTimeout(function () {
+        res.end()
+        next()
+      }, 250)
+    })
 
-  server.search('cn=paged', function (req, res, next) {
-    const min = 0
-    const max = 1000
+    server.search('dc=timeout', function () {
+      // Cause the client to timeout by not sending a response.
+    })
 
-    function sendResults (start, end) {
-      start = (start < min) ? min : start
-      end = (end > max || end < min) ? max : end
-      let i
-      for (i = start; i < end; i++) {
+    server.search(SUFFIX, function (req, res, next) {
+      if (req.dn.equals('cn=ref,' + SUFFIX)) {
+        res.send(res.createSearchReference('ldap://localhost'))
+      } else if (req.dn.equals('cn=bin,' + SUFFIX)) {
+        res.send(res.createSearchEntry({
+          objectName: req.dn,
+          attributes: {
+            'foo;binary': 'wr0gKyDCvCA9IMK+',
+            gb18030: Buffer.from([0xB5, 0xE7, 0xCA, 0xD3, 0xBB, 0xFA]),
+            objectclass: 'binary'
+          }
+        }))
+      } else {
+        const e = res.createSearchEntry({
+          objectName: req.dn,
+          attributes: {
+            cn: ['unit', 'test'],
+            SN: 'testy'
+          }
+        })
+        res.send(e)
+        res.send(e)
+      }
+
+      res.end()
+      return next()
+    })
+
+    server.search('cn=sizelimit', function (req, res, next) {
+      const sizeLimit = 200
+      for (let i = 0; i < 1000; i++) {
+        if (req.sizeLimit > 0 && i >= req.sizeLimit) {
+          break
+        } else if (i > sizeLimit) {
+          res.end(ldap.LDAP_SIZE_LIMIT_EXCEEDED)
+          return next()
+        }
         res.send({
-          dn: util.format('o=%d, cn=paged', i),
+          dn: util.format('o=%d, cn=sizelimit', i),
           attributes: {
             o: [i],
             objectclass: ['pagedResult']
           }
         })
       }
-      return i
-    }
-
-    let cookie = null
-    let pageSize = 0
-    req.controls.forEach(function (control) {
-      if (control.type === ldap.PagedResultsControl.OID) {
-        pageSize = control.value.size
-        cookie = control.value.cookie
-      }
-    })
-
-    if (cookie && Buffer.isBuffer(cookie)) {
-      // Do simple paging
-      let first = min
-      if (cookie.length !== 0) {
-        first = parseInt(cookie.toString(), 10)
-      }
-      const last = sendResults(first, first + pageSize)
-
-      let resultCookie
-      if (last < max) {
-        resultCookie = Buffer.from(last.toString())
-      } else {
-        resultCookie = Buffer.from('')
-      }
-      res.controls.push(new ldap.PagedResultsControl({
-        value: {
-          size: pageSize, // correctness not required here
-          cookie: resultCookie
-        }
-      }))
-      res.end()
-      next()
-    } else {
-      // don't allow non-paged searches for this test endpoint
-      next(new ldap.UnwillingToPerformError())
-    }
-  })
-  server.search('cn=sssvlv', function (req, res, next) {
-    const min = 0
-    const max = 100
-    const results = []
-    let o = 'aa'
-    for (let i = min; i < max; i++) {
-      results.push({
-        dn: util.format('o=%s, cn=sssvlv', o),
-        attributes: {
-          o: [o],
-          objectclass: ['sssvlvResult']
-        }
-      })
-      o = ((parseInt(o, 36) + 1).toString(36)).replace(/0/g, 'a')
-    }
-    function sendResults (start, end, sortBy, sortDesc) {
-      start = (start < min) ? min : start
-      end = (end > max || end < min) ? max : end
-      const sorted = results.sort((a, b) => {
-        if (a.attributes[sortBy][0] < b.attributes[sortBy][0]) {
-          return sortDesc ? 1 : -1
-        } else if (a.attributes[sortBy][0] > b.attributes[sortBy][0]) {
-          return sortDesc ? -1 : 1
-        }
-        return 0
-      })
-      for (let i = start; i < end; i++) {
-        res.send(sorted[i])
-      }
-    }
-    let sortBy = null
-    let sortDesc = null
-    let afterCount = null
-    let targetOffset = null
-    req.controls.forEach(function (control) {
-      if (control.type === ldap.ServerSideSortingRequestControl.OID) {
-        sortBy = control.value[0].attributeType
-        sortDesc = control.value[0].reverseOrder
-      }
-      if (control.type === ldap.VirtualListViewRequestControl.OID) {
-        afterCount = control.value.afterCount
-        targetOffset = control.value.targetOffset
-      }
-    })
-    if (sortBy) {
-      if (afterCount && targetOffset) {
-        sendResults(targetOffset - 1, (targetOffset + afterCount), sortBy, sortDesc)
-      } else {
-        sendResults(min, max, sortBy, sortDesc)
-      }
-      res.end()
-      next()
-    } else {
-      next(new ldap.UnwillingToPerformError())
-    }
-  })
-
-  server.search('cn=pagederr', function (req, res, next) {
-    let cookie = null
-    req.controls.forEach(function (control) {
-      if (control.type === ldap.PagedResultsControl.OID) {
-        cookie = control.value.cookie
-      }
-    })
-    if (cookie && Buffer.isBuffer(cookie) && cookie.length === 0) {
-      // send first "page"
-      res.send({
-        dn: util.format('o=result, cn=pagederr'),
-        attributes: {
-          o: 'result',
-          objectclass: ['pagedResult']
-        }
-      })
-      res.controls.push(new ldap.PagedResultsControl({
-        value: {
-          size: 2,
-          cookie: Buffer.from('a')
-        }
-      }))
       res.end()
       return next()
-    } else {
-      // send error instead of second page
-      res.end(ldap.LDAP_SIZE_LIMIT_EXCEEDED)
-      return next()
-    }
-  })
+    })
 
-  server.search('dc=empty', function (req, res, next) {
-    res.send({
-      dn: 'dc=empty',
-      attributes: {
-        member: [],
-        'member;range=0-1': ['cn=user1, dc=empty', 'cn=user2, dc=empty']
+    server.search('cn=paged', function (req, res, next) {
+      const min = 0
+      const max = 1000
+
+      function sendResults (start, end) {
+        start = (start < min) ? min : start
+        end = (end > max || end < min) ? max : end
+        let i
+        for (i = start; i < end; i++) {
+          res.send({
+            dn: util.format('o=%d, cn=paged', i),
+            attributes: {
+              o: [i],
+              objectclass: ['pagedResult']
+            }
+          })
+        }
+        return i
+      }
+
+      let cookie = null
+      let pageSize = 0
+      req.controls.forEach(function (control) {
+        if (control.type === ldap.PagedResultsControl.OID) {
+          pageSize = control.value.size
+          cookie = control.value.cookie
+        }
+      })
+
+      if (cookie && Buffer.isBuffer(cookie)) {
+        // Do simple paging
+        let first = min
+        if (cookie.length !== 0) {
+          first = parseInt(cookie.toString(), 10)
+        }
+        const last = sendResults(first, first + pageSize)
+
+        let resultCookie
+        if (last < max) {
+          resultCookie = Buffer.from(last.toString())
+        } else {
+          resultCookie = Buffer.from('')
+        }
+        res.controls.push(new ldap.PagedResultsControl({
+          value: {
+            size: pageSize, // correctness not required here
+            cookie: resultCookie
+          }
+        }))
+        res.end()
+        next()
+      } else {
+        // don't allow non-paged searches for this test endpoint
+        next(new ldap.UnwillingToPerformError())
       }
     })
-    res.end()
-    return next()
-  })
+    server.search('cn=sssvlv', function (req, res, next) {
+      const min = 0
+      const max = 100
+      const results = []
+      let o = 'aa'
+      for (let i = min; i < max; i++) {
+        results.push({
+          dn: util.format('o=%s, cn=sssvlv', o),
+          attributes: {
+            o: [o],
+            objectclass: ['sssvlvResult']
+          }
+        })
+        o = ((parseInt(o, 36) + 1).toString(36)).replace(/0/g, 'a')
+      }
+      function sendResults (start, end, sortBy, sortDesc) {
+        start = (start < min) ? min : start
+        end = (end > max || end < min) ? max : end
+        const sorted = results.sort((a, b) => {
+          if (a.attributes[sortBy][0] < b.attributes[sortBy][0]) {
+            return sortDesc ? 1 : -1
+          } else if (a.attributes[sortBy][0] > b.attributes[sortBy][0]) {
+            return sortDesc ? -1 : 1
+          }
+          return 0
+        })
+        for (let i = start; i < end; i++) {
+          res.send(sorted[i])
+        }
+      }
+      let sortBy = null
+      let sortDesc = null
+      let afterCount = null
+      let targetOffset = null
+      req.controls.forEach(function (control) {
+        if (control.type === ldap.ServerSideSortingRequestControl.OID) {
+          sortBy = control.value[0].attributeType
+          sortDesc = control.value[0].reverseOrder
+        }
+        if (control.type === ldap.VirtualListViewRequestControl.OID) {
+          afterCount = control.value.afterCount
+          targetOffset = control.value.targetOffset
+        }
+      })
+      if (sortBy) {
+        if (afterCount && targetOffset) {
+          sendResults(targetOffset - 1, (targetOffset + afterCount), sortBy, sortDesc)
+        } else {
+          sendResults(min, max, sortBy, sortDesc)
+        }
+        res.end()
+        next()
+      } else {
+        next(new ldap.UnwillingToPerformError())
+      }
+    })
 
-  server.search('cn=busy', function (req, res, next) {
-    next(new ldap.BusyError('too much to do'))
-  })
+    server.search('cn=pagederr', function (req, res, next) {
+      let cookie = null
+      req.controls.forEach(function (control) {
+        if (control.type === ldap.PagedResultsControl.OID) {
+          cookie = control.value.cookie
+        }
+      })
+      if (cookie && Buffer.isBuffer(cookie) && cookie.length === 0) {
+        // send first "page"
+        res.send({
+          dn: util.format('o=result, cn=pagederr'),
+          attributes: {
+            o: 'result',
+            objectclass: ['pagedResult']
+          }
+        })
+        res.controls.push(new ldap.PagedResultsControl({
+          value: {
+            size: 2,
+            cookie: Buffer.from('a')
+          }
+        }))
+        res.end()
+        return next()
+      } else {
+        // send error instead of second page
+        res.end(ldap.LDAP_SIZE_LIMIT_EXCEEDED)
+        return next()
+      }
+    })
 
-  server.search('', function (req, res, next) {
-    if (req.dn.toString() === '') {
+    server.search('dc=empty', function (req, res, next) {
       res.send({
-        dn: '',
+        dn: 'dc=empty',
         attributes: {
-          objectclass: ['RootDSE', 'top']
+          member: [],
+          'member;range=0-1': ['cn=user1, dc=empty', 'cn=user2, dc=empty']
         }
       })
       res.end()
-    } else {
-      // Turn away any other requests (since '' is the fallthrough route)
-      res.errorMessage = 'No tree found for: ' + req.dn.toString()
-      res.end(ldap.LDAP_NO_SUCH_OBJECT)
-    }
-    return next()
-  })
-
-  server.unbind(function (req, res, next) {
-    res.end()
-    return next()
-  })
-
-  server.listen(t.context.socketPath, function () {
-    const client = ldap.createClient({
-      connectTimeout: parseInt(LDAP_CONNECT_TIMEOUT, 10),
-      socketPath: t.context.socketPath
+      return next()
     })
-    t.context.client = client
-    client.on('connect', () => done())
+
+    server.search('cn=busy', function (req, res, next) {
+      next(new ldap.BusyError('too much to do'))
+    })
+
+    server.search('', function (req, res, next) {
+      if (req.dn.toString() === '') {
+        res.send({
+          dn: '',
+          attributes: {
+            objectclass: ['RootDSE', 'top']
+          }
+        })
+        res.end()
+      } else {
+        // Turn away any other requests (since '' is the fallthrough route)
+        res.errorMessage = 'No tree found for: ' + req.dn.toString()
+        res.end(ldap.LDAP_NO_SUCH_OBJECT)
+      }
+      return next()
+    })
+
+    server.unbind(function (req, res, next) {
+      res.end()
+      return next()
+    })
+
+    server.listen(t.context.socketPath, function () {
+      const client = ldap.createClient({
+        connectTimeout: parseInt(LDAP_CONNECT_TIMEOUT, 10),
+        socketPath: t.context.socketPath
+      })
+      t.context.client = client
+      client.on('connect', () => resolve())
+    })
   })
 })
 
-tap.afterEach((done, t) => {
-  t.context.client.unbind((err) => {
-    t.error(err)
-    t.context.server.close(() => done())
+tap.afterEach((t) => {
+  return new Promise(resolve => {
+    t.context.client.unbind((err) => {
+      t.error(err)
+      t.context.server.close(() => resolve())
+    })
   })
 })
 

@@ -21,55 +21,62 @@ function search (t, options, callback) {
   })
 }
 
-tap.beforeEach((done, t) => {
-  const suffix = `dc=${uuid()}`
-  const server = ldap.createServer()
+tap.beforeEach((t) => {
+  return new Promise((resolve, reject) => {
+    const suffix = `dc=${uuid()}`
+    const server = ldap.createServer()
 
-  t.context.server = server
-  t.context.socketPath = getSock()
-  t.context.suffix = suffix
+    t.context.server = server
+    t.context.socketPath = getSock()
+    t.context.suffix = suffix
 
-  server.bind('cn=root', function (req, res, next) {
-    res.end()
-    return next()
-  })
+    server.bind('cn=root', function (req, res, next) {
+      res.end()
+      return next()
+    })
 
-  server.search(suffix, function (req, res) {
-    const entry = {
-      dn: 'cn=foo, ' + suffix,
-      attributes: {
-        objectclass: ['person', 'top'],
-        cn: 'Pogo Stick',
-        sn: 'Stick',
-        givenname: 'ogo',
-        mail: uuid() + '@pogostick.org'
+    server.search(suffix, function (req, res) {
+      const entry = {
+        dn: 'cn=foo, ' + suffix,
+        attributes: {
+          objectclass: ['person', 'top'],
+          cn: 'Pogo Stick',
+          sn: 'Stick',
+          givenname: 'ogo',
+          mail: uuid() + '@pogostick.org'
+        }
       }
-    }
 
-    if (req.filter.matches(entry.attributes)) { res.send(entry) }
+      if (req.filter.matches(entry.attributes)) { res.send(entry) }
 
-    res.end()
-  })
-
-  server.listen(t.context.socketPath, function () {
-    t.context.client = ldap.createClient({
-      socketPath: t.context.socketPath
+      res.end()
     })
 
-    t.context.client.on('connectError', (err) => {
-      t.context.server.close(() => done(err))
-    })
-    t.context.client.on('connect', (socket) => {
-      t.context.socket = socket
-      done()
+    server.listen(t.context.socketPath, function () {
+      t.context.client = ldap.createClient({
+        socketPath: t.context.socketPath
+      })
+
+      t.context.client.on('connectError', (err) => {
+        t.context.server.close(() => reject(err))
+      })
+      t.context.client.on('connect', (socket) => {
+        t.context.socket = socket
+        resolve()
+      })
     })
   })
 })
 
-tap.afterEach((done, t) => {
-  if (!t.context.client) return done()
-  t.context.client.unbind(() => {
-    t.context.server.close(done)
+tap.afterEach((t) => {
+  return new Promise((resolve, reject) => {
+    if (!t.context.client) return resolve()
+    t.context.client.unbind(() => {
+      t.context.server.close((err) => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
   })
 })
 
