@@ -334,7 +334,7 @@ tap.test('close passes error to callback', function (t) {
 })
 
 tap.test('multithreading support via external server', function (t) {
-  let serverOptions = { }
+  const serverOptions = { }
   const server = ldap.createServer(serverOptions)
   const fauxServer = net.createServer(serverOptions, (connection) => {
     server.newConnection(connection)
@@ -358,7 +358,7 @@ tap.test('multithreading support via external server', function (t) {
 })
 
 tap.test('multithreading support via hook', function (t) {
-  let serverOptions = {
+  const serverOptions = {
     connectionRouter: (connection) => {
       server.newConnection(connection)
     }
