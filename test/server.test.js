@@ -1,5 +1,6 @@
 'use strict'
 
+const net = require('net')
 const tap = require('tap')
 const vasync = require('vasync')
 const { getSock } = require('./utils')
