@@ -555,7 +555,7 @@ $ ldapsearch -H ldap://localhost:389 -x -D cn=demo,dc=example,dc=com \
 
 This example demonstrates multi-threading via the `cluster` module utilizing a `net` server for initial socket receipt.  An alternate example demonstrating use of the `connectionRouter` `serverOptions` hook is available in the `examples` directory.
 
-```
+```js
 const cluster = require('cluster');
 const ldap = require('ldapjs');
 const net = require('net');
