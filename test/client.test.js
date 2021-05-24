@@ -806,7 +806,7 @@ tap.test('search paged', { timeout: 10000 }, function (t) {
         countEntries += 1
       }
 
-      function pageListener(result) {
+      function pageListener (result) {
         countPages += 1
         if (countPages < 10) {
           t2.equal(result.messageID, currentSearchRequest.messageID)
