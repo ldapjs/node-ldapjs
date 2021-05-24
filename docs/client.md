@@ -279,7 +279,7 @@ containing the following fields:
 Responses inside callback of the `search` method are an `EventEmitter` where you will get a notification for
 each `searchEntry` that comes back from the server. You will additionally be able to listen for a `searchRequest`
 , `searchReference`, `error` and `end` event.
-`searchRequest` is emitted immediately after every `SearchRequest` is sent with a `SearchRequest` param. You can do op
+`searchRequest` is emitted immediately after every `SearchRequest` is sent with a `SearchRequest` parameter. You can do operations
 like `client.abandon` with `searchRequest.messageID` to abandon this search request. Note that the `error` event will
 only be for client/TCP errors, not LDAP error codes like the other APIs. You'll want to check the LDAP status code
 (likely for `0`) on the `end` event to assert success. LDAP search results can give you a lot of status codes, such as
