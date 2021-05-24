@@ -276,15 +276,15 @@ containing the following fields:
 |timeLimit  |the maximum amount of time the server should take in responding, in seconds. Defaults to 10.  Lots of servers will ignore this.|
 |paged      |enable and/or configure automatic result paging|
 
-Responses from the `search` method are an `EventEmitter` where you will get a
-notification for each `searchEntry` that comes back from the server.  You will
-additionally be able to listen for a `searchReference`, `error` and `end` event.
-Note that the `error` event will only be for client/TCP errors, not LDAP error
-codes like the other APIs.  You'll want to check the LDAP status code
-(likely for `0`) on the `end` event to assert success.  LDAP search results
-can give you a lot of status codes, such as time or size exceeded, busy,
-inappropriate matching, etc., which is why this method doesn't try to wrap up
-the code matching.
+Responses inside callback of the `search` method are an `EventEmitter` where you will get a notification for
+each `searchEntry` that comes back from the server. You will additionally be able to listen for a `searchRequest`
+, `searchReference`, `error` and `end` event.
+`searchRequest` is emitted immediately after every `SearchRequest` is sent with a `SearchRequest` param. You can do op
+like `client.abandon` with `searchRequest.messageID` to abandon this search request. Note that the `error` event will
+only be for client/TCP errors, not LDAP error codes like the other APIs. You'll want to check the LDAP status code
+(likely for `0`) on the `end` event to assert success. LDAP search results can give you a lot of status codes, such as
+time or size exceeded, busy, inappropriate matching, etc., which is why this method doesn't try to wrap up the code
+matching.
 
 Example:
 
@@ -298,6 +298,9 @@ const opts = {
 client.search('o=example', opts, (err, res) => {
   assert.ifError(err);
 
+  res.on('searchRequest', (searchRequest) => {
+    console.log('searchRequest: ', searchRequest.messageID);
+  });
   res.on('searchEntry', (entry) => {
     console.log('entry: ' + JSON.stringify(entry.object));
   });

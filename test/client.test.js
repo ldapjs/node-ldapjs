@@ -777,14 +777,23 @@ tap.test('search paged', { timeout: 10000 }, function (t) {
   t.test('paged - no pauses', function (t2) {
     let countEntries = 0
     let countPages = 0
+    let currentSearchRequest = null
     t.context.client.search('cn=paged', { paged: { pageSize: 100 } }, function (err, res) {
       t2.error(err)
       res.on('searchEntry', entryListener)
+      res.on('searchRequest', (searchRequest) => {
+        t2.ok(searchRequest instanceof ldap.SearchRequest)
+        if (currentSearchRequest === null) {
+          t2.equal(countPages, 0)
+        }
+        currentSearchRequest = searchRequest
+      })
       res.on('page', pageListener)
       res.on('error', (err) => t2.error(err))
-      res.on('end', function () {
+      res.on('end', function (result) {
         t2.equal(countEntries, 1000)
         t2.equal(countPages, 10)
+        t2.equal(result.messageID, currentSearchRequest.messageID)
         t2.end()
       })
 
@@ -797,8 +806,11 @@ tap.test('search paged', { timeout: 10000 }, function (t) {
         countEntries += 1
       }
 
-      function pageListener () {
+      function pageListener(result) {
         countPages += 1
+        if (countPages < 10) {
+          t2.equal(result.messageID, currentSearchRequest.messageID)
+        }
       }
     })
   })
