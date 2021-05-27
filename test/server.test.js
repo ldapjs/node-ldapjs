@@ -1,5 +1,6 @@
 'use strict'
 
+const net = require('net')
 const tap = require('tap')
 const vasync = require('vasync')
 const { getSock } = require('./utils')
@@ -329,5 +330,51 @@ tap.test('close passes error to callback', function (t) {
   server.close(function (err) {
     t.ok(err)
     t.end()
+  })
+})
+
+tap.test('multithreading support via external server', function (t) {
+  const serverOptions = { }
+  const server = ldap.createServer(serverOptions)
+  const fauxServer = net.createServer(serverOptions, (connection) => {
+    server.newConnection(connection)
+  })
+  fauxServer.log = serverOptions.log
+  fauxServer.ldap = {
+    config: serverOptions
+  }
+  t.ok(server)
+  fauxServer.listen(5555, 'localhost', function () {
+    t.ok(true, 'server listening on ' + server.url)
+
+    t.ok(fauxServer)
+    const client = ldap.createClient({ url: 'ldap://127.0.0.1:5555' })
+    client.on('connect', function () {
+      t.ok(client)
+      client.unbind()
+      fauxServer.close(() => t.end())
+    })
+  })
+})
+
+tap.test('multithreading support via hook', function (t) {
+  const serverOptions = {
+    connectionRouter: (connection) => {
+      server.newConnection(connection)
+    }
+  }
+  const server = ldap.createServer(serverOptions)
+  const fauxServer = ldap.createServer(serverOptions)
+  t.ok(server)
+  fauxServer.listen(0, 'localhost', function () {
+    t.ok(true, 'server listening on ' + server.url)
+
+    t.ok(fauxServer)
+    const client = ldap.createClient({ url: fauxServer.url })
+    client.on('connect', function () {
+      t.ok(client)
+      client.unbind()
+      fauxServer.close(() => t.end())
+    })
   })
 })
