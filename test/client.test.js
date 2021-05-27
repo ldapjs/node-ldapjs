@@ -899,6 +899,25 @@ tap.test('search paged', { timeout: 10000 }, function (t) {
     })
   })
 
+  tap.test('paged - search with delayed event listener binding', function (t) {
+    t.context.client.search('cn=paged', { filter: '(objectclass=*)', paged: true }, function (err, res) {
+      t.error(err)
+      setTimeout(() => {
+        let gotEntry = 0
+        res.on('searchEntry', function () {
+          gotEntry++
+        })
+        res.on('error', function (err) {
+          t.fail(err)
+        })
+        res.on('end', function () {
+          t.equal(gotEntry, 1000)
+          t.end()
+        })
+      }, 100)
+    })
+  })
+
   t.end()
 })
 
