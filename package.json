@@ -34,7 +34,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
-    "highlight.js": "^10.6.0",
+    "highlight.js": "^11.0.1",
     "husky": "^4.2.5",
     "marked": "^2.0.0",
     "tap": "15.0.9"
