@@ -276,11 +276,21 @@ tap.test('bind/unbind identity user', function (t) {
       t.ok(anonDN.equals(c.ldap.bindDN), 'pre bind dn is correct')
       client.bind(testDN.toString(), 'somesecret', function (err) {
         t.error(err, 'user bind error')
-        t.ok(testDN.equals(c.ldap.bindDN), 'user unbind dn is correct')
-        client.unbind(function (err) {
-          t.error(err, 'user unbind error')
-          t.ok(anonDN.equals(c.ldap.bindDN), 'user unbind dn is correct')
-          server.close(() => t.end())
+        t.ok(testDN.equals(c.ldap.bindDN), 'user bind dn is correct')
+        // check rebinds too
+        client.bind('', '', function (err) {
+          t.error(err, 'client anon bind error')
+          t.ok(anonDN.equals(c.ldap.bindDN), 'anon bind dn is correct')
+          // user rebind
+          client.bind(testDN.toString(), 'somesecret', function (err) {
+            t.error(err, 'user bind error')
+            t.ok(testDN.equals(c.ldap.bindDN), 'user rebind dn is correct')
+            client.unbind(function (err) {
+              t.error(err, 'user unbind error')
+              t.ok(anonDN.equals(c.ldap.bindDN), 'user unbind dn is correct')
+              server.close(() => t.end())
+            })
+          })
         })
       })
     })
