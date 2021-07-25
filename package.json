@@ -35,7 +35,7 @@
     "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
     "highlight.js": "^11.0.1",
-    "husky": "^4.2.5",
+    "husky": "^7.0.1",
     "marked": "^2.0.0",
     "tap": "15.0.9"
   },
