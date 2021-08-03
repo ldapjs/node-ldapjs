@@ -204,6 +204,99 @@ tap.test('route unbind', function (t) {
   })
 })
 
+tap.test('bind/unbind identity anonymous', function (t) {
+  const server = ldap.createServer({
+    connectionRouter: function (c) {
+      server.newConnection(c)
+      server.emit('testconnection', c)
+    }
+  })
+
+  server.unbind(function (req, res, next) {
+    t.ok(true, 'server unbind successful')
+    res.end()
+    return next()
+  })
+
+  server.bind('', function (req, res, next) {
+    t.ok(true, 'server bind successful')
+    res.end()
+    return next()
+  })
+
+  const anonDN = ldap.dn.parse('cn=anonymous')
+
+  server.listen(t.context.sock, function () {
+    t.ok(true, 'server startup')
+
+    const client = ldap.createClient({ socketPath: t.context.sock })
+    server.once('testconnection', (c) => {
+      t.ok(anonDN.equals(c.ldap.bindDN), 'pre bind dn is correct')
+      client.bind('', '', function (err) {
+        t.error(err, 'client anon bind error')
+        t.ok(anonDN.equals(c.ldap.bindDN), 'anon bind dn is correct')
+        client.unbind(function (err) {
+          t.error(err, 'client anon unbind error')
+          t.ok(anonDN.equals(c.ldap.bindDN), 'anon unbind dn is correct')
+          server.close(() => t.end())
+        })
+      })
+    })
+  })
+})
+
+tap.test('bind/unbind identity user', function (t) {
+  const server = ldap.createServer({
+    connectionRouter: function (c) {
+      server.newConnection(c)
+      server.emit('testconnection', c)
+    }
+  })
+
+  server.unbind(function (req, res, next) {
+    t.ok(true, 'server unbind successful')
+    res.end()
+    return next()
+  })
+
+  server.bind('', function (req, res, next) {
+    t.ok(true, 'server bind successful')
+    res.end()
+    return next()
+  })
+
+  const anonDN = ldap.dn.parse('cn=anonymous')
+  const testDN = ldap.dn.parse('cn=anotheruser')
+
+  server.listen(t.context.sock, function () {
+    t.ok(true, 'server startup')
+
+    const client = ldap.createClient({ socketPath: t.context.sock })
+    server.once('testconnection', (c) => {
+      t.ok(anonDN.equals(c.ldap.bindDN), 'pre bind dn is correct')
+      client.bind(testDN.toString(), 'somesecret', function (err) {
+        t.error(err, 'user bind error')
+        t.ok(testDN.equals(c.ldap.bindDN), 'user bind dn is correct')
+        // check rebinds too
+        client.bind('', '', function (err) {
+          t.error(err, 'client anon bind error')
+          t.ok(anonDN.equals(c.ldap.bindDN), 'anon bind dn is correct')
+          // user rebind
+          client.bind(testDN.toString(), 'somesecret', function (err) {
+            t.error(err, 'user bind error')
+            t.ok(testDN.equals(c.ldap.bindDN), 'user rebind dn is correct')
+            client.unbind(function (err) {
+              t.error(err, 'user unbind error')
+              t.ok(anonDN.equals(c.ldap.bindDN), 'user unbind dn is correct')
+              server.close(() => t.end())
+            })
+          })
+        })
+      })
+    })
+  })
+})
+
 tap.test('strict routing', function (t) {
   const testDN = 'cn=valid'
   let clt
