@@ -728,6 +728,34 @@ tap.test('modify DN excessive length (GH-480)', function (t) {
   })
 })
 
+tap.test('modify DN excessive superior length', function (t) {
+  const { BerReader, BerWriter } = require('asn1')
+  const ModifyDNRequest = require('../lib/messages/moddn_request')
+  const ber = new BerWriter()
+  const entry = 'cn=Test     User,ou=A Long OU                  ,ou=Another Long OU                ,ou=Another Long OU              ,dc=acompany,DC=io'
+  const newSuperior = 'ou=A New Long OU              , ou=Another New Long OU                                   , ou=An OU               , dc=acompany, dc=io'
+  const newRdn = entry.replace(/(.*?),.*/, '$1')
+  const deleteOldRdn = true
+  const req = new ModifyDNRequest({
+    entry: entry,
+    deleteOldRdn: deleteOldRdn,
+    controls: []
+  })
+  req.newRdn = newRdn
+  req.newSuperior = newSuperior
+  req._toBer(ber)
+  const reader = new BerReader(ber.buffer)
+  t.equal(reader.readString(), entry)
+  t.equal(reader.readString(), newRdn)
+  t.equal(reader.readBoolean(), deleteOldRdn)
+  t.equal(reader.readByte(), 0x80)
+  reader.readLength()
+  t.equal(reader._len, newSuperior.length)
+  reader._buf[--reader._offset] = 0x4
+  t.equal(reader.readString(), newSuperior)
+  t.end()
+})
+
 tap.test('search basic', function (t) {
   t.context.client.search('cn=test, ' + SUFFIX, '(objectclass=*)', function (err, res) {
     t.error(err)
