@@ -33,7 +33,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "front-matter": "^4.0.2",
-    "get-port": "^5.1.1",
+    "get-port": "^6.0.0",
     "highlight.js": "^11.0.1",
     "husky": "^4.2.5",
     "marked": "^3.0.0",
