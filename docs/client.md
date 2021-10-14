@@ -32,17 +32,18 @@ that this will not use the LDAP TLS extended operation, but literally an SSL
 connection to port 636, as in LDAP v2). The full set of options to create a
 client is:
 
-|Attribute      |Description                                                |
-|---------------|-----------------------------------------------------------|
-|url            |A string or array of valid LDAP URL(s) (proto/host/port)   |
-|socketPath     |Socket path if using AF\_UNIX sockets                      |
-|log            |A compatible logger instance (Default: no-op logger)       |
-|timeout        |Milliseconds client should let operations live for before timing out (Default: Infinity)|
-|connectTimeout |Milliseconds client should wait before timing out on TCP connections (Default: OS default)|
-|tlsOptions     |Additional options passed to TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
-|idleTimeout    |Milliseconds after last activity before client emits idle event|
-|strictDN       |Force strict DN parsing for client methods (Default is true)|
-|reconnect      |Try to reconnect when the connection gets lost (Default is false)|
+| Attribute        | Description                                                                                                      |
+|------------------|------------------------------------------------------------------------------------------------------------------|
+| url              | A string or array of valid LDAP URL(s) (proto/host/port)                                                         |
+| socketPath       | Socket path if using AF\_UNIX sockets                                                                            |
+| log              | A compatible logger instance (Default: no-op logger)                                                             |
+| timeout          | Milliseconds client should let operations live for before timing out (Default: Infinity)                         |
+| connectTimeout   | Milliseconds client should wait before timing out on TCP connections (Default: OS default)                       |
+| tlsOptions       | Additional options passed to TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js) |
+| idleTimeout      | Milliseconds after last activity before client emits idle event                                                  |
+| strictDN         | Force strict DN parsing for client methods (Default is true)                                                     |
+| reconnect        | Try to reconnect when the connection gets lost (Default is false)                                                |
+| createConnection | A function that creates a socket to a given host and port (see below for example).                               |
 
 ### url
 This parameter takes a single connection string or an array of connection strings
@@ -106,6 +107,44 @@ You can, and probably will, omit this option.
 Almost every operation has the callback form of `function(err, res)` where err
 will be an instance of an `LDAPError` (you can use `instanceof` to switch).
 You probably won't need to check the `res` parameter, but it's there if you do.
+
+## Using createConnection to connect through a proxy
+
+Most users will not need to supply a `createConnection` function. If supplied,
+it should accept four arguments: `(port: number, host: string, onConnect: () =>
+void, onSocketDefined: (socket: net.Socket) => void)` It should create a
+`net.Socket` (`tls.Socket` works as well since it's a subclass), then call
+`onSocketDefined` with that socket, and then setup `onConnect` as the handler
+for the appropriate connection event (`'connect'` for `net.Socket` and
+`secureConnect` for `tls.Socket`).
+
+Here's an example which creates an LDAPS client that connects through a proxy
+using HTTP CONNECT:
+
+```js
+function createConnection(port, host, onConnect, onSocketDefined) {
+  const connectReq = http.request({
+    port: proxyPort,
+    host: proxyHost,
+    method: 'CONNECT',
+    path: `${host}:${port}`,
+  });
+  connectReq.end();
+  // http CONNECT requests emit the 'connect' event on successful connect
+  connectReq.on('connect', (_, socket) => {
+    const tlsSocket = tls.connect({
+      socket,
+    });
+    onSocketDefined(tlsSocket);
+    tlsSocket.on('secureConnect', onConnect)
+  });
+}
+
+const client = ldap.createClient({
+  url: ['ldap://127.0.0.1:1389'],
+  createConnection
+});
+```
 
 # bind
 `bind(dn, password, controls, callback)`
