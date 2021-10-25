@@ -121,6 +121,12 @@ test('case insensitive attribute names', function (t) {
   t.end()
 })
 
+test('case insensitive attributes', function (t) {
+  const dn2 = dn.parse('cn=foo,dc=bar')
+  t.ok(dn2.equals(dn.parse('cn=FOO,dc=BAR')))
+  t.end()
+})
+
 test('format', function (t) {
   const DN_ORDER = dn.parse('sn=bar+cn=foo,ou=test')
   const DN_QUOTE = dn.parse('cn="foo",ou=test')
