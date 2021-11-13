@@ -7,7 +7,7 @@ const { highlight } = require('highlight.js')
 marked.use({
   highlight: (code, lang) => {
     if (lang) {
-      return highlight(lang, code).value
+      return highlight(code, { language: lang }).value
     }
 
     return code
@@ -100,7 +100,13 @@ async function createDocs () {
   const branding = path.join(docs, 'branding')
   const src = path.join(branding, 'public')
 
-  await fs.rmdir(dist, { recursive: true })
+  try {
+    await fs.rm(dist, { recursive: true })
+  } catch (ex) {
+    if (ex.code !== 'ENOENT') {
+      throw ex
+    }
+  }
   await copyRecursive(src, dist)
 
   const highlightjsStyles = path.resolve(__dirname, '..', 'node_modules', 'highlight.js', 'styles')
