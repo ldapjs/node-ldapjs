@@ -111,25 +111,24 @@ You probably won't need to check the `res` parameter, but it's there if you do.
 ## Using createConnection to connect through a proxy
 
 Most users will not need to supply a `createConnection` function. If supplied,
-it should accept four arguments: `(port: number, host: string, onConnect: () =>
-void, onSocketDefined: (socket: net.Socket) => void)` It should create a
-`net.Socket` (`tls.Socket` works as well since it's a subclass), then call
-`onSocketDefined` with that socket, and then setup `onConnect` as the handler
-for the appropriate connection event (`'connect'` for `net.Socket` and
-`secureConnect` for `tls.Socket`).
+it should accept five arguments: `(port: number, host: string, onConnect: () =>
+void, onSocketDefined: (socket: net.Socket) => void, onError: (error: any, result:
+any) => void)` It should create a `net.Socket` (`tls.Socket` works as well since
+it's a subclass), then call `onSocketDefined` with that socket, and then setup
+`onConnect` as the handler for the appropriate connection event (`'connect'` for
+`net.Socket` and `secureConnect` for `tls.Socket`).
 
 Here's an example which creates an LDAPS client that connects through a proxy
 using HTTP CONNECT:
 
 ```js
-function createConnection(port, host, onConnect, onSocketDefined) {
+function createConnection(port, host, onConnect, onSocketDefined, onError) {
   const connectReq = http.request({
     port: proxyPort,
     host: proxyHost,
     method: 'CONNECT',
     path: `${host}:${port}`,
   });
-  connectReq.end();
   // http CONNECT requests emit the 'connect' event on successful connect
   connectReq.on('connect', (_, socket) => {
     const tlsSocket = tls.connect({
@@ -138,6 +137,9 @@ function createConnection(port, host, onConnect, onSocketDefined) {
     onSocketDefined(tlsSocket);
     tlsSocket.on('secureConnect', onConnect)
   });
+  connectReq.on('error', onError);
+
+  connectReq.end();
 }
 
 const client = ldap.createClient({
