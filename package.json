@@ -31,7 +31,7 @@
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-promise": "^6.0.0",
     "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
     "highlight.js": "^11.0.1",
