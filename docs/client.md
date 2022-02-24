@@ -63,6 +63,13 @@ Known compatible loggers are:
 + [Bunyan](https://www.npmjs.com/package/bunyan)
 + [Pino](https://www.npmjs.com/package/pino)
 
+
+### Note On Error Handling
+
+The client is an `EventEmitter`. If you don't register an error handler and
+e.g. a connection error occurs, Node.js will print a stack trace and exit the
+process ([reference](https://nodejs.org/api/events.html#error-events)).
+
 ## Connection management
 
 As LDAP is a stateful protocol (as opposed to HTTP), having connections torn
