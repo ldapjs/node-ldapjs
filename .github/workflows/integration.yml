@@ -21,7 +21,7 @@ jobs:
     #       - 636:636
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
 
       # Hack way to start service since GitHub doesn't integrate with its own services
