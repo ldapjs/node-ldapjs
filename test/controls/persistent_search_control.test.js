@@ -2,7 +2,7 @@
 
 const test = require('tap').test
 
-const asn1 = require('asn1')
+const asn1 = require('@ldapjs/asn1')
 
 const BerReader = asn1.BerReader
 const BerWriter = asn1.BerWriter
