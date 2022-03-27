@@ -17,7 +17,7 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
-    "@ldapjs/asn1": "^1.0.0-rc.1",
+    "@ldapjs/asn1": "^1.0.0",
     "abstract-logging": "^2.0.0",
     "assert-plus": "^1.0.0",
     "backoff": "^2.5.0",
