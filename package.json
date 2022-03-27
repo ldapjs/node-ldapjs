@@ -40,12 +40,12 @@
     "tap": "15.2.3"
   },
   "scripts": {
-    "test": "tap --no-cov",
-    "test:ci": "tap --coverage-report=lcovonly",
-    "test:cov": "tap",
-    "test:cov:html": "tap --coverage-report=html",
-    "test:watch": "tap -n -w --no-coverage-report",
-    "test:integration": "tap --no-cov 'test-integration/**/*.test.js'",
+    "test": "tap --no-cov -R terse",
+    "test:ci": "tap --coverage-report=lcovonly -R terse",
+    "test:cov": "tap -R terse",
+    "test:cov:html": "tap --coverage-report=html -R terse",
+    "test:watch": "tap -n -w --no-coverage-report -R terse",
+    "test:integration": "tap --no-cov -R terse 'test-integration/**/*.test.js'",
     "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
