@@ -3,7 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const { test } = require('tap')
-const { BerReader, BerWriter } = require('asn1')
+const { BerReader, BerWriter } = require('@ldapjs/asn1')
 const { Attribute, Change } = require('../lib')
 
 test('new no args', function (t) {
