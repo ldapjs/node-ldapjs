@@ -55,7 +55,7 @@ tap.test('properties', function (t) {
 
   t.equal(server.url, null, 'url empty before bind')
   // listen on a random port so we have a url
-  server.listen(0, 'localhost', function () {
+  server.listen(0, '127.0.0.1', function () {
     t.ok(server.url)
 
     server.close(() => t.end())
@@ -94,7 +94,7 @@ tap.test('listen on static port', function (t) {
 
 tap.test('listen on ephemeral port', function (t) {
   const server = ldap.createServer()
-  server.listen(0, 'localhost', function () {
+  server.listen(0, '127.0.0.1', function () {
     const addr = server.address()
     t.ok(addr.port > 0)
     t.ok(addr.port < 65535)
