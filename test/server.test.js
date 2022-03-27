@@ -24,7 +24,7 @@ tap.test('basic create', function (t) {
 tap.test('connection count', function (t) {
   const server = ldap.createServer()
   t.ok(server)
-  server.listen(0, 'localhost', function () {
+  server.listen(0, '127.0.0.1', function () {
     t.ok(true, 'server listening on ' + server.url)
 
     server.getConnections(function (err, count) {
@@ -55,7 +55,7 @@ tap.test('properties', function (t) {
 
   t.equal(server.url, null, 'url empty before bind')
   // listen on a random port so we have a url
-  server.listen(0, 'localhost', function () {
+  server.listen(0, '127.0.0.1', function () {
     t.ok(server.url)
 
     server.close(() => t.end())
@@ -83,7 +83,7 @@ tap.test('listen on static port', function (t) {
 
 tap.test('listen on ephemeral port', function (t) {
   const server = ldap.createServer()
-  server.listen(0, 'localhost', function () {
+  server.listen(0, '127.0.0.1', function () {
     const addr = server.address()
     t.ok(addr.port > 0)
     t.ok(addr.port < 65535)
@@ -437,7 +437,7 @@ tap.test('multithreading support via external server', function (t) {
     config: serverOptions
   }
   t.ok(server)
-  fauxServer.listen(5555, 'localhost', function () {
+  fauxServer.listen(5555, '127.0.0.1', function () {
     t.ok(true, 'server listening on ' + server.url)
 
     t.ok(fauxServer)
@@ -459,7 +459,7 @@ tap.test('multithreading support via hook', function (t) {
   const server = ldap.createServer(serverOptions)
   const fauxServer = ldap.createServer(serverOptions)
   t.ok(server)
-  fauxServer.listen(0, 'localhost', function () {
+  fauxServer.listen(0, '127.0.0.1', function () {
     t.ok(true, 'server listening on ' + server.url)
 
     t.ok(fauxServer)

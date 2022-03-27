@@ -4,9 +4,14 @@ name: 'Integration Tests'
 #  https://github.community/t5/GitHub-Actions/Github-Actions-services-not-reachable/m-p/30739/highlight/true#M538
 
 on:
+  push:
+    branches:
+      - master
+      - next
   pull_request:
     branches:
       - master
+      - next
 
 jobs:
   baseline:
