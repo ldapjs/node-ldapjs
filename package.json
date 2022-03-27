@@ -27,17 +27,17 @@
     "verror": "^1.8.1"
   },
   "devDependencies": {
-    "eslint": "^7.20.0",
+    "@fastify/pre-commit": "^2.0.2",
+    "eslint": "8.12.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-promise": "6.0.0",
     "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
     "highlight.js": "^11.0.1",
-    "husky": "^4.2.5",
     "marked": "^4.0.0",
-    "tap": "15.2.3"
+    "tap": "16.0.1"
   },
   "scripts": {
     "test": "tap --no-cov -R terse",
@@ -51,9 +51,8 @@
     "lint:ci": "eslint .",
     "docs": "node scripts/build-docs.js"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:ci && npm run test"
-    }
-  }
+  "pre-commit": [
+    "lint:ci",
+    "test"
+  ]
 }
