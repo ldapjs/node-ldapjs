@@ -122,7 +122,7 @@ tap.test('GH-55 Client emits connect multiple times', function (t) {
     t.ok(socket)
     count++
     c.bind('cn=root', 'secret', function (err) {
-      t.ifError(err)
+      t.error(err)
       c.unbind(function () {
         t.equal(count, 1)
         t.end()
