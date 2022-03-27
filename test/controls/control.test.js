@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
-const { BerReader, BerWriter } = require('asn1')
+const { BerReader, BerWriter } = require('@ldapjs/asn1')
 const { Control, getControl } = require('../../lib')
 
 test('new no args', function (t) {

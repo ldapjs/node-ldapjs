@@ -509,7 +509,7 @@ tap.test('add success with object', function (t) {
 })
 
 tap.test('add buffer', function (t) {
-  const { BerReader } = require('asn1')
+  const { BerReader } = require('@ldapjs/asn1')
   const dn = `cn=add, ${SUFFIX}`
   const attribute = 'thumbnailPhoto'
   const binary = 0xa5
@@ -729,7 +729,7 @@ tap.test('modify DN excessive length (GH-480)', function (t) {
 })
 
 tap.test('modify DN excessive superior length', function (t) {
-  const { BerReader, BerWriter } = require('asn1')
+  const { BerReader, BerWriter } = require('@ldapjs/asn1')
   const ModifyDNRequest = require('../lib/messages/moddn_request')
   const ber = new BerWriter()
   const entry = 'cn=Test     User,ou=A Long OU                  ,ou=Another Long OU                ,ou=Another Long OU              ,dc=acompany,DC=io'
