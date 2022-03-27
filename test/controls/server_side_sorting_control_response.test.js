@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
-const { BerReader, BerWriter } = require('asn1')
+const { BerReader, BerWriter } = require('@ldapjs/asn1')
 const ldap = require('../../lib')
 const { getControl, ServerSideSortingResponseControl: SSSResponseControl } = ldap
 const OID = '1.2.840.113556.1.4.474'
