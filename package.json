@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@ldapjs/asn1": "^1.0.0",
+    "@ldapjs/controls": "^1.0.0",
     "abstract-logging": "^2.0.0",
     "assert-plus": "^1.0.0",
     "backoff": "^2.5.0",
