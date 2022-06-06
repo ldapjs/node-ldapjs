@@ -1055,7 +1055,9 @@ tap.test('search - sssvlv', { timeout: 10000 }, function (t) {
     })
   })
 
-  t.test('vlv - first page', function (t2) {
+  t.test('vlv - first page', { skip: true }, function (t2) {
+    // This test is disabled.
+    // See https://github.com/ldapjs/node-ldapjs/pull/797#issuecomment-1094132289
     const sssrcontrol = new ldap.ServerSideSortingRequestControl(
       {
         value: {
@@ -1097,7 +1099,9 @@ tap.test('search - sssvlv', { timeout: 10000 }, function (t) {
       })
     })
   })
-  t.test('vlv - last page', function (t2) {
+  t.test('vlv - last page', { skip: true }, function (t2) {
+    // This test is disabled.
+    // See https://github.com/ldapjs/node-ldapjs/pull/797#issuecomment-1094132289
     const sssrcontrol = new ldap.ServerSideSortingRequestControl(
       {
         value: {
