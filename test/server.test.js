@@ -62,6 +62,17 @@ tap.test('properties', function (t) {
   })
 })
 
+tap.test('IPv6 URL is formatted correctly', function (t) {
+  const server = ldap.createServer()
+  t.equal(server.url, null, 'url empty before bind')
+  server.listen(0, '::1', function () {
+    t.ok(server.url)
+    t.equal(server.url, 'ldap://[::1]:' + server.port)
+
+    server.close(() => t.end())
+  })
+})
+
 tap.test('listen on unix/named socket', function (t) {
   const server = ldap.createServer()
   server.listen(t.context.sock, function () {
