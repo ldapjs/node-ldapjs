@@ -113,7 +113,7 @@ test('GH-53 NotFilter', function (t) {
 test('presence filter', function (t) {
   const f = parse('(foo=*)')
   t.ok(f)
-  t.equal(f.type, 'present')
+  t.equal(f.type, 'PresenceFilter')
   t.equal(f.attribute, 'foo')
   t.equal(f.toString(), '(foo=*)')
   t.end()
