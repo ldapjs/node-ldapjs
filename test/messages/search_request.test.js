@@ -33,7 +33,7 @@ test('parse', function (t) {
     value: 'foo@bar.com'
   })
 
-  let ber = new BerWriter()
+  const ber = new BerWriter()
   ber.writeString('cn=foo, o=test')
   ber.writeEnumeration(0)
   ber.writeEnumeration(0)
@@ -42,11 +42,7 @@ test('parse', function (t) {
   ber.writeBoolean(false)
 
   const eqBer = f.toBer()
-  const combinedBuffers = Buffer.concat([ber.buffer, eqBer.buffer])
-  ber = new BerWriter()
-  for (const b of combinedBuffers.values()) {
-    ber.writeByte(b)
-  }
+  ber.appendBuffer(eqBer.buffer)
 
   const req = new SearchRequest()
   t.ok(req._parse(new BerReader(ber.buffer)))
