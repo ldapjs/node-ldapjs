@@ -40,7 +40,13 @@ test('parse', function (t) {
   ber.writeInt(1)
   ber.writeInt(2)
   ber.writeBoolean(false)
-  ber = f.toBer(ber)
+
+  const eqBer = f.toBer()
+  const combinedBuffers = Buffer.concat([ber.buffer, eqBer.buffer])
+  ber = new BerWriter()
+  for (const b of combinedBuffers.values()) {
+    ber.writeByte(b)
+  }
 
   const req = new SearchRequest()
   t.ok(req._parse(new BerReader(ber.buffer)))
