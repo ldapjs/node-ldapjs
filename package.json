@@ -17,9 +17,9 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
-    "@ldapjs/asn1": "1.2.0-rc.1",
+    "@ldapjs/asn1": "1.2.0-rc.2",
     "@ldapjs/controls": "^1.0.0",
-    "@ldapjs/filter": "1.0.0-rc.5",
+    "@ldapjs/filter": "1.0.0-rc.6",
     "@ldapjs/protocol": "^1.0.0",
     "abstract-logging": "^2.0.0",
     "assert-plus": "^1.0.0",
