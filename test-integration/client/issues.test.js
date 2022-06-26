@@ -48,9 +48,9 @@ tap.test('whois works correctly (issue #370)', t => {
     client.exop('1.3.6.1.4.1.4203.1.11.3', (err, value, res) => {
       t.error(err)
       t.ok(value)
-      t.is(value, 'dn:cn=Philip J. Fry,ou=people,dc=planetexpress,dc=com')
+      t.equal(value, 'dn:cn=Philip J. Fry,ou=people,dc=planetexpress,dc=com')
       t.ok(res)
-      t.is(res.status, 0)
+      t.equal(res.status, 0)
 
       client.unbind(t.end)
     })
@@ -74,15 +74,15 @@ tap.test('can access large groups (issue #582)', t => {
       })
       response.on('error', t.error)
       response.on('end', (result) => {
-        t.is(result.status, 0)
-        t.is(results.length === 1, true)
+        t.equal(result.status, 0)
+        t.equal(results.length === 1, true)
         t.ok(results[0].attributes)
 
         const memberAttr = results[0].attributes.find(a => a.type === 'member')
         t.ok(memberAttr)
         t.ok(memberAttr.vals)
         t.type(memberAttr.vals, Array)
-        t.is(memberAttr.vals.length, 2000)
+        t.equal(memberAttr.vals.length, 2000)
 
         client.unbind(t.end)
       })

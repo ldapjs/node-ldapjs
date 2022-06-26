@@ -33,14 +33,16 @@ test('parse', function (t) {
     value: 'foo@bar.com'
   })
 
-  let ber = new BerWriter()
+  const ber = new BerWriter()
   ber.writeString('cn=foo, o=test')
   ber.writeEnumeration(0)
   ber.writeEnumeration(0)
   ber.writeInt(1)
   ber.writeInt(2)
   ber.writeBoolean(false)
-  ber = f.toBer(ber)
+
+  const eqBer = f.toBer()
+  ber.appendBuffer(eqBer.buffer)
 
   const req = new SearchRequest()
   t.ok(req._parse(new BerReader(ber.buffer)))
