@@ -53,7 +53,11 @@ test('parse no value', function (t) {
 })
 
 test('only value getter in sub-class with strict mode', function (t) {
+  // eslint-disable-next-line quotes
   "use strict"
+
+  const assert = require('assert-plus')
+  const util = require('util')
 
   function SubControl (options) {
     assert.optionalObject(options)
@@ -74,7 +78,7 @@ test('only value getter in sub-class with strict mode', function (t) {
   })
 
   SubControl.OID = '2.16.840.1.113730.3.4.2'
-  
+
   const c = new SubControl({
     value: { size: 3 },
     criticality: true
