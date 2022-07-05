@@ -53,8 +53,7 @@ test('parse no value', function (t) {
 })
 
 test('only value getter in sub-class with strict mode', function (t) {
-  // eslint-disable-next-line quotes
-  "use strict"
+  'use strict'
 
   const assert = require('assert-plus')
   const util = require('util')
