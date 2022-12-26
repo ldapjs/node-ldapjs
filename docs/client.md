@@ -119,14 +119,38 @@ You probably won't need to check the `res` parameter, but it's there if you do.
 
 Performs a bind operation against the LDAP server.
 
-The bind API only allows LDAP 'simple' binds (equivalent to HTTP Basic
-Authentication) for now. Note that all client APIs can optionally take an array
+The bind method allows LDAP 'simple' binds (equivalent to HTTP Basic
+Authentication). Note that all client APIs can optionally take an array
 of `Control` objects. You probably don't need them though...
 
 Example:
 
 ```js
 client.bind('cn=root', 'secret', (err) => {
+  assert.ifError(err);
+});
+```
+
+# saslBind
+`saslBind(token, controls, callback)`
+
+Performs a sasl bind operation against the LDAP server.
+
+Allows you to authenticate using a challange-response mechanism (NTLM/GSSAPI).
+This methods accepts a type 1 or type 3 token as a string or Buffer.
+Note that all client APIs can optionally take an array
+of `Control` objects. You probably don't need them though...
+
+Example:
+
+```js
+const match      = authorizationHeader.match(/^NTLM\s(.+)$/);
+const authBase64 = match ? match[1] : '';
+const token      = Buffer.from(authBase64, 'base64');
+client.saslBind(token, (err, res) => {
+  if (res && res.saslChallange) {
+    console.log(res.saslChallange);
+  }
   assert.ifError(err);
 });
 ```
