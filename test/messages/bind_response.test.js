@@ -58,8 +58,8 @@ test('toBer', function (t) {
 
 test('parse sasl type2', function (t) {
   // The indentation here is what you'd see in Wireshark
-  const sasl_buffer = Buffer.from(
-              '0a010e' + '0400040087820106' +
+  const saslBuffer = Buffer.from(
+    /*     */ '0a010e' + '0400040087820106' +
     'a18201023081ffa0' + '030a0101a10c060a' +
     '2b06010401823702' + '020aa281e90481e6' +
     '4e544c4d53535000' + '020000000c000c00' +
@@ -78,7 +78,7 @@ test('parse sasl type2', function (t) {
     '630061006c000700' + '080003a77ac1cf16' +
     'd90100000000', 'hex')
   const res = new BindResponse()
-  t.ok(res._parse(new BerReader(sasl_buffer)))
+  t.ok(res._parse(new BerReader(saslBuffer)))
   t.equal(res.status, LDAP_SASL_BIND_IN_PROGRESS)
   t.equal(res.matchedDN, '')
   t.equal(res.errorMessage, '')
