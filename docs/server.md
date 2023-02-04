@@ -80,8 +80,11 @@ Example:
 `listen(port, [host], [callback])`
 
 Begin accepting connections on the specified port and host. If the host is
-omitted, the server will accept connections directed to any IPv4 address
-(INADDR\_ANY).
+omitted, the server will accept connections on the unspecified IPv6 address (::)
+when IPv6 is available, or the unspecified IPv4 address (0.0.0.0) otherwise.
+
+In most operating systems, listening to the unspecified IPv6 address (::)
+may cause the net.Server to also listen on the unspecified IPv4 address (0.0.0.0).
 
 This function is asynchronous. The last parameter callback will be called when
 the server has been bound.
