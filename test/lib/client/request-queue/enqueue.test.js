@@ -4,13 +4,13 @@ const { test } = require('tap')
 const enqueue = require('../../../../lib/client/request-queue/enqueue')
 
 test('rejects new requests if size is exceeded', async t => {
-  const q = { _queue: { length: 5 }, size: 5 }
+  const q = { _queue: { size: 5 }, size: 5 }
   const result = enqueue.call(q, 'foo', 'bar', {}, {})
   t.notOk(result)
 })
 
 test('rejects new requests if queue is frozen', async t => {
-  const q = { _queue: { length: 0 }, size: 5, _frozen: true }
+  const q = { _queue: { size: 0 }, size: 5, _frozen: true }
   const result = enqueue.call(q, 'foo', 'bar', {}, {})
   t.notOk(result)
 })
@@ -18,7 +18,7 @@ test('rejects new requests if queue is frozen', async t => {
 test('adds a request and returns if no timeout', async t => {
   const q = {
     _queue: {
-      length: 0,
+      size: 0,
       add (obj) {
         t.same(obj, {
           message: 'foo',
@@ -38,7 +38,7 @@ test('adds a request and returns if no timeout', async t => {
 test('adds a request and returns timer not set', async t => {
   const q = {
     _queue: {
-      length: 0,
+      size: 0,
       add (obj) {
         t.same(obj, {
           message: 'foo',
@@ -61,7 +61,7 @@ test('adds a request, returns true, and clears queue', t => {
   t.plan(4)
   const q = {
     _queue: {
-      length: 0,
+      size: 0,
       add (obj) {
         t.same(obj, {
           message: 'foo',
