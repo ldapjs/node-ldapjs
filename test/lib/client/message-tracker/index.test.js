@@ -109,7 +109,7 @@ tap.test('#fetch', t => {
   t.test('returns handler for fetched message', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     tracker.track({}, handler)
-    const fetched = tracker.fetch(1)
+    const { callback: fetched } = tracker.fetch(1)
     t.equal(fetched, handler)
 
     function handler () {}
@@ -120,7 +120,7 @@ tap.test('#fetch', t => {
     tracker.track({}, handler)
     tracker.track({ abandon: 'message' }, () => {})
     tracker.abandon(1)
-    const fetched = tracker.fetch(1)
+    const { callback: fetched } = tracker.fetch(1)
     t.equal(fetched, handler)
 
     function handler () {}
@@ -185,13 +185,13 @@ tap.test('#remove', t => {
 })
 
 tap.test('#track', t => {
-  t.test('add messageID and tracks message', async t => {
+  t.test('add messageId and tracks message', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
     const msg = {}
     tracker.track(msg, handler)
 
-    t.same(msg, { messageID: 1 })
-    const cb = tracker.fetch(1)
+    t.same(msg, { messageId: 1 })
+    const { callback: cb } = tracker.fetch(1)
     t.equal(cb, handler)
 
     function handler () {}

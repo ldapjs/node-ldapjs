@@ -197,7 +197,7 @@ authenticated as on this connection. If the client didn't bind, then a DN object
 will be there defaulted to `cn=anonymous`.
 
 Additionally, request will have a `logId` parameter you can use to uniquely
-identify the request/connection pair in logs (includes the LDAP messageID).
+identify the request/connection pair in logs (includes the LDAP messageId).
 
 ## Common Response Elements
 

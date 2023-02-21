@@ -41,7 +41,6 @@ client is:
 |connectTimeout |Milliseconds client should wait before timing out on TCP connections (Default: OS default)|
 |tlsOptions     |Additional options passed to TLS connection layer when connecting via `ldaps://` (See: The TLS docs for node.js)|
 |idleTimeout    |Milliseconds after last activity before client emits idle event|
-|strictDN       |Force strict DN parsing for client methods (Default is true)|
 |reconnect      |Try to reconnect when the connection gets lost (Default is false)|
 
 ### url
@@ -287,7 +286,7 @@ Responses inside callback of the `search` method are an `EventEmitter` where you
 each `searchEntry` that comes back from the server. You will additionally be able to listen for a `searchRequest`
 , `searchReference`, `error` and `end` event.
 `searchRequest` is emitted immediately after every `SearchRequest` is sent with a `SearchRequest` parameter. You can do operations
-like `client.abandon` with `searchRequest.messageID` to abandon this search request. Note that the `error` event will
+like `client.abandon` with `searchRequest.messageId` to abandon this search request. Note that the `error` event will
 only be for client/TCP errors, not LDAP error codes like the other APIs. You'll want to check the LDAP status code
 (likely for `0`) on the `end` event to assert success. LDAP search results can give you a lot of status codes, such as
 time or size exceeded, busy, inappropriate matching, etc., which is why this method doesn't try to wrap up the code
@@ -306,7 +305,7 @@ client.search('o=example', opts, (err, res) => {
   assert.ifError(err);
 
   res.on('searchRequest', (searchRequest) => {
-    console.log('searchRequest: ', searchRequest.messageID);
+    console.log('searchRequest: ', searchRequest.messageId);
   });
   res.on('searchEntry', (entry) => {
     console.log('entry: ' + JSON.stringify(entry.object));

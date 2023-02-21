@@ -2,6 +2,8 @@
 
 const tap = require('tap')
 const { getSock, uuid } = require('./utils')
+const { SearchResultEntry } = require('@ldapjs/messages')
+const Attribute = require('@ldapjs/attribute')
 const ldap = require('../lib')
 
 function search (t, options, callback) {
@@ -40,18 +42,20 @@ tap.beforeEach((t) => {
     })
 
     server.search(suffix, function (req, res) {
-      const entry = {
-        dn: 'cn=foo, ' + suffix,
-        attributes: {
+      const entry = new SearchResultEntry({
+        entry: 'cn=foo,' + suffix,
+        attributes: Attribute.fromObject({
           objectclass: ['person', 'top'],
           cn: 'Pogo Stick',
           sn: 'Stick',
           givenname: 'ogo',
           mail: uuid() + '@pogostick.org'
-        }
-      }
+        })
+      })
 
-      if (req.filter.matches(entry.attributes)) { res.send(entry) }
+      if (req.filter.matches(entry.attributes)) {
+        res.send(entry)
+      }
 
       res.end()
     })
@@ -87,7 +91,7 @@ tap.afterEach((t) => {
   })
 })
 
-tap.test('Evolution search filter (GH-3)', { only: true }, function (t) {
+tap.test('Evolution search filter (GH-3)', function (t) {
   // This is what Evolution sends, when searching for a contact 'ogo'. Wow.
   const filter =
     '(|(cn=ogo*)(givenname=ogo*)(sn=ogo*)(mail=ogo*)(member=ogo*)' +
