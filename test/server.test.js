@@ -235,7 +235,7 @@ tap.test('bind/unbind identity anonymous', function (t) {
     return next()
   })
 
-  const anonDN = ldap.dn.parse('cn=anonymous')
+  const anonDN = ldap.parseDN('cn=anonymous')
 
   server.listen(t.context.sock, function () {
     t.ok(true, 'server startup')
@@ -276,8 +276,8 @@ tap.test('bind/unbind identity user', function (t) {
     return next()
   })
 
-  const anonDN = ldap.dn.parse('cn=anonymous')
-  const testDN = ldap.dn.parse('cn=anotheruser')
+  const anonDN = ldap.parseDN('cn=anonymous')
+  const testDN = ldap.parseDN('cn=anotheruser')
 
   server.listen(t.context.sock, function () {
     t.ok(true, 'server startup')
@@ -316,9 +316,7 @@ tap.test('strict routing', function (t) {
   vasync.pipeline({
     funcs: [
       function setup (_, cb) {
-        server = ldap.createServer({
-          // strictDN: true - on by default
-        })
+        server = ldap.createServer({})
         // invalid DNs would go to default handler
         server.search('', function (req, res, next) {
           t.ok(req.dn)
@@ -330,24 +328,9 @@ tap.test('strict routing', function (t) {
         server.listen(sock, function () {
           t.ok(true, 'server startup')
           clt = ldap.createClient({
-            socketPath: sock,
-            strictDN: false
+            socketPath: sock
           })
           cb()
-        })
-      },
-      function testBad (_, cb) {
-        clt.search('not a dn', { scope: 'base' }, function (err, res) {
-          t.error(err)
-          res.once('error', function (err2) {
-            t.ok(err2)
-            t.equal(err2.code, ldap.LDAP_INVALID_DN_SYNTAX)
-            cb()
-          })
-          res.once('end', function () {
-            t.fail('accepted invalid dn')
-            cb(Error('bogus'))
-          })
         })
       },
       function testGood (_, cb) {
@@ -370,37 +353,6 @@ tap.test('strict routing', function (t) {
       clt.destroy()
     }
     server.close(() => t.end())
-  })
-})
-
-tap.test('non-strict routing', function (t) {
-  const server = ldap.createServer({
-    strictDN: false
-  })
-  const testDN = 'this ain\'t a DN'
-
-  // invalid DNs go to default handler
-  server.search('', function (req, res, next) {
-    t.ok(req.dn)
-    t.equal(typeof (req.dn), 'string')
-    t.equal(req.dn, testDN)
-    res.end()
-    next()
-  })
-
-  server.listen(t.context.sock, function () {
-    t.ok(true, 'server startup')
-    const clt = ldap.createClient({
-      socketPath: t.context.sock,
-      strictDN: false
-    })
-    clt.search(testDN, { scope: 'base' }, function (err, res) {
-      t.error(err)
-      res.on('end', function () {
-        clt.destroy()
-        server.close(() => t.end())
-      })
-    })
   })
 })
 
