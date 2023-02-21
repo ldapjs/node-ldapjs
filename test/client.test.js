@@ -1253,7 +1253,7 @@ tap.test('GH-21 binary attributes', function (t) {
 tap.test('GH-23 case insensitive attribute filtering', function (t) {
   const opts = {
     filter: '(objectclass=*)',
-    attributes: ['@Cn']
+    attributes: ['Cn']
   }
   t.context.client.search('cn=test, ' + SUFFIX, opts, function (err, res) {
     t.error(err)

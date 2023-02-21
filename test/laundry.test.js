@@ -118,7 +118,7 @@ tap.test('GH-49 Client errors on bad attributes', function (t) {
   const searchOpts = {
     filter: 'cn=*ogo*',
     scope: 'one',
-    attributes: '@dn'
+    attributes: 'dn'
   }
   return search(t, searchOpts)
 })
