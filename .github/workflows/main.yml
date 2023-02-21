@@ -32,9 +32,9 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node:
-          - 14
           - 16
-          - 17
+          - 18
+          - 19
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
