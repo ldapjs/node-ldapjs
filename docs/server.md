@@ -80,8 +80,15 @@ Example:
 `listen(port, [host], [callback])`
 
 Begin accepting connections on the specified port and host. If the host is
-omitted, the server will accept connections directed to any IPv4 address
-(INADDR\_ANY).
+omitted, the server will accept connections directed to the IPv4 address
+`127.0.0.1`. To listen on any other address, supply said address as the `host`
+parameter. For example, to listen on all available IPv6 addresses supply
+`::` as the `host` (note, this _may_ also result in listening on all
+available IPv4 addresses, depending on operating system behavior).
+
+We highly recommend being as explicit as possible with the `host` parameter.
+Listening on all available addresses (through `::` or `0.0.0.0`) can lead
+to potential security issues.
 
 This function is asynchronous. The last parameter callback will be called when
 the server has been bound.
