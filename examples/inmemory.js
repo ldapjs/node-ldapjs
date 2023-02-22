@@ -130,7 +130,7 @@ server.search(SUFFIX, authorize, function (req, res, next) {
     case 'base':
       if (req.filter.matches(db[dn])) {
         res.send({
-          dn: dn,
+          dn,
           attributes: db[dn]
         })
       }
