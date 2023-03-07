@@ -308,7 +308,7 @@ client.search('o=example', opts, (err, res) => {
     console.log('searchRequest: ', searchRequest.messageId);
   });
   res.on('searchEntry', (entry) => {
-    console.log('entry: ' + JSON.stringify(entry.object));
+    console.log('entry: ' + JSON.stringify(entry.pojo));
   });
   res.on('searchReference', (referral) => {
     console.log('referral: ' + referral.uris.join());
