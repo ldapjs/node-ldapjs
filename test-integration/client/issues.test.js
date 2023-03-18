@@ -80,9 +80,9 @@ tap.test('can access large groups (issue #582)', t => {
 
         const memberAttr = results[0].attributes.find(a => a.type === 'member')
         t.ok(memberAttr)
-        t.ok(memberAttr.vals)
-        t.type(memberAttr.vals, Array)
-        t.equal(memberAttr.vals.length, 2000)
+        t.ok(memberAttr.values)
+        t.type(memberAttr.values, Array)
+        t.equal(memberAttr.values.length, 2000)
 
         client.unbind(t.end)
       })
