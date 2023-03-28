@@ -3,6 +3,7 @@
 const net = require('net')
 const tap = require('tap')
 const vasync = require('vasync')
+const vm = require('node:vm')
 const { getSock } = require('./utils')
 const ldap = require('../lib')
 
@@ -433,4 +434,17 @@ tap.test('multithreading support via hook', function (t) {
       fauxServer.close(() => t.end())
     })
   })
+})
+
+tap.test('cross-realm type checks', function (t) {
+  const server = ldap.createServer()
+  const ctx = vm.createContext({})
+  vm.runInContext(
+    'globalThis.search=function(){};\n' +
+    'globalThis.searches=[function(){}];'
+    , ctx)
+  server.search('', ctx.search)
+  server.search('', ctx.searches)
+  t.ok(server)
+  t.end()
 })
