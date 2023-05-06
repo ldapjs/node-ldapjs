@@ -37,7 +37,7 @@
     "front-matter": "^4.0.2",
     "get-port": "^5.1.1",
     "highlight.js": "^11.7.0",
-    "marked": "^4.2.12",
+    "marked": "^5.0.0",
     "tap": "16.3.4"
   },
   "scripts": {
