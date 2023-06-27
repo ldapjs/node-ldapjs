@@ -235,6 +235,16 @@ must be one of:
 | add       | Adds the attribute value(s) referenced in `modification`.  The attribute may or may not already exist. |
 | delete    | Deletes the attribute (and all values) referenced in `modification`. |
 
+```js
+interface Change {
+  operation: 'add' | 'delete' | 'replace',
+  modification: {
+    type: string,
+    values: any
+  }
+}
+```
+
 `modification` is just a plain old JS object with the values you want.
 
 # modifyDN
