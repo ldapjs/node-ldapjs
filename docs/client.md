@@ -235,17 +235,13 @@ must be one of:
 | add       | Adds the attribute value(s) referenced in `modification`.  The attribute may or may not already exist. |
 | delete    | Deletes the attribute (and all values) referenced in `modification`. |
 
-```js
-interface Change {
-  operation: 'add' | 'delete' | 'replace',
-  modification: {
-    type: string,
-    values: any
-  }
-}
-```
+`modification` is just a plain old JS object with the required type and values you want.
 
-`modification` is just a plain old JS object with the values you want.
+| Operation | Description |
+|-----------|-------------|
+| type      | String that defines the attribute type for the modification. |
+| values    | Defines the values for modification. |
+
 
 # modifyDN
 `modifyDN(dn, newDN, controls, callback)`
