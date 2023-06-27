@@ -213,7 +213,8 @@ Example:
 const change = new ldap.Change({
   operation: 'add',
   modification: {
-    pets: ['cat', 'dog']
+    type: 'pets',
+    values: ['cat', 'dog']
   }
 });
 
