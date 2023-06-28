@@ -112,9 +112,9 @@ map to:
 
 ```js
 {
-  initial: 'foo',
-  any: ['bar', 'cat'],
-  final: 'dog'
+  subInitial: 'foo',
+  subAny: ['bar', 'cat'],
+  subFinal: 'dog'
 }
 ```
 
@@ -124,9 +124,9 @@ key matching `attribute` and the "regex" matches the value
 ```js
 const f = new SubstringFilter({
   attribute: 'cn',
-  initial: 'foo',
-  any: ['bar'],
-  final: 'baz'
+  subInitial: 'foo',
+  subAny: ['bar'],
+  subFinal: 'baz'
 });
 
 f.matches({cn: 'foobigbardogbaz'});  => true
