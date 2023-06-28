@@ -13,14 +13,14 @@ with LDAP. If you're not, read the [guide](guide.html) first.
 
 LDAP search filters are really the backbone of LDAP search operations, and
 ldapjs tries to get you in "easy" with them if your dataset is small, and also
-lets you introspect them if you want to write a "query planner". For reference,
+lets you introspect them if you want to write a "query planner".  For reference,
 make sure to read over [RFC2254](http://www.ietf.org/rfc/rfc2254.txt), as this
 explains the LDAPv3 text filter representation.
 
 ldapjs gives you a distinct object type mapping to each filter that is
 context-sensitive. However, _all_ filters have a `matches()` method on them, if
-that's all you need. Most filters will have an `attribute` property on them,
-since "simple" filters all operate on an attribute/value assertion. The
+that's all you need.  Most filters will have an `attribute` property on them,
+since "simple" filters all operate on an attribute/value assertion.  The
 "complex" filters are really aggregations of other filters (i.e. 'and'), and so
 these don't provide that property.
 
@@ -31,19 +31,19 @@ will be one of:
 # parseFilter(filterString)
 
 Parses an [RFC2254](http://www.ietf.org/rfc/rfc2254.txt) filter string into an
-ldapjs object(s). If the filter is "complex", it will be a "tree" of objects.
+ldapjs object(s).  If the filter is "complex", it will be a "tree" of objects.
 For example:
 
 ```js
-const parseFilter = require("ldapjs").parseFilter;
+const parseFilter = require('ldapjs').parseFilter;
 
-const f = parseFilter("(objectclass=*)");
+const f = parseFilter('(objectclass=*)');
 ```
 
 Is a "simple" filter, and would just return a `PresenceFilter` object. However,
 
 ```js
-const f = parseFilter("(&(employeeType=manager)(l=Seattle))");
+const f = parseFilter('(&(employeeType=manager)(l=Seattle))');
 ```
 
 Would return an `AndFilter`, which would have a `filters` array of two
@@ -55,7 +55,7 @@ syntactically invalid string).
 # EqualityFilter
 
 The equality filter is used to check exact matching of attribute/value
-assertions. This object will have an `attribute` and `value` property, and the
+assertions.  This object will have an `attribute` and `value` property, and the
 `name` property will be `equal`.
 
 The string syntax for an equality filter is `(attr=value)`.
@@ -74,7 +74,7 @@ f.matches({cn: 'bar'});  => false
 ```
 
 Equality matching uses "strict" type JavaScript comparison, and by default
-everything in ldapjs (and LDAP) is a UTF-8 string. If you want comparison
+everything in ldapjs (and LDAP) is a UTF-8 string.  If you want comparison
 of numbers, or something else, you'll need to use a middleware interceptor
 that transforms values of objects.
 
@@ -242,7 +242,7 @@ equality filters):
 (|(cn=foo)(sn=bar))
 ```
 
-The `matches()` method will return true IFF the passed in object matches _any_
+The `matches()` method will return true IFF the passed in object matches *any*
 of the filters in the `filters` array.
 
 ```js
@@ -294,11 +294,11 @@ f.matches({cn: 'foo'});  => false
 # ApproximateFilter
 
 The approximate filter is used to check "approximate" matching of
-attribute/value assertions. This object will have an `attribute` and
+attribute/value assertions.  This object will have an `attribute` and
 `value` property, and the `name` property will be `approx`.
 
 As a side point, this is a useless filter. It's really only here if you have
-some whacky client that's sending this. It just does an exact match (which
+some whacky client that's sending this.  It just does an exact match (which
 is what ActiveDirectory does too).
 
 The string syntax for an equality filter is `(attr~=value)`.
