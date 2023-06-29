@@ -36,7 +36,7 @@ tap.beforeEach(t => {
     server.listen(0, '127.0.0.1', (err) => {
       if (err) return reject(err)
       t.context.url = server.url
-      t.context.client = ldapjs.createClient({ url: [server.url], timeout: 0, connectTimeout: 0, idleTimeout: 0 })
+      t.context.client = ldapjs.createClient({ url: [server.url], timeout: 5, connectTimeout: 0, idleTimeout: 0 })
       t.context.searchOpts = {
         filter: '(&(objectClass=*))',
         scope: 'sub',
@@ -58,12 +58,10 @@ tap.afterEach(t => {
   })
 })
 
-tap.test('tracker.fetch', t => {
+tap.test('handle null messages',{ timeout: 50000}, t => {
   const { client } = t.context
   client.bind(BIND_DN, BIND_PW, function (err, res) {
-    t.error(err)
-    t.ok(res)
-    t.equal(res.status, 0)
+    t.match(err.lde_message, 'request timeout (client interrupt)')
     t.end()
   })
 })
