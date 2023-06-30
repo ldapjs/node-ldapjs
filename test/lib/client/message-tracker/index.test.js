@@ -128,7 +128,7 @@ tap.test('#fetch', t => {
 
   t.test('returns {message: null, callback: null} when message does not exist', async t => {
     const tracker = messageTrackerFactory({ id: 'foo', parser: {} })
-    const { callback: fetched,message } = tracker.fetch(1)
+    const { callback: fetched, message } = tracker.fetch(1)
     t.equal(fetched, null)
     t.equal(message, null)
   })

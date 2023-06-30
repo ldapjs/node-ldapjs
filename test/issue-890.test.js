@@ -8,6 +8,14 @@ const BIND_DN = 'cn=root'
 const BIND_PW = 'secret'
 const SUFFIX = ''
 
+const directory = {
+  'dc=example,dc=com': {
+    objectclass: 'example',
+    dc: 'example',
+    cn: 'example'
+  }
+}
+
 server.bind(SUFFIX, (res, done) => {
   res.end()
   return done()
@@ -58,9 +66,9 @@ tap.afterEach(t => {
   })
 })
 
-tap.test('handle null messages',{ timeout: 50000}, t => {
+tap.test('handle null messages', { timeout: 50000 }, t => {
   const { client } = t.context
-  client.bind(BIND_DN, BIND_PW, function (err, res) {
+  client.bind(BIND_DN, BIND_PW, function (err) {
     t.match(err.lde_message, 'request timeout (client interrupt)')
     t.end()
   })
