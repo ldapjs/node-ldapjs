@@ -16,7 +16,7 @@
     "@ldapjs/change": "1.0.0",
     "@ldapjs/controls": "2.0.0",
     "@ldapjs/dn": "1.1.0",
-    "@ldapjs/filter": "2.0.0",
+    "@ldapjs/filter": "2.1.0",
     "@ldapjs/messages": "1.1.0",
     "@ldapjs/protocol": "^1.2.1",
     "abstract-logging": "^2.0.1",
