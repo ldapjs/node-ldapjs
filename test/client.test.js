@@ -10,6 +10,7 @@ const Attribute = require('@ldapjs/attribute')
 const Change = require('@ldapjs/change')
 const messages = require('@ldapjs/messages')
 const controls = require('@ldapjs/controls')
+const dn = require('@ldapjs/dn')
 const ldap = require('../lib')
 
 const {
@@ -735,6 +736,36 @@ tap.test('search basic', function (t) {
   const { SearchResultEntry, SearchResultDone } = messages
 
   t.context.client.search('cn=test, ' + SUFFIX, '(objectclass=*)', function (err, res) {
+    t.error(err)
+    t.ok(res)
+    let gotEntry = 0
+    res.on('searchEntry', function (entry) {
+      t.ok(entry)
+      t.ok(entry instanceof SearchResultEntry)
+      t.equal(entry.dn.toString(), 'cn=test,' + SUFFIX)
+      t.ok(entry.attributes)
+      t.ok(entry.attributes.length)
+      t.equal(entry.attributes[0].type, 'cn')
+      t.equal(entry.attributes[1].type, 'SN')
+      gotEntry++
+    })
+    res.on('error', function (err) {
+      t.fail(err)
+    })
+    res.on('end', function (res) {
+      t.ok(res)
+      t.ok(res instanceof SearchResultDone)
+      t.equal(res.status, 0)
+      t.equal(gotEntry, 2)
+      t.end()
+    })
+  })
+})
+
+tap.test('search basic with DN', function (t) {
+  const { SearchResultEntry, SearchResultDone } = messages
+
+  t.context.client.search(dn.DN.fromString('cn=test, ' + SUFFIX, '(objectclass=*)'), function (err, res) {
     t.error(err)
     t.ok(res)
     let gotEntry = 0
