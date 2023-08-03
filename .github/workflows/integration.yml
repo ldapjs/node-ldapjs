@@ -20,10 +20,12 @@ jobs:
 
     services:
       openldap:
-        image: ghcr.io/ldapjs/docker-test-openldap/openldap:latest
+        image: ghcr.io/ldapjs/docker-test-openldap/openldap:2023-03-18
         ports:
           - 389:389
           - 636:636
+        options: >
+          --health-cmd "ldapsearch -Y EXTERNAL -Q -H ldapi:// -b ou=people,dc=planetexpress,dc=com -LLL '(cn=Turanga Leela)' cn"
 
     steps:
       - uses: actions/checkout@v3
