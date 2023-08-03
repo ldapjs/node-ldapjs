@@ -47,7 +47,7 @@
     "test:cov:html": "tap --coverage-report=html -R terse",
     "test:watch": "tap -n -w --no-coverage-report -R terse",
     "test:integration": "tap --no-cov -R terse 'test-integration/**/*.test.js'",
-    "test:integration:local": "docker-compose up -d && npm run test:integration && docker-compose down",
+    "test:integration:local": "docker-compose up -d --wait && npm run test:integration ; docker-compose down",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
     "docs": "node scripts/build-docs.js"
