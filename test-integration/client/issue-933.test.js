@@ -6,7 +6,7 @@ const parseDN = ldapjs.parseDN;
 
 const SCHEME = process.env.SCHEME || 'ldap';
 const HOST = process.env.HOST || '127.0.0.1';
-const PORT = process.env.PORT || 1389;
+const PORT = process.env.PORT || 389
 const baseURL = `${SCHEME}://${HOST}:${PORT}`;
 
 const client = ldapjs.createClient({ url: baseURL });
