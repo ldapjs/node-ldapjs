@@ -1,6 +1,6 @@
 services:
   openldap:
-    image: ghcr.io/ldapjs/docker-test-openldap/openldap:2023-03-18
+    image: ghcr.io/ldapjs/docker-test-openldap/openldap:2023-08-15
     ports:
       - 389:389
       - 636:636
