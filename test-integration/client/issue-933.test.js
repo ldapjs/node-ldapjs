@@ -35,7 +35,7 @@ tap.test('can search OUs with Norwegian characters', (t) => {
       res.on('searchEntry', (entry) => {
          t.match(entry.pojo, {
             type: 'SearchResultEntry',
-            objectName: 'cn=jdoe,ou=Norge Gjc3\b8vik,dc=planetexpress,dc=com',
+            objectName: 'cn=jdoe,ou=Norge Gj\\c3\\b8vik,dc=planetexpress,dc=com',
             attributes: [
                {
                   type: 'cn',
