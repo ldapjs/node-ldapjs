@@ -10,7 +10,14 @@ const PORT = process.env.PORT || 389
 const baseURL = `${SCHEME}://${HOST}:${PORT}`
 
 tap.test('modifyDN with long name (issue #480)', t => {
-  const longStr = 'a292979f2c86d513d48bbb9786b564b3c5228146e5ba46f404724e322544a7304a2b1049168803a5485e2d57a544c6a0d860af91330acb77e5907a9e601ad1227e80e0dc50abe963b47a004f2c90f570450d0e920d15436fdc771e3bdac0487a9735473ed3a79361d1778d7e53a7fb0e5f01f97a75ef05837d1d5496fc86968ff47fcb64'
+  // 2023-08-15: disabling this 265 character string until a bug can be
+  // fixed in OpenLDAP. See https://github.com/ldapjs/docker-test-openldap/blob/d48bc2fb001b4ed9a152715ced4a2cb120439ec4/bootstrap/slapd-init.sh#L19-L31.
+  // const longStr = 'a292979f2c86d513d48bbb9786b564b3c5228146e5ba46f404724e322544a7304a2b1049168803a5485e2d57a544c6a0d860af91330acb77e5907a9e601ad1227e80e0dc50abe963b47a004f2c90f570450d0e920d15436fdc771e3bdac0487a9735473ed3a79361d1778d7e53a7fb0e5f01f97a75ef05837d1d5496fc86968ff47fcb64'
+
+  // 2023-08-15: this 140 character string satisfies the original issue
+  // (https://github.com/ldapjs/node-ldapjs/issues/480) and avoids a bug
+  // in OpenLDAP 2.5.
+  const longStr = '292979f2c86d513d48bbb9786b564b3c5228146e5ba46f404724e322544a7304a2b1049168803a5485e2d57a544c6a0d860af91330acb77e5907a9e601ad1227e80e0dc50ab'
   const targetDN = 'cn=Turanga Leela,ou=people,dc=planetexpress,dc=com'
   const client = ldapjs.createClient({ url: baseURL })
   client.bind('cn=admin,dc=planetexpress,dc=com', 'GoodNewsEveryone', bindHandler)
