@@ -11,20 +11,33 @@ const baseURL = `${SCHEME}://${HOST}:${PORT}`
 
 const client = ldapjs.createClient({ url: baseURL })
 
-const opts = {
-  filter: '(&(objectClass=person))',
-  scope: 'sub',
-  paged: true,
-  sizeLimit: 100,
-  attributes: ['cn', 'employeeID']
-}
+tap.before(() => {
+  return new Promise((resolve, reject) => {
+    client.bind('cn=admin,dc=planetexpress,dc=com', 'GoodNewsEveryone', (err) => {
+      if (err) {
+        return reject(err)
+      }
+      resolve()
+    })
+  })
+})
 
-const baseDN = parseDN('ou=テスト,dc=planetexpress,dc=com')
+tap.teardown(() => {
+  client.unbind()
+})
 
 tap.test('can search OUs with Japanese characters', t => {
-  client.bind('cn=admin,dc=planetexpress,dc=com', 'GoodNewsEveryone', (err) => {
-    t.error(err, 'bind error')
-  })
+  t.plan(2)
+
+  const opts = {
+    filter: '(&(objectClass=person))',
+    scope: 'sub',
+    paged: true,
+    sizeLimit: 100,
+    attributes: ['cn', 'employeeID']
+  }
+
+  const baseDN = parseDN('ou=テスト,dc=planetexpress,dc=com')
 
   client.search(baseDN.toString(), opts, (err, res) => {
     t.error(err, 'search error')
@@ -42,7 +55,41 @@ tap.test('can search OUs with Japanese characters', t => {
       t.error(err, 'search entry error')
     })
     res.on('end', () => {
-      client.unbind(t.end)
+      t.end()
+    })
+  })
+})
+
+tap.test('can search with non-ascii chars in filter', t => {
+  t.plan(3)
+
+  const opts = {
+    filter: '(&(sn=Rodríguez))',
+    scope: 'sub',
+    attributes: ['dn', 'sn', 'cn'],
+    type: 'user'
+  }
+
+  let searchEntryCount = 0
+  client.search('dc=planetexpress,dc=com', opts, (err, res) => {
+    t.error(err, 'search error')
+    res.on('searchEntry', (entry) => {
+      searchEntryCount += 1
+      t.match(entry.pojo, {
+        type: 'SearchResultEntry',
+        objectName: 'cn=Bender Bending Rodr\\c3\\adguez,ou=people,dc=planetexpress,dc=com',
+        attributes: [{
+          type: 'cn',
+          values: ['Bender Bending Rodríguez']
+        }]
+      })
+    })
+    res.on('error', (err) => {
+      t.error(err, 'search entry error')
+    })
+    res.on('end', () => {
+      t.equal(searchEntryCount, 1, 'should have found 1 entry')
+      t.end()
     })
   })
 })
