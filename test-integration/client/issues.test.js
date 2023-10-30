@@ -96,3 +96,77 @@ tap.test('can access large groups (issue #582)', t => {
     })
   })
 })
+
+tap.test('can use password policy response', t => {
+  const client = ldapjs.createClient({ url: baseURL })
+
+  client.bind('cn=admin,dc=planetexpress,dc=com', 'GoodNewsEveryone', (err) => {
+    t.error(err)
+
+    const passwordChangeAttribute = new ldapjs.Attribute({ type: 'userPassword', values: 'bender2' })
+    const passwordChange = new ldapjs.Change({ operation: 'replace', modification: passwordChangeAttribute })
+
+    const targetDN = 'cn=Bender Bending Rodríguez,ou=people,dc=planetexpress,dc=com'
+    client.modify(targetDN, passwordChange, (err, res) => {
+      t.error(err)
+      t.ok(res)
+      t.equal(res.status, 0)
+
+      client.unbind(err => {
+        t.error(err)
+
+        const client2 = ldapjs.createClient({ url: baseURL })
+        const control = new ldapjs.PasswordPolicyControl()
+
+        client2.bind(targetDN, 'bender2', control, (err, res) => {
+          t.error(err)
+          t.ok(res)
+          t.equal(res.status, 0)
+
+          let error = null
+          res.controls.forEach(control => {
+            if (control.type === ldapjs.PasswordPolicyControl.OID) {
+              error = control.value.error
+            }
+          })
+          if (error) {
+            t.equal(error, 2)
+          } else {
+            t.fail('Expected error to be set')
+          }
+
+          const passwordChangeAttribute2 = new ldapjs.Attribute({ type: 'userPassword', values: 'bender' })
+          const passwordChange2 = new ldapjs.Change({ operation: 'replace', modification: passwordChangeAttribute2 })
+          client2.modify(targetDN, passwordChange2, (err, res) => {
+            t.error(err)
+            t.ok(res)
+            t.equal(res.status, 0)
+
+            client2.unbind(err => {
+              t.error(err)
+
+              const client3 = ldapjs.createClient({ url: baseURL })
+              client3.bind(targetDN, 'bender', control, (err, res) => {
+                t.error(err)
+                t.ok(res)
+                t.equal(res.status, 0)
+
+                let timeBeforeExpiration = null
+                res.controls.forEach(control => {
+                  if (control.type === ldapjs.PasswordPolicyControl.OID) {
+                    timeBeforeExpiration = control.value.timeBeforeExpiration
+                  }
+                })
+                if (timeBeforeExpiration === null) {
+                  t.fail('Expected timeBeforeExpiration to be set')
+                }
+
+                client3.unbind(t.end)
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+})
