@@ -257,6 +257,27 @@ tap.test('bind/unbind identity anonymous', function (t) {
   })
 })
 
+tap.test('does not crash on empty DN values', function (t) {
+  const server = ldap.createServer({
+    connectionRouter: function (c) {
+      server.newConnection(c)
+      server.emit('testconnection', c)
+    }
+  })
+
+  server.listen(t.context.sock, function () {
+    const client = ldap.createClient({ socketPath: t.context.sock })
+    server.once('testconnection', () => {
+      client.bind('', 'pw', function (err) {
+        t.ok(err, 'blank bind dn throws error')
+        client.unbind(function () {
+          server.close(() => t.end())
+        })
+      })
+    })
+  })
+})
+
 tap.test('bind/unbind identity user', function (t) {
   const server = ldap.createServer({
     connectionRouter: function (c) {
