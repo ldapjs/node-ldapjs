@@ -28,7 +28,7 @@ jobs:
           --health-cmd "ldapsearch -Y EXTERNAL -Q -H ldapi:// -b ou=people,dc=planetexpress,dc=com -LLL '(cn=Turanga Leela)' cn"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
